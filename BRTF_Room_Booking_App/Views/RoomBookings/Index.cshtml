@@ -1,0 +1,370 @@
+﻿@model IEnumerable<BRTF_Room_Booking_App.Models.RoomBooking>
+@*For Cookies*@
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{ ViewData["Title"] = "Bookings Index"; }
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href='~/fullcalendar/main.css' rel='stylesheet' />
+
+
+</head>
+@if (TempData["AlertMessage"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        @Html.Raw(TempData["AlertMessage"])
+    </div>
+    <br />
+}
+@if (TempData["Message"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        <strong>@Html.Raw(TempData["Message"])</strong>
+    </div>
+    <br />
+}
+<body class="align-items-center justify-content-center">
+
+    <br />
+    <h1 class="mb-4 text-center">Bookings</h1>
+    <br />
+    <div class="container">
+        <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-5 py-2 my-3">
+
+            <h4 class="text-left">
+                <a asp-action="Create" class="btn btn-primary mt-3">Book a Room</a>
+            </h4>
+            <form asp-action="Index" method="get">
+                <div class="text-center pb-2 ml-5 d-none d-lg-block">
+                    <input type="date" id="calendarDatePicker" onchange="refreshCalendar();" />
+                </div>
+                <div class="d-none d-lg-block" id='calendar'></div>
+
+                <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+                <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+                <div class="form-horizontal align-items-start text-left justify-content-start mt-3">
+                    <button class="btn @(ViewData["Filtering"]) mb-3" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                        <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
+                    </button>
+                    <div class="collapse mb-3" id="collapseFilter" style="margin-bottom:20px;">
+                        <div class="card card-body bg-light">
+                            <div class="d-block d-lg-none">
+                                <div class="form-group">
+                                    <label class="control-label">Sort By:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" class="" value="desc"
+                                                       @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                                       name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                            </div>
+                                        </div>
+                                        <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search After Date:</label>
+                                    @Html.TextBox("SearchAfterDate", null, new { @class = "form-control", @type = "date" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search Before Date:</label>
+                                    @Html.TextBox("SearchBeforeDate", null, new { @class = "form-control", @type = "date" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search Username:</label>
+                                    @Html.TextBox("SearchUserName", null, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search User's Full Name:</label>
+                                    @Html.TextBox("SearchFullName", null, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search by Area:</label>
+                                    @Html.DropDownList("RoomGroupID", null, "All Areas", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search by Room:</label>
+                                    @Html.DropDownList("RoomID", null, "Select an Area first", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search by Approval Status:</label>
+                                    @Html.DropDownList("SearchApprovalStatus", new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text="Approved & Pending", Value=""},
+                                        new SelectListItem { Text="Approved Only", Value="Approved"},
+                                        new SelectListItem { Text="Pending Only", Value="Pending"},
+                                        new SelectListItem { Text="Declined Only", Value="Declined"},
+                                        new SelectListItem { Text="All Statuses", Value="All"}
+                                    }, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButton" value="Apply" class="btn btn-outline-primary" />
+                                    <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
+                    {
+                        <button class="btn btn-outline-secondary ml-2 mb-3" type="button" onclick="pageSize()">
+                            View All Bookings
+                        </button>
+                    }
+                    <a role="button" class="btn btn-outline-secondary ml-2 mb-3" asp-area="" asp-controller="Home" asp-action="UsersBookings" asp-route-id="">Your Bookings</a>
+                </div>
+
+                <div class="container-fluid d-block d-lg-none">
+                    <div class="card-deck-wrapper">
+                        <div class="card-deck">
+                            @foreach (var item in Model)
+                            {
+                                <div class="card mb-sm-3" style="min-width: 18rem;">
+                                    <h5 class="card-header">@Html.DisplayFor(modelItem => item.User.FullName)</h5>
+                                    <div class="card-body">
+                                        <div class="media-body ml-2">
+                                            @*<p class="card-text">*@
+                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")</div>
+                                            <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()</div>
+                                            <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
+                                            <div class="card-text"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>
+                                            <br />
+                                            @*</p>*@
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-center">
+                                            @{ int userID = Convert.ToInt32(HttpContextAccessor.HttpContext.Request.Cookies["userID"]);}
+                                            @if ((userID == item.UserID) || (User.IsInRole("Admin") || User.IsInRole("Top-level Admin")))
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
+                                                <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
+                                                <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                            }
+                                            </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <table class="table d-none d-lg-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button type="submit" class="btn btn-link" name="actionButton" value="Start Date"><b>Date</b></button>
+                            </th>
+                            <th>
+                                <button type="submit" class="btn btn-link" disabled style="color:black"><b>Time</b></button>
+                            </th>
+                            <th>
+                                <button type="submit" class="btn btn-link" disabled style="color:black"><b>Room</b></button>
+                            </th>
+                            <th>
+                                <button type="submit" class="btn btn-link" disabled style="color:black"><b>User</b></button>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")
+                                </td>
+                                <td>
+                                    @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Room.RoomName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.User.FullName)
+                                </td>
+                                <td style="width: 310px">
+                                    @{ int userID = Convert.ToInt32(HttpContextAccessor.HttpContext.Request.Cookies["userID"]);}
+                                    @if ((userID == item.UserID) || (User.IsInRole("Admin") || User.IsInRole("Top-level Admin")))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
+                                        <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
+                                        <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (User.IsInRole("Top-level Admin"))
+                {
+                    <input onclick="$('#bulkDeleteModal').modal('show');" value="Delete Filtered Bookings" class="btn btn-danger mx-2 float-right" style="cursor: pointer;" readonly />
+                    <div class="modal fade" id="bulkDeleteModal" aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="bulkDeleteModalLabel">@Html.Raw(ViewBag.BulkDeleteMessageTitle)</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div id="bulkDeleteModalBody" class="modal-body">
+                                    @Html.Raw(ViewBag.BulkDeleteMessageBody)
+                                    @Html.ListBox("bookingsToBulkDelete", (MultiSelectList)ViewBag.selOpts,
+                                        new { @size = 10, @class = "form-control", @style = "height:90%; display:none;" })
+                                    @* display:none; Hides the above listbox. If you are debugging bulk deletion, you should remove this style to Show the listbox. *@
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <input onclick="$('#bookingsToBulkDelete option').prop('selected', true);" type="submit" name="actionButton" value="Delete Bookings" class="btn btn-danger mx-2" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <partial name="_PagingNavBar" />
+            </form>
+        </section>
+    </div>
+</body>
+@section Scripts {
+    <script src="~/js/refreshDDL.js"></script>
+    <script type="text/javascript">
+        // When page loads, match the datepicker of the calendar view to the start date of the filter
+        $('document').ready(function () {
+            $("#calendarDatePicker").val($("#SearchAfterDate").val());
+            refreshCalendar();
+        });
+    </script>
+    <script type="text/javascript">
+        // Refresh DDL of available rooms when Area is changed
+        $('#RoomGroupID').change(function () {
+            var selectedRoomGroup = $("#RoomGroupID").val();
+            var URL = "/RoomBookings/GetRooms/" + selectedRoomGroup;
+            refreshDDL('RoomID', URL, true, "All Rooms", true, "All Rooms", true);
+        });
+    </script>
+    <script>
+        function pageSize() {
+            document.cookie = "RoomBookingspageSizeValue=10000";
+            location.reload();
+        }
+    </script>
+    <script src='~/fullcalendar/main.js'></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var rooms = @Html.Raw(ViewBag.RoomList);
+            var bookings = @Html.Raw(ViewBag.BookingList);
+            var today = new Date;
+            var time = today.getHours() + ":" + today.getMinutes();
+            var height = 50 + rooms.length * 50;
+
+            if (height > 600) { height = 600;}
+
+            console.log(bookings);
+
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                initialDate: new Date(),
+                editable: false,
+                selectable: false,
+                nowIndicator: true,
+                contentHeight: height,
+                scrollTime: time,
+                headerToolbar: {
+                    left: 'today prev,next',
+                    center: 'title',
+                    right: 'resourceTimelineDay,resourceTimelineThreeDays'
+                },
+                initialView: 'resourceTimelineDay',
+                views: {
+                    resourceTimelineThreeDays: {
+                        type: 'resourceTimeline',
+                        duration: { days: 3 },
+                        buttonText: '3 days'
+                    }
+                },
+                resourceAreaWidth: '40%',
+                resourceAreaColumns: [
+                    {
+                        group: true,
+                        headerContent: 'Area',
+                        field: 'building'
+                    },
+                    {
+                        headerContent: 'Room',
+                        field: 'title'
+                    },
+                ],
+                resources: rooms,
+                events: bookings
+            });
+
+            calendar.render();
+        });
+
+        function refreshCalendar() {
+            var testdate = $("#calendarDatePicker").val();
+            var calendar = document.getElementById('calendar');
+            var rooms = @Html.Raw(ViewBag.RoomList);
+            var bookings = @Html.Raw(ViewBag.BookingList);
+            var today = new Date;
+            var time = today.getHours() + ":" + today.getMinutes();
+            var height = 50 + rooms.length * 50;
+
+            if (height > 600) { height = 600;}
+
+            calendar = new FullCalendar.Calendar(calendar, {
+                schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                initialDate: testdate,
+                editable: false,
+                selectable: false,
+                nowIndicator: true,
+                contentHeight: height,
+                scrollTime: time,
+                headerToolbar: {
+                    left: 'today prev,next',
+                    center: 'title',
+                    right: 'resourceTimelineDay,resourceTimelineThreeDays'
+                },
+                initialView: 'resourceTimelineDay',
+                views: {
+                    resourceTimelineThreeDays: {
+                        type: 'resourceTimeline',
+                        duration: { days: 3 },
+                        buttonText: '3 days'
+                    }
+                },
+                resourceAreaWidth: '40%',
+                resourceAreaColumns: [
+                    {
+                        group: true,
+                        headerContent: 'Area',
+                        field: 'building'
+                    },
+                    {
+                        headerContent: 'Room',
+                        field: 'title'
+                    },
+                ],
+                resources: rooms,
+                events: bookings
+            });
+
+            calendar.render();
+        };
+
+
+    </script>
+
+}

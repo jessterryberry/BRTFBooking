@@ -1,0 +1,191 @@
+﻿@model BRTF_Room_Booking_App.Models.User
+
+@{
+    ViewData["Title"] = "Create User";
+
+}
+<head>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+</head>
+<body class="justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Register Users</h1>
+    <br />
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="create_user p-3 mt-3 mb-5">
+        <div>
+            <br />
+            <h4 class="text-center">Individual User Entry</h4>
+            <br />
+        </div>
+        <form asp-action="Create" asp-controller="Users" method="post" enctype="multipart/form-data">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+
+                    <div class="form-group">
+                        <label for="Role" class="label">Role *</label>
+                        <select id="Role" name="Role" class="form-control" asp-items="ViewBag.Role"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TermAndProgramID" class="label">Term and Program *</label>
+                        <select asp-for="TermAndProgramID" id="termProgramInput" class="form-control" asp-items="ViewBag.TermAndProgramID">
+                            <option value="">- Select a Term and Program -</option>
+                        </select>
+                        <span asp-validation-for="TermAndProgramID" id="termProgramError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Username" class="label">Username *</label>
+                        <input asp-for="Username" id="usernameInput" class="form-control" placeholder="0123456" />
+                        <span asp-validation-for="Username" id="usernameError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="label">First Name *</label>
+                        <input asp-for="FirstName" id="firstNameInput" class="form-control" placeholder="First Name" />
+                        <span asp-validation-for="FirstName" id="firstNameError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MiddleName" class="label"></label>
+                        <input asp-for="MiddleName" class="form-control" placeholder="Middle Name" />
+                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LastName" class="label">Last Name *</label>
+                        <input asp-for="LastName" id="lastNameInput" class="form-control" placeholder="Last Name" />
+                        <span asp-validation-for="LastName" id="lastNameError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="label">Email *</label>
+                        <input asp-for="Email" id="emailInput" class="form-control" placeholder="username@ncstudents.niagaracollege.ca" />
+                        <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Email Notification</label>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="EmailBookingNotifications" /> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
+                            </label>
+                        </div>
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="EmailCancelNotifications" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                            </label>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div class="d-flex justify-content-center">
+                        <input type="submit" value="Add User" class="btn btn-primary mx-2" style="width: 100px;" />
+                        <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2">Back to Users</a>
+                    </div>
+                    <br/>
+                </div>
+            </div>
+        </form>
+    </section>
+    <br/>
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="px-1 py-2 mt-2 mb-5">
+        <div>
+            <br />
+            <h4 class="text-center">Bulk User Entry</h4>
+            <br />
+        </div>
+        <div class="row justify-content-center">
+            <form asp-action="InsertFromExcel" asp-controller="Users" method="post" enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="form-group">
+                            <label class="control-label">Upload XLSX/CSV File:</label>
+                            <button type="button" title="Bulk Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right"
+                                    data-content="This bulk upload can only be used to upload student(regular user) data">
+                                <img src="~/img/questionmark.png" width="30" height="30" />
+                            </button>
+                        </div>
+                    </div>
+                    @*<div class="col-md-1 text-center">
+                    </div>*@
+                    <div class="col-md-12 text-center">
+                        <div class="form-group ml-5 pl-3">
+                            <input type="file" class="" name="theExcel" />
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <div class="form-group">
+                            <a asp-action="DownloadExampleExcel" class="btn btn-primary mt-2">Download Example File</a> <button type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="This downloadable Excel file shows the correct format bulk user data should be in prior to uploading. Please ensure all column headers match the exact locations of those in the example file in order to complete a successful bulk user upload.">
+    <img src="~/img/questionmark.png" width="30" height="30" />
+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="d-flex justify-content-center">
+                    <input type="submit" value="Add Users" class="btn btn-primary mx-2" style="width: 100px;" />
+                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2">Back to Users</a>
+                </div>
+                <br/>
+            </form>
+        </div>
+    </section>
+</body>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    });
+
+    $("#firstNameInput").on("input", function () {
+        if ($("#firstNameInput").val().length == 0) {
+            $("#firstNameError").html("Please enter a first name, to a maximum of 50 characters.");
+        }
+        else {
+            $("#firstNameError").html("");
+        }
+    });
+    $("#usernameInput").on("input", function () {
+        if ($("#usernameInput").val().length == 0) {
+            $("#usernameError").html("Please enter a username, to a maximum of 50 characters.");
+        }
+        else {
+            $("#usernameError").html("");
+        }
+    });    
+    $("#lastNameInput").on("input", function () {
+        if ($("#lastNameInput").val().length == 0) {
+            $("#lastNameError").html("Please enter a last name, to a maximum of 50 characters.");
+        }
+        else {
+            $("#lastNameError").html("");
+        }
+    });
+    $("#emailInput").on("input", function () {
+        let emailChk = new RegExp("^[a-zA-Z]+?[a-zA-Z0-9]*?@@[a-zA-Z.]*?niagaracollege\\.ca$");
+        if ($("#emailInput").val().length == 0 || emailChk.test($("#emailInput").val()) == false) {
+            $("#emailError").html("Please enter a valid Niagara College email, to a maximum of 200 characters.");
+        }
+        else {
+            $("#emailError").html("");
+        }
+    });
+    $("#termProgramInput").on("input", function () {
+        if ($("#termProgramInput").val().length == 0) {
+            $("#termProgramError").html("You must assign a Term and Program.");
+        }
+        else {
+            $("#termProgramError").html("");
+        }
+    });
+</script>

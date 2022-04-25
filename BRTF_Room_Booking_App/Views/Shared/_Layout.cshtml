@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BRTF Room Booking App</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        /* Change hover-over colour for Bootstrap dropdown-menu list items. */
+        .dropdown-menu > li > a:hover, .dropdown-menu > li > form > button:hover, .nav-item a:hover {
+            background-image: none;
+            background-color: dodgerblue;
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #2F7DBB; color: #E4E6E6;">
+        <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand mr-auto" asp-area="" asp-controller="Home" asp-action="Index"><img style="height:50%; width:225px;" src="~/img/Logo.png" alt="Logo of BRTF" /></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                    <span><img src="~/img/navbar-toggler-icon.png" width="40" height="40"/></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarToggler">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="dropdown-divider d-lg-none"></li>
+                        <li class="nav-item ml-4"><a class="nav-link" asp-area="" asp-controller="RoomBookings" asp-action="Create" style="color: #E4E6E6">Book a Room</a></li>
+                        <li class="dropdown-divider d-lg-none"></li>
+                        <li class="nav-item ml-4"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Help" style="color: #E4E6E6">Help</a></li>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
+                        {
+                            <li class="dropdown-divider d-lg-none"></li>
+                            <li class="nav-item ml-4">
+                                <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Create" style="color: #E4E6E6">Register User</a>
+                            </li>
+                            <li class="dropdown-divider d-lg-none"></li>
+                            <li class="nav-item ml-4">
+                                <a class="nav-link" asp-area="" asp-controller="Rooms" asp-action="BookingSummary" style="color: #E4E6E6">Admin Reports</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("User"))
+                        {
+                            <li class="dropdown-divider d-lg-none"></li>
+                            <li class="nav-item ml-4">
+                                <a class="nav-link" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6">Bookings</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
+                        {
+                            <li class="dropdown-divider d-lg-none"></li>
+                            <li class="nav-item dropdown ml-4">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" style="color: #E4E6E6">
+                                    Lists<b class="caret"></b>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index" style="color: #E4E6E6;">Users</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="UserGroups" asp-action="Index" style="color: #E4E6E6;">User&nbsp;Groups</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="TermAndPrograms" asp-action="Index" style="color: #E4E6E6;">Terms&nbsp;and&nbsp;Programs</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6;">Bookings</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="RoomGroups" asp-action="Index" style="color: #E4E6E6;">Room&nbsp;Groups</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Rooms" asp-action="Index" style="color: #E4E6E6;">Rooms</a>
+                                    @if (User.IsInRole("Top-level Admin"))
+                                    {
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" style="color: #E4E6E6;">Global Settings</a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                        <li class="dropdown-divider d-lg-none"></li>
+                        <li class="nav-item mr-lg-5 ml-4"><partial name="_LoginPartial" /></li>
+                    </ul>
+                </div>
+        </nav>
+    </header>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container" style="text-align: center;">
+            &copy; 2022 - BRTF Room Booking App - <a asp-area="" asp-controller="Home" asp-action="Privacy" style="color: dimgrey">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/script.js"></script>
+    <script>
+        const toggleButton = document.getElementsByClassName('toggle-button')[0]
+        const navbarLinks = document.getElementsByClassName('navbar-links')[0]
+
+        toggleButton.addEventListener('click', () => {
+            navbarLinks.classList.toggle('active')
+        })
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

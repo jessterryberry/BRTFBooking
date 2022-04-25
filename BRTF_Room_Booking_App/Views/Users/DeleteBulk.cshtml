@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Bulk Delete Users";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<br/>
+<h1 class="mb-4 text-center">Bulk Delete Users</h1>
+<br/>
+
+<section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 65%; margin:auto;" class="px-5 py-2 my-3">
+    <br />
+    <h4 class="text-center">Select Roles or User Groups to delete Users from <button type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="If you would like to delete all users in a specific Role please click on the checkboxes under the first heading. If you would like to delete all users in specific User Groups, please click on the checkboxes under the second heading."><img src="~/img/questionmark.png" width="30" height="30" /></button></h4>
+    <p class="text-center" style="margin-bottom: 20px;  margin-top: 20px; font-style: italic;">* Please note that it is not possible to delete your own account *</p>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row justify-content-center">
+        <form asp-action="DeleteBulk">
+            <div class="form-group">
+                <label class="control-label"><b>Select Roles to delete Users from</b></label>
+                <div class="col-md-offset-1">
+                    <table>
+                        <tr>
+                            @{
+                                int rCount = 0;
+                                List<BRTF_Room_Booking_App.ViewModels.CheckOptionVM> rCheckboxes = ViewBag.RoleOptions;
+                                foreach (var checkbox in rCheckboxes)
+                                {
+                                    if (rCount++ % 3 == 0)
+                                    {
+                                    @:</tr><tr>
+                                    }
+                                    @:<td>
+                                        <input type="checkbox"
+                                               name="selectedRoles"
+                                               value="@checkbox.DisplayText"
+                                               @(Html.Raw(checkbox.Assigned ? "checked=\"checked\"" : "")) />
+                                        @checkbox.DisplayText @:&nbsp;&nbsp;
+                                    @:</td>
+                                }
+                            @:</tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><b>Select User Groups to delete Users from</b></label>
+                    <div class="col-md-offset-1">
+                        <table>
+                            <tr>
+                                @{
+                                    int gCount = 0;
+                                    List<BRTF_Room_Booking_App.ViewModels.CheckOptionVM> gCheckboxes = ViewBag.GroupOptions;
+                                    foreach (var checkbox in gCheckboxes)
+                                    {
+                                        if (gCount++ % 3 == 0)
+                                        {
+                                        @:</tr><tr>
+                                        }
+                                        @:<td>
+                                            <input type="checkbox"
+                                                   name="selectedGroups"
+                                                   value="@checkbox.ID"
+                                                   @(Html.Raw(checkbox.Assigned ? "checked=\"checked\"" : "")) />
+                                            @checkbox.DisplayText @:&nbsp;&nbsp;
+                                        @:</td>
+                                    }
+                                @:</tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                    @*<div>
+                        <input type="checkbox"
+                               name="selectAll"
+                               value="Select All"
+                               onClick="selectAllCheckboxes(this)" />
+                        <b>Select All&nbsp;&nbsp;</b>
+                        </div>*@
+                    <br />
+                    <div>
+                        <input type="submit" value="Delete Selected" class="btn btn-danger" />
+                        <a asp-action="Index" role="button" class="btn btn-secondary mx-2">Back to Users</a>
+                    </div>
+                    <br />
+                </form>
+            </div>
+
+        </section>
+            @section Scripts {
+                @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+                <script type="text/javascript">
+                    function selectAllCheckboxes(source) {
+                        checkboxesRoles = document.getElementsByName('selectedRoles');
+                        for (var i = 0, n = checkboxesRoles.length; i < n; i++) {
+                            checkboxesRoles[i].checked = source.checked;
+                        }
+                        checkboxesGroups = document.getElementsByName('selectedGroups');
+                        for (var i = 0, n = checkboxesGroups.length; i < n; i++) {
+                            checkboxesGroups[i].checked = source.checked;
+                        }
+                    }
+                </script>
+                <script tye="text/javascript">
+                    $(function () {
+                        $('[data-toggle="popover"]').popover()
+                    })
+                </script>
+            }

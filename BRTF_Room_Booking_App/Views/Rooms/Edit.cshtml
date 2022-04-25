@@ -1,0 +1,72 @@
+﻿@model BRTF_Room_Booking_App.Models.Room
+@{
+    ViewData["Title"] = "Edit Room";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body class="justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Edit</h1>
+    <br />
+
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="px-5 py-2 my-3">
+        <div>
+            <br />
+            <h4 class="text-center">Edit this Room</h4>
+            <br />
+        </div>
+        <form asp-action="Edit">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="ID" />
+                    <div class="form-group">
+                        <label asp-for="RoomGroupID" class="label">Area *</label>
+                        <select asp-for="RoomGroupID" class="form-control" asp-items="ViewBag.RoomGroupID"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RoomName" class="label">Room Name *</label>
+                        <input asp-for="RoomName" id="roomNameInput" class="form-control" />
+                        <span asp-validation-for="RoomName" id="roomNameError" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RoomMaxHoursTotal" class="label"></label>
+                        <input asp-for="RoomMaxHoursTotal" class="form-control" />
+                        <span asp-validation-for="RoomMaxHoursTotal" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Is Enabled</label>
+                        <div class="form-group form-check">
+                            <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
+                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Rooms</a>
+            </div>
+            <br />
+        </form>
+    </section>
+</body>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+    $("#roomNameInput").on("input", function () {
+        if ($("#roomNameInput").val().length == 0) {
+            $("#roomNameError").html("Please enter a room name, up to 50 characters in length.");
+        }
+        else {
+            $("#roomNameError").html("");
+        }
+    });
+</script>
+}

@@ -1,0 +1,265 @@
+﻿@model IEnumerable<BRTF_Room_Booking_App.ViewModels.BookingSummary>
+
+@{
+    ViewData["Title"] = "Admin Reports";
+}
+
+<br />
+<h1 class="mb-4 text-center">Admin Reports</h1>
+<br />
+<p class="text-danger">@TempData["Message"]</p>
+<div class="container">
+<section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-5 py-2 my-3">
+    <br />
+    <h4 class="text-center">Booking Summary</h4>
+    <br />
+    <form asp-action="BookingSummary" method="get">
+        <div class="row">
+                <div class="col-12">
+                    <div class="form-horizontal align-items-start text-left justify-content-start my-3">
+                        <a asp-action="DownloadBookings" class="btn btn-info mb-3">Download Bookings Report</a>
+                    </div>
+                </div>
+            <div class="col-12">
+                <div class="form-horizontal align-items-start text-left justify-content-start my-3">
+                    <button class="btn @(ViewData["Filter"])" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                        Filter/Search
+                    </button>
+                    <div class="collapse @(ViewData["Filtering"])" id="collapseFilter">
+                        <div class="card card-body bg-light">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Bookings From:</label>
+                                    @Html.TextBox("start", null, new { @class = "form-control", @type = "date" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Bookings Before:</label>
+                                    @Html.TextBox("end", null, new { @class = "form-control", @type = "date" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search Room:</label>
+                                    @Html.TextBox("SearchRoom", null, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search by Room Group:</label>
+                                    @Html.DropDownList("RoomGroupID", null, "All Room Groups", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButton" value="Filter" class="btn btn-outline-primary" />
+                                    <a asp-action="BookingSummary" class="btn btn-outline-dark">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="chartHolder">
+            <!-- HTML -->
+            <div id="chartdiv"></div>
+        </div>
+
+
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.RoomName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RoomGroup)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NumberOfAppointments)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalHours)
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomGroup)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NumberOfAppointments)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalHours)
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+</div>
+<style>
+    #chartHolder {
+        height: 500px;
+        overflow: scroll;
+    }
+
+    #chartdiv {
+        width: 100%;
+    }
+</style>
+
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+<!-- Chart code -->
+<script>
+    am5.ready(function() {
+
+    // Create root element
+    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+    var root = am5.Root.new("chartdiv");
+
+
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+
+
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: false,
+      panY: false,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      layout: root.verticalLayout
+    }));
+
+
+    // Add legend
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+    var legend = chart.children.push(am5.Legend.new(root, {
+      centerX: am5.p50,
+      x: am5.p50
+    }))
+
+    var data = @Html.Raw(ViewBag.RoomList);
+
+    var height = Math.round(Object.keys(data).length*80);
+
+    if(height < 500)
+    height = 500;
+
+    document.getElementById("chartdiv").style.height = height+"px";
+
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+      categoryField: "room",
+      renderer: am5xy.AxisRendererY.new(root, {
+        inversed: true,
+        cellStartLocation: 0.1,
+        cellEndLocation: 0.9
+      })
+    }));
+
+    yAxis.data.setAll(data);
+
+    var xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
+      renderer: am5xy.AxisRendererX.new(root, {}),
+      min: 0
+    }));
+
+
+    // Add series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    function createSeries(field, name) {
+      var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+        name: name,
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueXField: field,
+        categoryYField: "room",
+        sequencedInterpolation: true,
+        tooltip: am5.Tooltip.new(root, {
+          pointerOrientation: "horizontal",
+          labelText: "[bold]{name}[/]\n{categoryY}: {valueX}"
+        })
+      }));
+
+      series.columns.template.setAll({
+        height: am5.p100
+      });
+
+
+      series.bullets.push(function() {
+        return am5.Bullet.new(root, {
+          locationX: 1,
+          locationY: 0.5,
+          sprite: am5.Label.new(root, {
+            centerY: am5.p50,
+            text: "{valueX}",
+            populateText: true
+          })
+        });
+      });
+
+      series.bullets.push(function() {
+        return am5.Bullet.new(root, {
+          locationX: 1,
+          locationY: 0.5,
+          sprite: am5.Label.new(root, {
+            centerX: am5.p100,
+            centerY: am5.p50,
+            fill: am5.color(0xffffff),
+            populateText: true
+          })
+        });
+      });
+
+      series.data.setAll(data);
+      series.appear();
+
+      return series;
+    }
+
+    createSeries("numBookings", "Number of Bookings");
+    createSeries("hrsBookings", "Hours of Bookings");
+
+
+    // Add legend
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
+    var legend = chart.children.push(am5.Legend.new(root, {
+      centerX: am5.p50,
+      x: am5.p50
+    }));
+
+    legend.data.setAll(chart.series.values);
+
+
+    // Add cursor
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+      behavior: "zoomY"
+    }));
+    cursor.lineY.set("forceHidden", true);
+    cursor.lineX.set("forceHidden", true);
+
+
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    chart.appear(1000, 100);
+
+    }); // end am5.ready()
+</script>

@@ -1,0 +1,161 @@
+﻿@model BRTF_Room_Booking_App.Models.User
+
+@{
+    ViewData["Title"] = "User Details";
+}
+@if (TempData["AlertMessage"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        @Html.Raw(TempData["AlertMessage"])
+    </div>
+    <br />
+}
+@if (TempData["Message"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        <strong>@Html.Raw(TempData["Message"])</strong>
+    </div>
+    <br />
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<body style="background-color:#E4E6E6" class="justify-content-left">
+    <br />
+    <h1 class="mb-4 text-center">Details</h1>
+    <br />
+    <div class="container-fluid d-block d-lg-none" style="display:block;">
+            <div class="card-deckwrapper">
+                <div class="card-deck">
+                    <div class="card mb-sm-3" style="min-width: 18rem;">
+                        <h5 class="card-header text-center">User Details</h5>
+                        <div class="card-body">
+                            <div class="media-body ml-2">
+                                <div class="card-text mb-3"><strong>Username:</strong> @Html.DisplayFor(model => model.Username)</div>
+                                <div class="card-text mb-3"><strong>First Name:</strong> @Html.DisplayFor(model => model.FirstName)</div>
+                                <div class="card-text mb-3"><strong>Middle Name:</strong> @Html.DisplayFor(model => model.MiddleName)</div>
+                                <div class="card-text mb-3"><strong>Last Name:</strong> @Html.DisplayFor(model => model.LastName)</div>
+                                <div class="card-text mb-3"><strong>Email:</strong> @Html.DisplayFor(model => model.Email)</div>
+                                <div class="card-text mb-3"><strong>Term and Program:</strong> @Html.DisplayFor(model => model.TermAndProgram.TermAndProgramSummary)</div>
+                                <div class="card-text mb-3"><strong>Role:</strong> @Html.DisplayFor(model => model.TermAndProgram.UserGroup.UserGroupName)</div>
+                                <div class="card-text">
+                                    <strong>Email Notification:</strong>
+                                    <div class="form-group form-check mt-3">
+                                        <input class="form-check-input" asp-for="EmailBookingNotifications" disabled="disabled" />@Html.DisplayNameFor(model => model.EmailBookingNotifications)
+                                    </div>
+                                    <div class="form-group form-check">
+                                        <input class="form-check-input" asp-for="EmailCancelNotifications" disabled="disabled" />@Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+                            <div class="card-footer d-flex justify-content-center">
+                                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-1" style="width:100px;">Edit</a>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
+                                {
+                                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-1">Back to Users</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 55%; margin:auto" class="px-1 py-2 my-3 d-none d-lg-block">
+        <div>
+            <br />
+            <h4 class="text-center">User Details</h4>
+            <br />
+        </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="ID" />
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="Username" class="label">Username</label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.Username)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="FirstName" class="label"></label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.FirstName)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="MiddleName" class="label"></label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.MiddleName)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="LastName" class="label"></label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.LastName)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right py-2">
+                            <label asp-for="Email" class="label"></label>
+                        </div>
+                        <div class="col-6 py-2">
+                            @Html.DisplayFor(model => model.Email)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="TermAndProgramID" class="label"></label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.TermAndProgram.TermAndProgramSummary)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label for="Role" class="label">Role</label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @ViewBag.Role
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="EmailBookingNotifications" class="label">Email Notification</label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            <div class="form-group form-check">
+                                <input class="form-check-input" asp-for="EmailBookingNotifications" disabled="disabled" /> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
+                            </div>
+                            <div class="form-group form-check">
+                                <input class="form-check-input" asp-for="EmailCancelNotifications" disabled="disabled" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="d-flex justify-content-center">
+                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-2" style="width:100px;">Edit</a>
+                @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
+                {
+                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2">Back to Users</a>
+                }
+            </div>
+        <br />
+    </section>
+
+</body>
+

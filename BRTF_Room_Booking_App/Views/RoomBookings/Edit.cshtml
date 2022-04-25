@@ -1,0 +1,802 @@
+﻿@model BRTF_Room_Booking_App.Models.RoomBooking
+
+@{ ViewData["Title"] = "Edit Booking"; }
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<body style="background-color:#E4E6E6" class="justify-content-center">
+
+    <br />
+    <h1 class="mb-4 text-center">Edit</h1>
+    <br />
+
+    <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 80%; margin: auto " class="px-5 py-2 my-3">
+        
+        @if (TempData["SimultaneousStudentBookingViolations"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Simultaneous Booking violation:</b> Your new Booking occurs at the same time as one of your existing Bookings. Students cannot book multiple rooms for the same time slot, since students cannot be at two places at once.<br /><br />
+                @:<table style='width:100%;'>
+                    @:<tr>
+                        @:<th colspan='5'>Edited Bookings</th>
+                        @:<th style="width: 4%;"></th> @* Space between User bookings and Existing bookings *@
+                        @:<th colspan='5'>Existing Bookings</th>
+                    @:</tr>
+                    @:<tr>
+                        @:<th>Room</th>
+                        @:<th>Start&nbsp;Date</th>
+                        @:<th>Start&nbsp;Time</th>
+                        @:<th>End&nbsp;Date</th>
+                        @:<th>End&nbsp;Time</th>
+                        @:<th></th>
+                        @:<th>Room</th>
+                        @:<th>Start&nbsp;Date</th>
+                        @:<th>Start&nbsp;Time</th>
+                        @:<th>End&nbsp;Date</th>
+                        @:<th>End&nbsp;Time</th>
+                    @:</tr>
+
+                    List<RoomBooking> yourBookings = TempData["YourBookings"] as List<RoomBooking>;
+                    List<RoomBooking> conflictBookings = TempData["SimultaneousStudentBookingViolations"] as List<RoomBooking>;
+                    int yourBookingsCount = yourBookings.Count;
+
+                    string previousRoomName = yourBookings[0].Room.RoomName;  // Used to bold text where the room name changes
+
+                    for (int i = 0; i < yourBookingsCount; i++)
+                    {
+                        if (yourBookings[i].Room.RoomName != previousRoomName)
+                        {
+                            @:<tr><td>&nbsp;</td></tr>
+                            previousRoomName = yourBookings[i].Room.RoomName;
+                        }
+                        @:<tr
+                              if (conflictBookings[i] != null)
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))</td>
+                            @:<td></td>
+                            if (conflictBookings[i] != null)
+                            {
+                                @:<td>@(Html.Raw(conflictBookings[i].Room.RoomName))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))</td>
+                            }
+                            else
+                            {
+                                @:<td></td>
+                                @:<td colspan='4'>(no violation)</td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+        
+        @if (TempData["TimeConflictedBookings"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Time conflict:</b> Your updated Booking times overlap with the following existing Bookings.<br /><br />
+                @:<table style='width:100%;'>
+                    @:<tr>
+                        @:<th>Room</th>
+                        @:<th colspan='4'>Your Bookings</th>
+                        @:<th style="width: 4%;"></th> @* Space between User bookings and Existing bookings *@
+                        @:<th colspan='5'>Existing Bookings</th>
+                    @:</tr>
+                    @:<tr>
+                        @:<th></th>
+                        @:<th>Start&nbsp;Date</th>
+                        @:<th>Start&nbsp;Time</th>
+                        @:<th>End&nbsp;Date</th>
+                        @:<th>End&nbsp;Time</th>
+                        @:<th></th>
+                        @:<th>Start&nbsp;Date</th>
+                        @:<th>Start&nbsp;Time</th>
+                        @:<th>End&nbsp;Date</th>
+                        @:<th>End&nbsp;Time</th>
+                        @:<th>Booked For</th>
+                    @:</tr>
+
+                    List<RoomBooking> yourBookings = TempData["YourBookings"] as List<RoomBooking>;
+                    List<RoomBooking> conflictBookings = TempData["TimeConflictedBookings"] as List<RoomBooking>;
+                    int yourBookingsCount = yourBookings.Count;
+
+                    string previousRoomName = yourBookings[0].Room.RoomName;  // Used to bold text where the room name changes
+
+                    for (int i = 0; i < yourBookingsCount; i++)
+                    {
+                        if (yourBookings[i].Room.RoomName != previousRoomName)
+                        {
+                            @:<tr><td>&nbsp;</td></tr>
+                            previousRoomName = yourBookings[i].Room.RoomName;
+                        }
+                        @:<tr
+                              if (conflictBookings[i] != null)
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))</td>
+                            @:<td></td>
+                            if (conflictBookings[i] != null)
+                            {
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].User.FullName))</td>
+                            }
+                            else
+                            {
+                                @:<td></td>
+                                @:<td colspan='4'>(no conflict)</td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+
+        @if (TempData["AreaHoursViolation"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Maximum Area hours violation:</b> Your updated Booking exceeds the maximum hours you are allowed to book for these Areas.<br /><br />
+                @:<table style='width:100%;'>
+                    @:<tr>
+                        @:<th>Area&nbsp;</th>
+                        @:<th>Original Booking Duration&nbsp;</th>
+                        @:<th>Original Total Bookings in Area&nbsp;</th>
+                        @:<th>Updated Booking Duration&nbsp;</th>
+                        @:<th>Updated Total Bookings in Area&nbsp;</th>
+                        @:<th>Max Allowed Total&nbsp;</th>
+                        @:<th></th>
+                    @:</tr>
+
+                    List<IDictionary<string, string>> hourViolations = TempData["AreaHoursViolation"] as List<IDictionary<string, string>>;
+                    int hourViolationsCount = hourViolations.Count;
+
+                    for (int i = 0; i < hourViolationsCount; i++)
+                    {
+                        @:<tr
+                              if (Convert.ToDouble(hourViolations[i]["NewTotalHoursForArea"]) > Convert.ToDouble(hourViolations[i]["MaxHoursForArea"]))
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(hourViolations[i]["AreaName"]))&nbsp;</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["PreviousBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["PreviousTotalHoursForArea"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["NewBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["NewTotalHoursForArea"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["MaxHoursForArea"]).ToString("0.##"))) hours</td>
+                            if (Convert.ToDouble(hourViolations[i]["NewTotalHoursForArea"]) > Convert.ToDouble(hourViolations[i]["MaxHoursForArea"]))
+                            {
+                                @:<td><b>Exceeds Max</b></td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+
+        @if (TempData["RoomHoursViolation"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Maximum Room hours violation:</b> Your updated Booking exceeds the maximum hours you are allowed to book for these Rooms.<br /><br />
+                @:<table style='width:100%;'>
+                    @:<tr>
+                        @:<th>Room&nbsp;</th>
+                        @:<th>Original Booking Duration&nbsp;</th>
+                        @:<th>Original Total Bookings in Room&nbsp;</th>
+                        @:<th>Updated Booking Duration&nbsp;</th>
+                        @:<th>Updated Total Bookings in Room&nbsp;</th>
+                        @:<th>Max Allowed Total&nbsp;</th>
+                        @:<th></th>
+                    @:</tr>
+
+                    List<IDictionary<string, string>> hourViolations = TempData["RoomHoursViolation"] as List<IDictionary<string, string>>;
+                    int hourViolationsCount = hourViolations.Count;
+
+                    for (int i = 0; i < hourViolationsCount; i++)
+                    {
+                        @:<tr
+                              if (Convert.ToDouble(hourViolations[i]["NewTotalHoursForRoom"]) > Convert.ToDouble(hourViolations[i]["MaxHoursForRoom"]))
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(hourViolations[i]["RoomName"]))&nbsp;</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["PreviousBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["PreviousTotalHoursForRoom"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["NewBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["NewTotalHoursForRoom"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["MaxHoursForRoom"]).ToString("0.##"))) hours</td>
+                            if (Convert.ToDouble(hourViolations[i]["NewTotalHoursForRoom"]) > Convert.ToDouble(hourViolations[i]["MaxHoursForRoom"]))
+                            {
+                                @:<td><b>Exceeds Max</b></td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+
+        @if (TempData["SingleBookingLengthViolation"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Booking length violation:</b> Your updated Booking exceeds the maximum allowed uninterrupted time for Booking lengths in these Areas.<br /><br />
+                @:<table style='width:100%;'>
+                    @:<tr>
+                        @:<th>Area</th>
+                        @:<th>Original Booking Length</th>
+                        @:<th>Updated Booking Length</th>
+                        @:<th>Max Allowed Length</th>
+                        @:<th></th>
+                    @:</tr>
+
+                    List<IDictionary<string, string>> hourViolations = TempData["SingleBookingLengthViolation"] as List<IDictionary<string, string>>;
+                    int hourViolationsCount = hourViolations.Count;
+
+                    for (int i = 0; i < hourViolationsCount; i++)
+                    {
+                        @:<tr
+                              if (Convert.ToDouble(hourViolations[i]["NewBookingDuration"]) > Convert.ToDouble(hourViolations[i]["MaxHoursSingleBooking"]))
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(hourViolations[i]["AreaName"]))&nbsp;</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["PreviousBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["NewBookingDuration"]).ToString("0.##"))) hours</td>
+                            @:<td>@(Html.Raw(Convert.ToDouble(hourViolations[i]["MaxHoursSingleBooking"]).ToString("0.##"))) hours</td>
+                            if (Convert.ToDouble(hourViolations[i]["NewBookingDuration"]) > Convert.ToDouble(hourViolations[i]["MaxHoursSingleBooking"]))
+                            {
+                                @:<td><b>Exceeds Max</b></td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+
+        @if (TempData["BlackoutTimeViolation"] != null)
+        {
+            @:<br />
+            @:<div class="alert alert-warning text-left text-body">
+                @:<b>Blackout time violation:</b> Some Rooms require a minimum blackout time between consecutive Bookings for the same User. Your updated Booking violates the blackout time of your existing Bookings.<br /><br />
+                @:<table style='width:100%; padding: 5px;'>
+                    @:<tr>
+                        @:<th>Room&nbsp;&nbsp;</th>
+                        @:<th colspan='4'>Updated Booking</th>
+                        @:<th style="width: 3%;"></th> @* Space between New bookings and Existing bookings *@
+                        @:<th colspan='6'>Violated Existing Booking</th>
+                    @:</tr>
+                    @:<tr>
+                        @:<th></th>
+                        @:<th>Start&nbsp;Date&nbsp;&nbsp;</th>
+                        @:<th>Start&nbsp;Time&nbsp;&nbsp;</th>
+                        @:<th>End&nbsp;Date&nbsp;&nbsp;</th>
+                        @:<th>End&nbsp;Time</th>
+                        @:<th></th>
+                        @:<th>Start&nbsp;Date&nbsp;&nbsp;</th>
+                        @:<th>Start&nbsp;Time&nbsp;&nbsp;</th>
+                        @:<th>End&nbsp;Date&nbsp;&nbsp;</th>
+                        @:<th>End&nbsp;Time&nbsp;&nbsp;</th>
+                        @:<th>Time Between Your Bookings</th>
+                        @:<th>Minimum Required Blackout</th>
+                    @:</tr>
+
+                    List<RoomBooking> yourBookings = TempData["YourBookings"] as List<RoomBooking>;
+                    List<RoomBooking> conflictBookings = TempData["BlackoutTimeViolation"] as List<RoomBooking>;
+                    List<int> blackoutTimes = TempData["BlackoutTimeValues"] as List<int>;
+                    int yourBookingsCount = yourBookings.Count;
+
+                    for (int i = 0; i < yourBookingsCount; i++)
+                    {
+                        @:<tr
+                              if (conflictBookings[i] != null)
+                              {
+                                  @:class="alert alert-danger text-left text-body"
+                                  @:style="border: 1px solid red; font-weight: bold;"
+                              }
+                        @:>
+                            @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))&nbsp;</td>
+                            @:<td></td>
+                            if (conflictBookings[i] != null)
+                            {
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(Math.Min(Math.Abs((yourBookings[i].StartDate - conflictBookings[i].EndDate).TotalHours),
+                                                    Math.Abs((conflictBookings[i].StartDate - yourBookings[i].EndDate).TotalHours))
+                                                .ToString("0.##"))) hours&nbsp;</td>
+                                @:<td>@(Html.Raw(blackoutTimes[i].ToString("0.##"))) hours&nbsp;</td>
+                            }
+                            else
+                            {
+                                @:<td></td>
+                                @:<td colspan='5'>(no violation)</td>
+                            }
+                        @:</tr>
+                    }
+                @:</table><br />
+                @:Please adjust your Booking times.
+            @:</div>
+            @:<br />
+        }
+        
+        <div>
+            <br />
+            <h4 class="text-center">Edit this Booking</h4>
+            <br />
+        </div>
+        <div>
+            <!--Mobile Screen Sizes View-->
+            <div class="container">
+                <form asp-action="Edit">
+                    <div class="col-lg-8" style="margin: auto">
+                        <div class="form-group text-left">
+                            <label asp-for="UserID" class="label">Full Name *</label>
+                            <select asp-for="UserID" class="form-control" asp-items="ViewBag.UserID" disabled="@(ViewBag.UserIdDisabled)"></select>
+                        </div>
+                        <div class="form-group text-left">
+                            <label asp-for="SpecialNotes" class="label">Special Notes</label>
+                            <textarea asp-for="SpecialNotes" class="form-control"></textarea>
+                            <span asp-validation-for="SpecialNotes" class="text-danger"></span>
+                        </div>
+                        <div class="form-group text-left">
+                            <button type="button" title="Booking Time Help" class="btn btn-sm mr-1" data-container="body" data-toggle="popover" data-placement="left"
+                                    data-content="This time selection to the right sets the beginning and end time for a SINGLE booking. If you want to create MULTIPLE repeat bookings over several days, please use the Repeat settings on the bottom of this page.">
+                                <img src="~/img/questionmark.png" width="30" height="30" />
+                            </button>
+                            <label asp-for="StartDate" class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Booking Time *</strong></label>
+                        </div>
+                        @* First row contains separate pickers for Date, Time, Duration. Javascript updates the datetimes in Third row using these pickers in First row *@
+                        <div class="form-group text-left">
+                            Select Booking Date
+                            <input type="date" class="form-control" id="startDatePicker" onchange="startDatePickerHandler(event);" />
+                        </div>
+                        <div class="form-group text-left">
+                            Select Booking Time
+                            @Html.DropDownList("startTimePicker", new List<SelectListItem>
+                           {
+                               new SelectListItem { Value="00:00", Text="12:00 A.M."},
+                               new SelectListItem { Value="00:30", Text="12:30 A.M."},
+                               new SelectListItem { Value="01:00", Text="1:00 A.M."},
+                               new SelectListItem { Value="01:30", Text="1:30 A.M."},
+                               new SelectListItem { Value="02:00", Text="2:00 A.M."},
+                               new SelectListItem { Value="02:30", Text="2:30 A.M."},
+                               new SelectListItem { Value="03:00", Text="3:00 A.M."},
+                               new SelectListItem { Value="03:30", Text="3:30 A.M."},
+                               new SelectListItem { Value="04:00", Text="4:00 A.M."},
+                               new SelectListItem { Value="04:30", Text="4:30 A.M."},
+                               new SelectListItem { Value="05:00", Text="5:00 A.M."},
+                               new SelectListItem { Value="05:30", Text="5:30 A.M."},
+                               new SelectListItem { Value="06:00", Text="6:00 A.M."},
+                               new SelectListItem { Value="06:30", Text="6:30 A.M."},
+                               new SelectListItem { Value="07:00", Text="7:00 A.M."},
+                               new SelectListItem { Value="07:30", Text="7:30 A.M."},
+                               new SelectListItem { Value="08:00", Text="8:00 A.M."},
+                               new SelectListItem { Value="08:30", Text="8:30 A.M."},
+                               new SelectListItem { Value="09:00", Text="9:00 A.M."},
+                               new SelectListItem { Value="09:30", Text="9:30 A.M."},
+                               new SelectListItem { Value="10:00", Text="10:00 A.M."},
+                               new SelectListItem { Value="10:30", Text="10:30 A.M."},
+                               new SelectListItem { Value="11:00", Text="11:00 A.M."},
+                               new SelectListItem { Value="11:30", Text="11:30 A.M."},
+                               new SelectListItem { Value="12:00", Text="12:00 P.M."},
+                               new SelectListItem { Value="12:30", Text="12:30 P.M."},
+                               new SelectListItem { Value="13:00", Text="1:00 P.M."},
+                               new SelectListItem { Value="13:30", Text="1:30 P.M."},
+                               new SelectListItem { Value="14:00", Text="2:00 P.M."},
+                               new SelectListItem { Value="14:30", Text="2:30 P.M."},
+                               new SelectListItem { Value="15:00", Text="3:00 P.M."},
+                               new SelectListItem { Value="15:30", Text="3:30 P.M."},
+                               new SelectListItem { Value="16:00", Text="4:00 P.M."},
+                               new SelectListItem { Value="16:30", Text="4:30 P.M."},
+                               new SelectListItem { Value="17:00", Text="5:00 P.M."},
+                               new SelectListItem { Value="17:30", Text="5:30 P.M."},
+                               new SelectListItem { Value="18:00", Text="6:00 P.M."},
+                               new SelectListItem { Value="18:30", Text="6:30 P.M."},
+                               new SelectListItem { Value="19:00", Text="7:00 P.M."},
+                               new SelectListItem { Value="19:30", Text="7:30 P.M."},
+                               new SelectListItem { Value="20:00", Text="8:00 P.M."},
+                               new SelectListItem { Value="20:30", Text="8:30 P.M."},
+                               new SelectListItem { Value="21:00", Text="9:00 P.M."},
+                               new SelectListItem { Value="21:30", Text="9:30 P.M."},
+                               new SelectListItem { Value="22:00", Text="10:00 P.M."},
+                               new SelectListItem { Value="22:30", Text="10:30 P.M."},
+                               new SelectListItem { Value="23:00", Text="11:00 P.M."},
+                               new SelectListItem { Value="23:30", Text="11:30 P.M."}
+                           }, htmlAttributes: new { @class = "form-control", @onchange = "startTimePickerHandler(event);" })
+                        </div>
+                        <div class="form-group text-left">
+                            Select Duration
+                            @Html.DropDownList("durationPicker", new List<SelectListItem>
+                           {
+                               new SelectListItem { Value="00:29", Text="0.5 hours"},
+                               new SelectListItem { Value="00:59", Text="1 hours"},
+                               new SelectListItem { Value="01:29", Text="1.5 hours"},
+                               new SelectListItem { Value="01:59", Text="2 hours"},
+                               new SelectListItem { Value="02:29", Text="2.5 hours"},
+                               new SelectListItem { Value="02:59", Text="3 hours"},
+                               new SelectListItem { Value="03:29", Text="3.5 hours"},
+                               new SelectListItem { Value="03:59", Text="4 hours"},
+                               new SelectListItem { Value="04:29", Text="4.5 hours"},
+                               new SelectListItem { Value="04:59", Text="5 hours"},
+                               new SelectListItem { Value="05:29", Text="5.5 hours"},
+                               new SelectListItem { Value="05:59", Text="6 hours"},
+                               new SelectListItem { Value="06:29", Text="6.5 hours"},
+                               new SelectListItem { Value="06:59", Text="7 hours"},
+                               new SelectListItem { Value="07:29", Text="7.5 hours"},
+                               new SelectListItem { Value="07:59", Text="8 hours"},
+                               new SelectListItem { Value="08:29", Text="8.5 hours"},
+                               new SelectListItem { Value="08:59", Text="9 hours"},
+                               new SelectListItem { Value="09:29", Text="9.5 hours"},
+                               new SelectListItem { Value="09:59", Text="10 hours"},
+                               new SelectListItem { Value="10:29", Text="10.5 hours"},
+                               new SelectListItem { Value="10:59", Text="11 hours"},
+                               new SelectListItem { Value="11:29", Text="11.5 hours"},
+                               new SelectListItem { Value="11:59", Text="12 hours"},
+                               new SelectListItem { Value="12:29", Text="12.5 hours"},
+                               new SelectListItem { Value="12:59", Text="13 hours"},
+                               new SelectListItem { Value="13:29", Text="13.5 hours"},
+                               new SelectListItem { Value="13:59", Text="14 hours"},
+                               new SelectListItem { Value="14:29", Text="14.5 hours"},
+                               new SelectListItem { Value="14:59", Text="15 hours"},
+                               new SelectListItem { Value="15:29", Text="15.5 hours"},
+                               new SelectListItem { Value="15:59", Text="16 hours"},
+                               new SelectListItem { Value="16:29", Text="16.5 hours"},
+                               new SelectListItem { Value="16:59", Text="17 hours"},
+                               new SelectListItem { Value="17:29", Text="17.5 hours"},
+                               new SelectListItem { Value="17:59", Text="18 hours"},
+                               new SelectListItem { Value="18:29", Text="18.5 hours"},
+                               new SelectListItem { Value="18:59", Text="19 hours"},
+                               new SelectListItem { Value="19:29", Text="19.5 hours"},
+                               new SelectListItem { Value="19:59", Text="20 hours"},
+                               new SelectListItem { Value="20:29", Text="20.5 hours"},
+                               new SelectListItem { Value="20:59", Text="21 hours"},
+                               new SelectListItem { Value="21:29", Text="21.5 hours"},
+                               new SelectListItem { Value="21:59", Text="22 hours"},
+                               new SelectListItem { Value="22:29", Text="22.5 hours"},
+                               new SelectListItem { Value="22:59", Text="23 hours"},
+                               new SelectListItem { Value="23:29", Text="23.5 hours"},
+                               new SelectListItem { Value="23:59", Text="24 hours"}
+                           }, htmlAttributes: new { @class = "form-control", @onchange = "durationPickerHandler(event);" })
+                        </div>
+                        <div class="form-group">
+                            <div class="text-right pt-2">
+                            </div>
+                            @* Second row contains the REAL inputs for the start and end time, but they are hidden from the user.
+                        User does not edit directly. Javascript on First row edits these.
+                        Also Error Messages for the datetime inputs get displayed here. *@
+                            <div class="text-left">
+                                <input type="hidden" id="startDateInput" asp-for="StartDate" class="form-control" runat="server" />
+                                <input type="hidden" asp-for="EndDate" id="endDateInput" class="form-control" runat="server" />
+                                <span id="startDateError" class="text-danger"></span>
+                                <span id="aspStartDateErrorSpan" asp-validation-for="StartDate" class="text-danger"></span>
+                                <span id="endDateError" class="text-danger"></span>
+                                <span id="aspEndDateErrorSpan" asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group text-left">
+                            <div class="text-right pt-2">
+                            </div>
+                            @* Third row shows the start and end datetimes FOR DISPLAY. User does not edit directly. Javascript on First row edits these *@
+                            <label>Your Chosen Booking Starts At</label>
+                            <input type="datetime-local" id="startDateDisplay" class="form-control" disabled />
+                        </div>
+                        <div class="form-group text-left">
+                            <label>Your Chosen Booking Ends At</label>
+                            <input type="datetime-local" id="endDateDisplay" class="form-control" disabled />
+                        </div>
+                        <br />
+                        <div class="form-group text-left">
+                            <button type="button" title="Room Selection Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="To add a Room to your Booking, first select the Area. You will then be able to select the desired Room in that Area from the Dropdown below.">
+                                <img src="~/img/questionmark.png" width="30" height="30" />
+                            </button>
+                            <label class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Select a Room</strong></label>
+                        </div>
+
+                        <div class="form-group text-left">
+                            <label for="RoomGroupID" class="label">Area *</label>
+                            <select id="RoomGroupID" name="RoomGroupID" class="form-control" asp-items="ViewBag.RoomGroupID"></select>
+                        </div>
+
+                        <div id="areaDescription" class="alert alert-dark text-center" role="alert">
+                            <h6 id="areaDescription_Title">Connection Error</h6>
+                            <span id="areaDescription_Body">Could not load Area description.</span>
+                        </div>
+
+                        <div class="form-group text-left">
+                            <label asp-for="RoomID" class="label">Room *</label>
+                            <select asp-for="RoomID" class="form-control" asp-items="ViewBag.RoomID"></select>
+                            <span asp-validation-for="RoomID" class="text-danger"></span>
+                        </div>
+                        <div class="form-group text-left">
+                            <label asp-for="ApprovalStatus" class="label">Approval Status *</label>
+                            @Html.DropDownList("ApprovalStatus", new List<SelectListItem>
+                           {
+                               new SelectListItem { Text="Pending", Value="Pending"},
+                               new SelectListItem { Text="Approved", Value="Approved"},
+                               new SelectListItem { Text="Declined", Value="Declined"}
+                           }, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <br />
+                        <div class="d-flex justify-content-center">
+                            <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
+                            <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Bookings</a>
+                        </div>
+                        <br />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <br />
+</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/refreshDDL.js"></script>
+    <script type="text/javascript">
+        // Disable ApprovalStatus dropdown according to ViewData
+        $('document').ready(function () {
+            var disableApprovalStatus = '@ViewData["DisableSelectApprovalStatus"]';
+            if (disableApprovalStatus.toLowerCase() == 'true') {
+                document.getElementById("ApprovalStatus").disabled = true;
+            }
+            else {
+                document.getElementById("ApprovalStatus").disabled = false;
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        // Load initial booking time when page loads
+        $('document').ready(function () {
+            // Grab initial start datetime from the true Start Datetime picker
+            var startDatetime = new Date(document.getElementById("startDateInput").value);
+            var startDay = parseInt(startDatetime.getDate());
+            var startMonth = parseInt(startDatetime.getMonth() + 1);
+            var startYear = parseInt(startDatetime.getFullYear());
+
+            // Construct string and set datepicker by plain string
+            var startDateString = startYear + "-";
+            if (startMonth < 10) { startDateString = startDateString + "0" }
+            startDateString = startDateString + startMonth + "-";
+            if (startDay < 10) { startDateString = startDateString + "0" }
+            startDateString = startDateString + startDay;
+
+            document.getElementById('startDatePicker').value = startDateString;
+
+            // Grab starting Time from the true Start Datetime picker
+            var startHour = startDatetime.getHours();
+            var startMinute = startDatetime.getMinutes();
+
+            // Construct string and set time select list using plain string
+            var startTimeString = "";
+            if (startHour < 10) { startTimeString = startTimeString + "0"; }
+            startTimeString = startTimeString + startHour + ":";
+            if (startMinute < 10) { startTimeString = startTimeString + "0"; }
+            startTimeString = startTimeString + startMinute;
+
+            document.getElementById("startTimePicker").value = startTimeString;
+
+            // Grab initial end datetime from the true End Datetime picker
+            var endDatetime = new Date(document.getElementById("endDateInput").value);
+
+            // Get the difference
+            var startEndDifference = Math.abs(endDatetime - startDatetime); // Difference between start and end time in milliseconds
+            var differenceInMinutes = (startEndDifference / 1000) / 60;
+            var differenceInHours = differenceInMinutes / 60;
+            var differenceInHoursRounded = Math.round(differenceInHours * 10) / 10;
+
+            // Set duration select list using plain string
+            var textToFind = differenceInHoursRounded + " hours";
+            var dd = document.getElementById('durationPicker');
+            dd.selectedIndex = [...dd.options].findIndex(option => option.text === textToFind);
+
+            // After setting all controls using values from the true Start/End datetime pickers, update displays
+            updateStartEndDatetimes(false);
+        });
+
+        // Update start and end time using sub controls
+        function updateStartEndDatetimes(flashDisplays) {
+            // Update startDateInput by a plain string
+            var startDatetimeString = document.getElementById('startDatePicker').value + 'T' + document.getElementById("startTimePicker").value;;
+            document.getElementById('startDateInput').value = startDatetimeString;   // Set Actual start datetime input
+            document.getElementById('startDateDisplay').value = startDatetimeString;   // Set Display-only start datetime
+
+            // Calculate end time using input from select list
+            var startTime = document.getElementById("startTimePicker").value.split(":");
+            var startHour = parseInt(startTime[0]);
+            var startMinute = parseInt(startTime[1]);
+            var durationTime = document.getElementById("durationPicker").value.split(":");
+            var endHour = startHour + parseInt(durationTime[0]);
+            var endMinute = startMinute + parseInt(durationTime[1]);
+            if (endMinute >= 60) {
+                endHour = endHour + 1;
+                endMinute = endMinute - 60;
+            }
+
+            // Generate string and update endDateInput by plain string
+            var startDatetime = new Date(document.getElementById("startDateInput").value);
+            var endDatetime = startDatetime;
+            if (endHour >= 24) {
+                endDatetime.setDate(endDatetime.getDate() + 1);
+                endHour = endHour - 24;
+            }
+            var endDay = parseInt(endDatetime.getDate());
+            var endMonth = parseInt(endDatetime.getMonth() + 1);
+            var endYear = parseInt(endDatetime.getFullYear());
+
+            var endDatetimeString = endYear + "-";
+            if (endMonth < 10) { endDatetimeString = endDatetimeString + "0" }
+            endDatetimeString = endDatetimeString + endMonth + "-";
+            if (endDay < 10) { endDatetimeString = endDatetimeString + "0" }
+            endDatetimeString = endDatetimeString + endDay + "T";
+            if (endHour < 10) { endDatetimeString = endDatetimeString + "0"; }
+            endDatetimeString = endDatetimeString + endHour + ":" + endMinute;
+
+            document.getElementById('endDateInput').value = endDatetimeString;   // Set Actual end datetime input
+            document.getElementById('endDateDisplay').value = endDatetimeString;   // Set Display-only end datetime
+
+            // Flash displays
+            if (flashDisplays != false) {
+                $("#startDateDisplay").fadeToggle(400, function () {
+                    $("#startDateDisplay").fadeToggle(400);
+                });
+                $("#endDateDisplay").fadeToggle(400, function () {
+                    $("#endDateDisplay").fadeToggle(400);
+                });
+            }
+
+            updateSelectedDatetimeErrorMsg();
+        }
+
+        // Update start and end time when start Date picker changes
+        function startDatePickerHandler(e) {
+            updateStartEndDatetimes(true);
+            $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
+            $("#aspEndDateErrorSpan").html("");
+        }
+
+        // Update start and end time when start Time picker changes
+        function startTimePickerHandler(e) {
+            updateStartEndDatetimes(true);
+            $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
+            $("#aspEndDateErrorSpan").html("");
+        }
+
+        // Update start and end time when Duration picker changes
+        function durationPickerHandler(e) {
+            updateStartEndDatetimes(true);
+            $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
+            $("#aspEndDateErrorSpan").html("");
+        }
+
+        // Refresh DDL of time durations when duration selection control is clicked
+        $('#durationPicker').click(function () {
+            var selectedRoomGroup = $("#RoomGroupID").val();
+            var selectedDuration = $("#durationPicker").val();
+            var URL = "/RoomBookings/GetDurations/?ID=" + selectedRoomGroup + "&selectedValue=" + selectedDuration;
+            refreshDDL('durationPicker', URL);
+            if (selectedDuration == null || selectedDuration.length() == 0) {
+                $("#durationPicker").val($("#durationPicker option:first").val());
+            }
+            updateStartEndDatetimes(false);
+        });
+    </script>
+    <script type="text/javascript">
+        // Refresh DDL of available rooms when Area is changed
+        $('#RoomGroupID').change(function () {
+            var selectedRoomGroup = $("#RoomGroupID").val();
+            var URL = "/RoomBookings/GetRooms/" + selectedRoomGroup;
+            refreshDDL('RoomID', URL, true, "There are no Rooms available in this Area.", true, "-Select a Room-", true);
+        });
+    </script>
+    <script type="text/javascript">
+        // Load initial Area description when page loads
+        $('document').ready(function () {
+            var selectedRoomGroup = $("#RoomGroupID").val();
+            var URL = "/RoomBookings/GetArea/" + selectedRoomGroup;
+            $.getJSON(URL, function (data) {
+                if (data !== null && !jQuery.isEmptyObject(data)) {
+                    $("#areaDescription_Title").text(data.areaName);
+                    $("#areaDescription_Body").html(data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                } else {
+                    $("#areaDescription_Title").text("Connection Error");
+                    $("#areaDescription_Body").html("Could not load Area description.");
+                }
+            });
+        });
+        // Refresh Area description when Area is changed
+        $('#RoomGroupID').change(function () {
+            var selectedRoomGroup = $("#RoomGroupID").val();
+            var URL = "/RoomBookings/GetArea/" + selectedRoomGroup;
+            $.getJSON(URL, function (data) {
+                if (data !== null && !jQuery.isEmptyObject(data)) {
+                    $("#areaDescription_Title").text(data.areaName);
+                    $("#areaDescription_Body").html(data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                } else {
+                    $("#areaDescription_Title").text("Connection Error");
+                    $("#areaDescription_Body").html("Could not load Area description.");
+                }
+                $("#areaDescription").fadeToggle(400, function () {
+                    $("#areaDescription").fadeToggle(400);
+                });
+            });
+        });
+    </script>
+    <script tye="text/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+    </script>
+    <script>
+        // Javascript updates live error message beneath datetime selector
+        function updateSelectedDatetimeErrorMsg() {
+            console.log("Actual Selected Start Datetime: '" + $("#startDateInput").val()) + "'";
+            if ($("#startDateInput").val().length == 0 || new Date($("#startDateInput").val()) < new Date($.now())) {
+                $("#startDateError").html("Booking start cannot be in the past. Please select a new date/time.");
+            }
+            else {
+                $("#startDateError").html("");
+            }
+
+            console.log("Actual Selected End Datetime: '" + $("#endDateInput").val()) + "'";
+            if ($("#endDateInput").val().length == 0 || new Date($("#endDateInput").val()) < new Date($("#startDateInput").val())) {
+                $("#endDateError").html("The end date/time must occur after the selected start date/time. Please select a new date/time.");
+            }
+            else {
+                $("#endDateError").html("");
+            }
+        }
+
+        $("#startDateInput").change(function () {
+            updateSelectedDatetimeErrorMsg();
+        });
+        $("#endDateInput").change(function () {
+            updateSelectedDatetimeErrorMsg();
+        });
+    </script>
+}

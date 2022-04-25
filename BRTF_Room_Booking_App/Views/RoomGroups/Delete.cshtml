@@ -1,0 +1,198 @@
+﻿@model BRTF_Room_Booking_App.Models.RoomGroup
+
+@{
+    ViewData["Title"] = "Delete Room Group";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body class="justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Delete</h1>
+    <br />
+
+    <div class="container-fluid d-block d-lg-none" style="display:block;">
+        <div class="card-deck-wrapper">
+            <div class="card-deck">
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header text-center">Are you sure you want to delete this Room Group?</h5>
+                    <div class="card-body">
+
+                        <div class="media-body ml-2">
+                            <div class="card-text mb-4"><strong>Area: <br /></strong>@Html.DisplayFor(model => model.AreaName) </div>
+                            <div class="card-text mb-4"><strong>Description: </strong>@Html.DisplayFor(model => model.Description) </div>
+                            <div class="card-text mb-4"><strong>Hours of Blackout Time Between Consecutive Bookings in This Area: </strong>@Html.DisplayFor(model => model.BlackoutTime) </div>
+                            <div class="card-text mb-4"><strong>Maximum Hours Per Single Booking in This Area: </strong>@Html.DisplayFor(model => model.MaxHoursPerSingleBooking) </div>
+                            <div class="card-text mb-4"><strong>Maximum Total Hours That Can Be Booked in This Area: </strong>@Html.DisplayFor(model => model.MaxHoursTotal) </div>
+                            <div class="card-text mb-4"><strong>Maximum Number of Separate Bookings in This Area: </strong>@Html.DisplayFor(model => model.MaxNumberOfBookings) </div>
+                            <div class="card-text mb-4">
+                                <strong>Apply Time-of-Day Restrictions: </strong>
+                                <div class="form-group form-check">
+                                    <input class="form-check-input align-content-end" asp-for="TimeOfDayRestrictions" disabled /> @Html.DisplayNameFor(model => model.TimeOfDayRestrictions)
+                                </div>
+                            </div>
+                            <div class="card-text mb-4"><strong>Earliest Allowed Start Time in This Area: </strong>@Html.DisplayFor(model => model.EarliestTime) </div>
+                            <div class="card-text mb-4"><strong>Latest Allowed End Time in This Area: </strong>@Html.DisplayFor(model => model.LatestTime) </div>
+                            <div class="card-text mb-4">
+                                <strong>Is Enabled: </strong>
+                                <div class="form-group form-check">
+                                    <input class="form-check-input align-content-end" asp-for="Enabled" disabled /> @Html.DisplayNameFor(model => model.Enabled)
+                                </div>
+                            </div>
+                            <div class="card-text mb-4">
+                                <strong>Needs Approval: </strong>
+                                <div class="form-group form-check">
+                                    <input class="form-check-input align-content-end" asp-for="NeedsApproval" disabled /> @Html.DisplayNameFor(model => model.NeedsApproval)
+                                </div>
+                            </div>
+                            <div class="card-text">
+                                <strong>Approvers: </strong>
+                                @foreach (var a in Model.RoomGroupApprovers)
+                                {
+                                    @a.User.FullName <br />
+                                }
+                            </div>
+                            <br />
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-center">
+                            <form asp-action="Delete" class="d-flex justify-content-center">
+                                <input type="hidden" asp-for="ID" />
+                                <input type="submit" value="Delete" class="btn btn-danger mx-1" style="width:100px;" />
+                                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-1">Back to Room Groups</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 80%; margin:auto" class="px-5 py-2 my-3 d-none d-lg-block">
+        <div>
+            <br />
+            <h4 class="text-center">Are you sure you want to delete this Room Group?</h4>
+            <br />
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="ID" />
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="AreaName" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.AreaName)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="Description" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.Description)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="BlackoutTime" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.BlackoutTime)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="MaxHoursPerSingleBooking" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.MaxHoursPerSingleBooking)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="MaxHoursTotal" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.MaxHoursTotal)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="MaxNumberOfBookings" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.MaxNumberOfBookings)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right pt-2">
+                        <label asp-for="TimeOfDayRestrictions" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="form-group form-check">
+                            <input class="form-check-input align-content-end" asp-for="TimeOfDayRestrictions" disabled /> @Html.DisplayNameFor(model => model.TimeOfDayRestrictions)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="EarliestTime" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.EarliestTime)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right py-2">
+                        <label asp-for="LatestTime" class="label"></label>
+                    </div>
+                    <div class="col-6 py-2">
+                        @Html.DisplayFor(model => model.LatestTime)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right pt-2">
+                        <label class="label">Is Enabled</label>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="form-group form-check">
+                            <input class="form-check-input" asp-for="Enabled" disabled /> @Html.DisplayNameFor(model => model.Enabled)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right pt-2">
+                        <label class="label">Needs Approval</label>
+                    </div>
+                    <div class="col-6 py-2">
+                        <div class="form-group form-check">
+                            <input class="form-check-input align-content-end" asp-for="NeedsApproval" disabled /> @Html.DisplayNameFor(model => model.NeedsApproval)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right pt-2">
+                        <label class="label">Approvers</label>
+                    </div>
+                    <div class="col-6 pt-2">
+                        @foreach (var a in Model.RoomGroupApprovers)
+                        {
+                            @a.User.FullName <br />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="d-flex justify-content-center">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="ID" />
+                <input type="submit" value="Delete" class="btn btn-danger mx-2" style="width:100px;" />
+                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Room Groups</a>
+            </form>
+        </div>
+        <br />
+    </section>
+</body>

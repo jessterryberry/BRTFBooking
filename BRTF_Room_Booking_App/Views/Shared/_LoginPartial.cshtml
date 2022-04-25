@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@*For Cookies*@
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<ul style="list-style-type: none;">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var userName = HttpContextAccessor.HttpContext.Request.Cookies["userName"] ?? UserManager.GetUserName(User);
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarIDDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color: #E4E6E6">
+                Hello&nbsp;@userName!&nbsp;<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarIDDropdown">
+                @if (!String.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Cookies["userID"]))
+                {
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Details" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Manage Account</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="UsersBookings" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Your Bookings</a></li>
+                    <li class="dropdown-divider"></li>
+                }
+                <li>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="dropdown-item my-2" style="color: #E4E6E6">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" style="color: #E4E6E6">Login</a>
+        </li>
+    }
+</ul>

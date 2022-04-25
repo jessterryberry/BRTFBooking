@@ -1,0 +1,84 @@
+﻿@model BRTF_Room_Booking_App.Models.TermAndProgram
+
+@{
+    ViewData["Title"] = "Create Term & Program";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body class="justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Create</h1>
+    <br />
+
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="px-3 py-2 my-3">
+        <div>
+            <br />
+            <h4 class="text-center">Create New Term and Program</h4>
+            <br />
+        </div>
+        <form asp-action="Create">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="ProgramName" class="label">Program Name *</label>
+                        <input asp-for="ProgramName" id="progNameInput" class="form-control" />
+                        <span asp-validation-for="ProgramName" id="progNameError" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ProgramCode" class="label">Program Code *</label>
+                        <input asp-for="ProgramCode" id="progCodeInput" class="form-control" />
+                        <span asp-validation-for="ProgramCode" id="progCodeError" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ProgramLevel" class="label">Program Level *</label>
+                        <input asp-for="ProgramLevel" id="progLevelInput" class="form-control" />
+                        <span asp-validation-for="ProgramLevel" id="progLevelError" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="UserGroupID" class="label">User Group *</label>
+                        <select asp-for="UserGroupID" class="form-control" asp-items="ViewBag.UserGroupID"></select>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Create" class="btn btn-primary mx-2" style="width:100px;" />
+                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Terms and Programs</a>
+            </div>
+            <br />
+        </form>
+    </section>
+</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $("#progNameInput").on("input", function () {
+        if ($("#progNameInput").val().length == 0) {
+            $("#progNameError").html("Please enter a program name, up to a maximum of 50 characters.");
+        }
+        else {
+            $("#progNameError").html("");
+        }
+    });
+    $("#progCodeInput").on("input", function () {
+        if ($("#progCodeInput").val().length == 0) {
+            $("#progCodeError").html("Please enter a valid 5 character Code (e.g. P0122).");
+        }
+        else {
+            $("#progCodeError").html("");
+        }
+    });
+    $("#progLevelInput").on("input", function () {
+        if ($("#progLevelInput").val().length == 0) {
+            $("#progLevelError").html("Please enter a program level greater than 1.");
+        }
+        else {
+            $("#progLevelError").html("");
+        }
+    });
+</script>

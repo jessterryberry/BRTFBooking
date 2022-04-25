@@ -1,0 +1,219 @@
+﻿@model IEnumerable<BRTF_Room_Booking_App.Models.User>
+
+@{
+    ViewData["Title"] = "Users Index";
+}
+@if (TempData["AlertMessage"] != null)
+{
+    <br />
+    <div class="alert alert-danger">
+        @Html.Raw(TempData["AlertMessage"])
+    </div>
+    <br />
+}
+@if (TempData["Message"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        <strong>@Html.Raw(TempData["Message"])</strong>
+    </div>
+    <br />
+}
+
+@*<head>
+        <link rel="stylesheet" href="~/css/style.css" />
+    </head>*@
+
+<body style="background-color:#E4E6E6" class="align-items-center justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Users</h1>
+    <br />
+    <div class="container">
+        <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-2 py-3 my-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <a asp-action="Create" class="btn btn-primary">Register Users</a>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-primary" type="button" data-toggle="collapse" id="bulkToggle" data-target="#collapseBulk" aria-expanded="false" aria-controls="collapseBulk">
+                        Bulk Actions
+                    </button>
+                </div>
+            </div>
+            <div class="collapse" id="collapseBulk">
+                <div class="card card-body bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form asp-action="InsertFromExcel" asp-controller="Users" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <h4>Update Users using XLSX/CSV File:</h4>
+
+                                    <label class="control-label">Upload XLSX/CSV File:</label>
+                                    <button type="button" title="Bulk Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right"
+                                            data-content="This bulk upload can only be used to upload student(regular user) data">
+                                        <img src="~/img/questionmark.png" width="30" height="30" />
+                                    </button>
+                                    <input type="file" class="" name="theExcel" /><br />
+                                    <a asp-action="DownloadExampleExcel" class="btn btn-primary mt-2">Download Example File</a> <button type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="This downloadable Excel file shows the correct format bulk user data should be in prior to uploading. Please ensure all column headers match the exact locations of those in the example file in order to complete a successful bulk user upload."><img src="~/img/questionmark.png" width="30" height="30" /></button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <input type="submit" value="Upload File" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        @if (User.IsInRole("Top-level Admin"))
+                        {
+                            <div class="col-md-6">
+                                <h4>Bulk Delete Users:</h4><br />
+                                <a asp-action="DeleteBulk" class="btn btn-danger">Select Groups to Delete</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <form asp-action="Index" method="get">
+                <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+                <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+                <div class="form-horizontal">
+                    <button class="btn @(ViewData["Filtering"])" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" style="margin-bottom:20px;">
+                        <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
+                    </button>
+                    <div class="collapse" id="collapseFilter" style="margin-bottom:20px;">
+                        <div class="card card-body bg-light">
+                            <div class="d-block d-lg-none">
+                                <div class="form-group">
+                                    <label class="control-label">Sort By:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" class="" value="desc"
+                                                       @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                                       name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+                                            </div>
+                                        </div>
+                                        <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Select by User Group:</label>
+                                    @Html.DropDownList("UserGroupID", null, "All Groups", htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search by Student:</label>
+                                    @Html.TextBox("SearchName", null, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search Email:</label>
+                                    @Html.TextBox("SearchEmail", null, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButton" id="Filter" value="Apply" class="btn btn-outline-primary" />
+                                    <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid d-block d-lg-none">
+                    <div class="card-deckwrapper">
+                        <div class="card-deck">
+                            @foreach (var item in Model)
+                            {
+                                <div class="card mb-sm-3" style="min-width: 18rem;">
+                                    <h5 class="card-header">@Html.DisplayFor(modelItem => item.FullName)</h5>
+                                    <div class="card-body">
+                                        <div class="media-body ml-2">
+                                            @*<p class="card-text">*@
+                                                <div class="card-text mb-2"><strong>Username:</strong> @Html.DisplayFor(modelItem => item.Username)</div>
+                                                <div class="card-text mb-2"><strong>Email:</strong> @Html.DisplayFor(modelItem => item.Email)</div>
+                                                <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.TermAndProgram.UserGroup.UserGroupName)</div>
+                                                <br />
+                                            @*</p>*@
+
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-center">
+                                            <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
+                                            <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
+                                            @if (User.IsInRole("Top-level Admin"))
+                                            {
+                                                <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <table class="table d-none d-lg-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="submit" name="actionButton" disabled="disabled" value="Username" class="btn btn-link" style="font-weight:700" />
+                            </th>
+                            <th>
+                                <input type="submit" name="actionButton" value="Full Name" class="btn btn-link" style="font-weight:700" />
+                            </th>
+                            <th>
+                                <input type="submit" name="actionButton" disabled="disabled" value="Email" class="btn btn-link" style="font-weight:700" />
+                            </th>
+                            <th>
+                                <input type="submit" name="actionButton" value="User Group" class="btn btn-link" style="font-weight:700" />
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Username)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FullName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TermAndProgram.UserGroup.UserGroupName)
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
+                                    @if (User.IsInRole("Top-level Admin"))
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <partial name="_PagingNavBar" />
+            </form>
+        </section>
+    </div>
+</body>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        });
+    </script>
+}

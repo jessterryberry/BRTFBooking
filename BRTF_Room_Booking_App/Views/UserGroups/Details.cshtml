@@ -1,0 +1,100 @@
+﻿@model BRTF_Room_Booking_App.Models.UserGroup
+
+@{
+    ViewData["Title"] = "User Group Details";
+}
+@if (TempData["AlertMessage"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        @Html.Raw(TempData["AlertMessage"])
+    </div>
+    <br />
+}
+@if (TempData["Message"] != null)
+{
+    <br />
+    <div class="alert alert-success">
+        <strong>@Html.Raw(TempData["Message"])</strong>
+    </div>
+    <br />
+}
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<body class="justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Details</h1>
+    <br />
+
+    <div class="container-fluid d-block d-lg-none" style="display:block;">
+        <div class="card-deck-wrapper">
+            <div class="card-deck">
+                <div class="card mb-sm-3" style="min-width: 18rem;">
+                    <h5 class="card-header text-center">This User Group</h5>
+                    <div class="card-body">
+                        <div class="media-body ml-2">
+                            <div class="card-text mb-3"><strong>User Group: </strong> @Html.DisplayFor(model => model.UserGroupName)</div>
+                            <p class="card-text">
+                                <strong>Room Group Permissions:</strong> <br />
+                                @foreach (var r in Model.RoomUserGroupPermissions)
+                                {
+                                    @r.RoomGroup.AreaName <br />
+                                }<br />
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-center">
+                            @if (User.IsInRole("Top-level Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
+                            }
+                            <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to User Groups</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 60%; margin:auto" class="px-5 py-2 my-3 d-none d-lg-block">
+        <div>
+            <br />
+            <h4 class="text-center">This User Group</h4>
+            <br />
+        </div>
+        <div>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="UserGroupName" class="label"></label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @Html.DisplayFor(model => model.UserGroupName)
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label class="label">Room Group Permissions</label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            @foreach (var r in Model.RoomUserGroupPermissions)
+                            {
+                                @r.RoomGroup.AreaName <br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="d-flex justify-content-center">
+            @if (User.IsInRole("Top-level Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.ID" role="button" class="btn btn-primary mx-2" style="width:100px;">Edit</a>
+            }
+            <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to User Groups</a>
+        </div>
+        <br />
+    </section>
+</body>

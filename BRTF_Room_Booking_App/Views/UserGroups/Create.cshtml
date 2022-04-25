@@ -1,0 +1,86 @@
+﻿@model BRTF_Room_Booking_App.Models.UserGroup
+
+@{
+    ViewData["Title"] = "Create User Group";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<body style="background-color:#E4E6E6" class="align-items-center justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Create</h1>
+    <br />
+
+    <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 90%; margin: auto" class="px-5 py-2 my-3">
+        <div>
+            <br />
+            <h4 class="text-center">New User Group</h4>
+            <br />
+        </div>
+        <div class="container">
+            <form asp-action="Create">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group text-left">
+                            <label asp-for="UserGroupName" class="label">User Group *</label>
+                            <input asp-for="UserGroupName" id="userGroupInput" class="form-control" />
+                            <span asp-validation-for="UserGroupName" id="userGroupError" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="form-group col-md-6 text-left">
+                                <label class="label"> Current Room Group Permissions</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
+                                    <strong>-</strong>
+                                </button>
+                                @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control" })
+                                <span id="selectedOptionsError" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group col-md-6 text-left">
+                                <label class="label"> Add Room Group Permissions</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
+                                    <strong>+</strong>
+                                </button>
+                                @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <br/>
+                    <div class="d-flex justify-content-center">
+                        <input type="submit" id="btnSubmit" value="Create" class="btn btn-primary mx-2" style="width:100px;" />
+                        <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to User Groups</a>
+                    </div>
+                    <br/>
+            </form>
+        </div>
+    </section>
+</body>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script src="~/js/multiselect.js"></script>
+    }
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $("#userGroupInput").on("input", function () {
+        if ($("#userGroupInput").val().length == 0) {
+            $("#userGroupError").html("Please enter a User Group name, up to a maximum of 20 characters.");
+        }
+        else {
+            $("#userGroupError").html("");
+        }
+    });
+    $("#btnRight").click(function () {
+        console.log($("#selectedOptions").val().length)
+        if ($("#selectedOptions").val().length == 1) {
+            console.log("hi!")
+            $("#selectedOptionsError").html("User Groups need at least 1 Room Group for a permission.");
+        }
+        else {
+            $("#selectedOptionsError").html("");
+        }
+    });
+</script>
