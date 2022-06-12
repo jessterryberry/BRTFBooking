@@ -15,11 +15,11 @@ namespace BRTF_Room_Booking_App.Models
         [Display(Name = "User Group")]
         public UserGroup UserGroup { get; set; }
 
-        [Display(Name = "Room Group")]
-        [Required(ErrorMessage = "You must assign a Room Group.")]
-        public int RoomGroupID { get; set; }
+        [Display(Name = "Area")]
+        [Required(ErrorMessage = "You must assign a Area.")]
+        public int AreaID { get; set; }
 
-        [Display(Name = "Room Group")]
-        public RoomGroup RoomGroup { get; set; }
+        [Display(Name = "Area")]
+        public Area Area { get; set; }
     }
 }

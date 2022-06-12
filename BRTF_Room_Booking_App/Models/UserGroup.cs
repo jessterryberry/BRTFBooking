@@ -24,7 +24,7 @@ namespace BRTF_Room_Booking_App.Models
         [Display(Name = "Terms and Programs")]
         public ICollection<TermAndProgram> TermAndPrograms { get; set; }
 
-        [Display(Name = "Room Group Permissions")]
+        [Display(Name = "Area Permissions")]
         public ICollection<RoomUserGroupPermission> RoomUserGroupPermissions { get; set; }
     }
 }

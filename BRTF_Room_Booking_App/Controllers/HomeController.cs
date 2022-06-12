@@ -35,10 +35,10 @@ namespace BRTF_Room_Booking_App.Controllers
             _emailSender = emailSender;
         }
 
-        public bool canApprove(int userID, int roomGroupID)
+        public bool canApprove(int userID, int areaID)
         {
-            var approver = _context.RoomGroupApprovers
-                .Where(a => a.UserID == userID && a.RoomGroupID == roomGroupID)
+            var approver = _context.AreaApprovers
+                .Where(a => a.UserID == userID && a.AreaID == areaID)
                 .FirstOrDefault();
 
             return approver == null ? false : true;
@@ -56,10 +56,10 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 var bookings = from r in _context.RoomBookings
                            .Include(r => r.Room)
-                           .ThenInclude(r => r.RoomGroup)
-                           .ThenInclude(r => r.RoomGroupApprovers)
+                           .ThenInclude(r => r.Area)
+                           .ThenInclude(r => r.AreaApprovers)
                            .Include(r => r.User)
-                           .Where(r => r.ApprovalStatus == "Pending" && r.Room.RoomGroup.NeedsApproval == true)
+                           .Where(r => r.ApprovalStatus == "Pending" && r.Room.Area.NeedsApproval == true)
                                select r;
 
                 return View(await bookings.ToListAsync());
@@ -72,16 +72,16 @@ namespace BRTF_Room_Booking_App.Controllers
 
                 var bookings = from r in _context.RoomBookings
                            .Include(r => r.Room)
-                           .ThenInclude(r => r.RoomGroup)
-                           .ThenInclude(r => r.RoomGroupApprovers)
+                           .ThenInclude(r => r.Area)
+                           .ThenInclude(r => r.AreaApprovers)
                            .Include(r => r.User)
-                           .Where(r => r.ApprovalStatus == "Pending" && r.Room.RoomGroup.NeedsApproval)
+                           .Where(r => r.ApprovalStatus == "Pending" && r.Room.Area.NeedsApproval)
                                select r;
 
                 List<RoomBooking> approverBookings = new List<RoomBooking>();
                 foreach (RoomBooking r in bookings)
                 {
-                    if (canApprove(currentUser.ID, r.Room.RoomGroupID))
+                    if (canApprove(currentUser.ID, r.Room.AreaID))
                     {
                         approverBookings.Add(r);
                     }
@@ -97,7 +97,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
                 var bookings = from r in _context.RoomBookings
                                .Include(r => r.Room)
-                               .ThenInclude(r => r.RoomGroup)
+                               .ThenInclude(r => r.Area)
                                .Include(r => r.User)
                                .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
                                select r;
@@ -199,7 +199,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             var bookings = from r in _context.RoomBookings
                            .Include(r => r.Room)
-                           .ThenInclude(r => r.RoomGroup)
+                           .ThenInclude(r => r.Area)
                            .Include(r => r.User)
                            .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
                            select r;
@@ -290,7 +290,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             var _bookings = from r in _context.RoomBookings
                            .Include(r => r.Room)
-                           .ThenInclude(r => r.RoomGroup)
+                           .ThenInclude(r => r.Area)
                            .Include(r => r.User)
                            .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
                            select r;
@@ -311,7 +311,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             foreach (RoomBooking b in _bookings){
                 bookings.Add(new BookingVM {
-                        Area = b.Room.RoomGroup.AreaName,
+                        Area = b.Room.Area.AreaName,
                         Room = b.Room.RoomName,
                         Start = b.StartDate.ToString("g"),
                         End = b.EndDate.ToString("g"),

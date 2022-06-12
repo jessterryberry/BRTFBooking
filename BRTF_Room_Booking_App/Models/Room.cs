@@ -37,10 +37,10 @@ namespace BRTF_Room_Booking_App.Models
 
         [Display(Name = "Area")]
         [Required(ErrorMessage = "You must assign an Area.")]
-        public int RoomGroupID { get; set; }
+        public int AreaID { get; set; }
 
         [Display(Name = "Area")]
-        public RoomGroup RoomGroup { get; set; }
+        public Area Area { get; set; }
 
         [Display(Name = "Bookings")]
         public ICollection<RoomBooking> RoomBookings { get; set; }

@@ -1,7 +1,7 @@
-﻿@model BRTF_Room_Booking_App.Models.RoomGroup
+﻿@model BRTF_Room_Booking_App.Models.Area
 
 @{
-    ViewData["Title"] = "Create Room Group";
+    ViewData["Title"] = "Edit Area";
 }
 
 <head>
@@ -9,19 +9,36 @@
 </head>
 <body class="justify-content-center">
     <br />
-    <h1 class="mb-4 text-center">Create</h1>
+    <h1 class="mb-4 text-center">Edit</h1>
     <br />
 
     <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="px-3 py-2 my-3">
-        <div>
-            <br />
-            <h4 class="text-center">Create New Room Group</h4>
-            <br />
+        <div class="container">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col">
+                    <br />
+                    <h4 class="text-center">Edit this Area</h4>
+                    <br />
+                </div>
+                <div class="col text-right pt-4">
+                    @if (User.IsInRole("Top-level Admin"))
+                    {
+                        @*<form asp-action="Delete" class="d-flex justify-content-center">
+                                <input type="hidden" asp-for="ID" />
+                                <input type="submit" value="Delete" class="btn btn-danger mx-1" style="width:100px;" />
+                            </form>*@
+                        <a asp-action="Delete" asp-route-id="@Model.ID" role="button" class="btn btn-danger mx-2">Delete</a>
+                    }
+                </div>
+            </div>
         </div>
-        <form asp-action="Create">
+
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
                         <label asp-for="AreaName" class="label">Area Name *</label>
                         <input asp-for="AreaName" id="areaNameInput" class="form-control" />
@@ -43,7 +60,7 @@
                         <span asp-validation-for="MaxHoursPerSingleBooking" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="MaxHoursTotal" class="label"></label>
+                        <strong><label asp-for="MaxHoursTotal" class="control-label"></label></strong>
                         <input asp-for="MaxHoursTotal" class="form-control" />
                         <span asp-validation-for="MaxHoursTotal" class="text-danger"></span>
                     </div>
@@ -53,21 +70,21 @@
                         <span asp-validation-for="MaxNumberOfBookings" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <button type="button" title="Time of Day Restrictions Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="If you would like to restrict what time this area is available to be booked please select the checkbox to specify the Earliest Start Time and Latest End Time. For example, if you want an area to only allow bookings between 8:00am-6:00pm set the Earliest Start Time to 8:00am and the Latest End Time to 5:59pm. By default all Room Groups are available to be booked at any time in a 24 hour period.">
+                        <button type="button" title="Time of Day Restrictions Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="If you would like to restrict what time this area is available to be booked please select the checkbox to specify the Earliest Start Time and Latest End Time. For example, if you want an area to only allow bookings between 8:00am-6:00pm set the Earliest Start Time to 8:00am and the Latest End Time to 5:59pm. By default all Areas are available to be booked at any time in a 24 hour period.">
                             <img src="~/img/questionmark.png" width="30" height="30" />
                         </button>
                         <label asp-for="TimeOfDayRestrictions" class="label"></label>
                         <div class="form-group form-check">
-                            <input class="form-check-input" id="chkTimeRestrictions" asp-for="TimeOfDayRestrictions" data-toggle="collapse" data-target="#collapseTimeRestrictions" aria-expanded="false" aria-controls="collapseTimeRestrictions" /> @Html.DisplayNameFor(model => model.TimeOfDayRestrictions)
+                            <input class="form-check-input" id="chkTimeRestrictions" asp-for="TimeOfDayRestrictions" data-toggle="collapse" data-target="#collapseTimeRestrictions" aria-expanded="true" aria-controls="collapseTimeRestrictions" /> @Html.DisplayNameFor(model => model.TimeOfDayRestrictions)
                         </div>
                     </div>
-                    <div class="collapse" id="collapseTimeRestrictions">
+                    <div class="collapse @ViewData["collapseTimeRestrictions"]" id="collapseTimeRestrictions">
                         <div class="form-group">
                             <button type="button" title="Earliest Time Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="Please select the earliest start time allowed for bookings for this area. For example, if you want an area to only allow bookings between 8:00am-6:00pm set the Earliest Start Time to 8:00am. This field is set to 12:00am by default to allow 24 hour bookings.">
                                 <img src="~/img/questionmark.png" width="30" height="30" />
                             </button>
                             <label asp-for="EarliestTime" class="label">Earliest Allowed Start Time in This Area *</label>
-                            <input asp-for="EarliestTime" id="earliestTimeInput" type="time" class="form-control" />
+                            <input asp-for="EarliestTime" id="earliestTimeInput" class="form-control" />
                             <span id="earliestTimeError" class="text-danger"></span>
                             <span asp-validation-for="EarliestTime" class="text-danger"></span>
                         </div>
@@ -76,25 +93,24 @@
                                 <img src="~/img/questionmark.png" width="30" height="30" />
                             </button>
                             <label asp-for="LatestTime" class="label">Latest Allowed End Time in This Area *</label>
-                            <input asp-for="LatestTime" id="latestTimeInput" type="time" class="form-control" />
+                            <input asp-for="LatestTime" id="latestTimeInput" class="form-control" />
                             <span id="latestTimeError" class="text-danger"></span>
                             <span asp-validation-for="LatestTime" class="text-danger"></span>
                         </div>
                     </div>
-                        <div class="form-group">
-                            <label class="label">Is Enabled</label>
-                            <div class="form-group form-check">
-                                <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
-                            </div>
+                    <div class="form-group">
+                        <label class="label">Is Enabled</label>
+                        <div class="form-group form-check">
+                            <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
                         </div>
+                    </div>
                     <div class="form-group">
                         <label class="label">Needs Approval</label>
                         <div class="form-group form-check">
-                            <input class="form-check-input" id="chkApproval" asp-for="NeedsApproval" data-toggle="collapse" data-target="#collapseApprovers" aria-expanded="false" aria-controls="collapseApprovers" /> @Html.DisplayNameFor(model => model.NeedsApproval)
+                            <input class="form-check-input" id="chkApproval" asp-for="NeedsApproval" data-toggle="collapse" data-target="#collapseApprovers" aria-expanded="true" aria-controls="collapseApprovers" /> @Html.DisplayNameFor(model => model.NeedsApproval)
                         </div>
                     </div>
-
-                    <div class="collapse" id="collapseApprovers">
+                    <div class="collapse @ViewData["collapseApprovers"]" id="collapseApprovers">
                         <div class="row form-group">
                             <div class="col-1 text-right" style="padding:0px">
                                 <button type="button" title="Area Approval Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left"
@@ -114,7 +130,7 @@
                                 @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control", @style = "height: 90%;" })
                             </div>
                             <div class="col-md-6">
-                                <label for="availOptions" class="control-label"><strong>Available Approvers</strong></label> <button type="button" title="Add Approvers to Area" id="btnLeft" class="btn btn-success btn-sm">
+                                <label for="availOptions" class="control-label"><strong>Add Approvers to Area</strong></label> <button type="button" title="Add Approvers to Area" id="btnLeft" class="btn btn-success btn-sm">
                                     <strong>➕</strong>
                                 </button>
                                 @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control", @style = "height: 90%;" })
@@ -125,15 +141,13 @@
             </div>
             <br />
             <div class="d-flex justify-content-center">
-                <input type="submit" value="Create" class="btn btn-primary mx-2" style="width:100px;" />
-                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Room Groups</a>
+                <input type="submit" value="Save" id="btnSubmit" class="btn btn-primary mx-2" style="width:100px;" />
+                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Areas</a>
             </div>
             <br />
         </form>
     </section>
 </body>
-
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -144,7 +158,6 @@
     </script>
     <script src="~/js/multiselect.js"></script>
     <script src="~/js/refreshListbox.js"></script>
-
     <script>
         $("#areaNameInput").on("input", function () {
             if ($("#areaNameInput").val().length == 0) {
@@ -181,11 +194,19 @@
         });
     </script>
     <script>
+        $("#userGroupInput").on("input", function () {
+            if ($("#userGroupInput").val().length == 0) {
+                $("#userGroupError").html("Please enter a User Group name, up to a maximum of 20 characters.");
+            }
+            else {
+                $("#userGroupError").html("");
+            }
+        });
         $("#btnRight").click(function () {
             console.log($("#selectedOptions").val().length)
             if ($("#selectedOptions").val().length == 1) {
                 console.log("hi!")
-                $("#selectedOptionsError").html("User Groups need at least 1 Room Group for a permission.");
+                $("#selectedOptionsError").html("User Groups need at least 1 Area for a permission.");
             }
             else {
                 $("#selectedOptionsError").html("");

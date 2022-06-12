@@ -8,26 +8,7 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "GlobalSettings",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StartOfTermDate = table.Column<DateTime>(nullable: false),
-                    EndOfTermDate = table.Column<DateTime>(nullable: false),
-                    LatestAllowableFutureBookingDay = table.Column<int>(nullable: false),
-                    EmailBookingNotificationsOverride = table.Column<bool>(nullable: false),
-                    PreventBookingNotificationsOverride = table.Column<bool>(nullable: false),
-                    EmailCancelNotificationsOverride = table.Column<bool>(nullable: false),
-                    PreventCancelNotificationsOverride = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GlobalSettings", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RoomGroups",
+                name: "Areas",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -46,7 +27,26 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomGroups", x => x.ID);
+                    table.PrimaryKey("PK_Areas", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GlobalSettings",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    StartOfTermDate = table.Column<DateTime>(nullable: false),
+                    EndOfTermDate = table.Column<DateTime>(nullable: false),
+                    LatestAllowableFutureBookingDay = table.Column<int>(nullable: false),
+                    EmailBookingNotificationsOverride = table.Column<bool>(nullable: false),
+                    PreventBookingNotificationsOverride = table.Column<bool>(nullable: false),
+                    EmailCancelNotificationsOverride = table.Column<bool>(nullable: false),
+                    PreventCancelNotificationsOverride = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GlobalSettings", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,15 +71,15 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                     RoomName = table.Column<string>(maxLength: 50, nullable: false),
                     RoomMaxHoursTotal = table.Column<int>(nullable: true),
                     Enabled = table.Column<bool>(nullable: false),
-                    RoomGroupID = table.Column<int>(nullable: false)
+                    AreaID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rooms", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Rooms_RoomGroups_RoomGroupID",
-                        column: x => x.RoomGroupID,
-                        principalTable: "RoomGroups",
+                        name: "FK_Rooms_Areas_AreaID",
+                        column: x => x.AreaID,
+                        principalTable: "Areas",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -89,15 +89,15 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 columns: table => new
                 {
                     UserGroupID = table.Column<int>(nullable: false),
-                    RoomGroupID = table.Column<int>(nullable: false)
+                    AreaID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomUserGroupPermissions", x => new { x.UserGroupID, x.RoomGroupID });
+                    table.PrimaryKey("PK_RoomUserGroupPermissions", x => new { x.UserGroupID, x.AreaID });
                     table.ForeignKey(
-                        name: "FK_RoomUserGroupPermissions_RoomGroups_RoomGroupID",
-                        column: x => x.RoomGroupID,
-                        principalTable: "RoomGroups",
+                        name: "FK_RoomUserGroupPermissions_Areas_AreaID",
+                        column: x => x.AreaID,
+                        principalTable: "Areas",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -157,6 +157,30 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AreaApprovers",
+                columns: table => new
+                {
+                    UserID = table.Column<int>(nullable: false),
+                    AreaID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AreaApprovers", x => new { x.AreaID, x.UserID });
+                    table.ForeignKey(
+                        name: "FK_AreaApprovers_Areas_AreaID",
+                        column: x => x.AreaID,
+                        principalTable: "Areas",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AreaApprovers_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RoomBookings",
                 columns: table => new
                 {
@@ -186,29 +210,16 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "RoomGroupApprovers",
-                columns: table => new
-                {
-                    UserID = table.Column<int>(nullable: false),
-                    RoomGroupID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoomGroupApprovers", x => new { x.RoomGroupID, x.UserID });
-                    table.ForeignKey(
-                        name: "FK_RoomGroupApprovers_RoomGroups_RoomGroupID",
-                        column: x => x.RoomGroupID,
-                        principalTable: "RoomGroups",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RoomGroupApprovers_Users_UserID",
-                        column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_AreaApprovers_UserID",
+                table: "AreaApprovers",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Areas_AreaName",
+                table: "Areas",
+                column: "AreaName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoomBookings_RoomID",
@@ -221,26 +232,15 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomGroupApprovers_UserID",
-                table: "RoomGroupApprovers",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RoomGroups_AreaName",
-                table: "RoomGroups",
-                column: "AreaName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rooms_RoomGroupID_RoomName",
+                name: "IX_Rooms_AreaID_RoomName",
                 table: "Rooms",
-                columns: new[] { "RoomGroupID", "RoomName" },
+                columns: new[] { "AreaID", "RoomName" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomUserGroupPermissions_RoomGroupID",
+                name: "IX_RoomUserGroupPermissions_AreaID",
                 table: "RoomUserGroupPermissions",
-                column: "RoomGroupID");
+                column: "AreaID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TermAndPrograms_UserGroupID",
@@ -275,20 +275,18 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 table: "Users",
                 column: "Username",
                 unique: true);
-
-            ExtraMigration.Steps(migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AreaApprovers");
+
+            migrationBuilder.DropTable(
                 name: "GlobalSettings");
 
             migrationBuilder.DropTable(
                 name: "RoomBookings");
-
-            migrationBuilder.DropTable(
-                name: "RoomGroupApprovers");
 
             migrationBuilder.DropTable(
                 name: "RoomUserGroupPermissions");
@@ -300,7 +298,7 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "RoomGroups");
+                name: "Areas");
 
             migrationBuilder.DropTable(
                 name: "TermAndPrograms");

@@ -41,7 +41,7 @@ namespace BRTF_Room_Booking_App.Controllers
             string[] sortOptions = new[] { "User Group" };
 
             var userGroups = from u in _context.UserGroups
-                             .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.RoomGroup)
+                             .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.Area)
                              select u;
 
             //Filter
@@ -110,7 +110,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var userGroup = await _context.UserGroups
-                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.Area)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (userGroup == null)
@@ -187,7 +187,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             var userGroup = await _context.UserGroups
                 .Include(u => u.RoomUserGroupPermissions)
-               .ThenInclude(u => u.RoomGroup)
+               .ThenInclude(u => u.Area)
                .FirstOrDefaultAsync(u => u.ID == id);
 
             if (userGroup == null)
@@ -213,7 +213,7 @@ namespace BRTF_Room_Booking_App.Controllers
             // Get the UserGroup to update
             var userGroupToUpdate = await _context.UserGroups
                 .Include(u => u.RoomUserGroupPermissions)
-               .ThenInclude(u => u.RoomGroup)
+               .ThenInclude(u => u.Area)
                .FirstOrDefaultAsync(u => u.ID == id);
 
             // Check that you got it or exit with a not found error
@@ -280,7 +280,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var userGroup = await _context.UserGroups
-                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.Area)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (userGroup == null)
@@ -301,7 +301,7 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewDataReturnURL();
 
             var userGroup = await _context.UserGroups
-                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.RoomUserGroupPermissions).ThenInclude(r => r.Area)
                 .FirstOrDefaultAsync(m => m.ID == id);
             try
             {
@@ -324,11 +324,11 @@ namespace BRTF_Room_Booking_App.Controllers
             return View(userGroup);
         }
 
-        // Populate Room Group Permissions Listbox
+        // Populate Area Permissions Listbox
         private void PopulateAssignedSpecialtyData(UserGroup usergroup)
         {
-            var allOptions = _context.RoomGroups;
-            var currentOptionsHS = new HashSet<int>(usergroup.RoomUserGroupPermissions.Select(b => b.RoomGroupID));
+            var allOptions = _context.Areas;
+            var currentOptionsHS = new HashSet<int>(usergroup.RoomUserGroupPermissions.Select(b => b.AreaID));
             
             var selected = new List<ListOptionVM>();
             var available = new List<ListOptionVM>();
@@ -367,9 +367,9 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var selectedOptionsHS = new HashSet<string>(selectedOptions);
-            var currentOptionsHS = new HashSet<int>(userGroupToUpdate.RoomUserGroupPermissions.Select(b => b.RoomGroupID));
+            var currentOptionsHS = new HashSet<int>(userGroupToUpdate.RoomUserGroupPermissions.Select(b => b.AreaID));
 
-            foreach (var s in _context.RoomGroups)
+            foreach (var s in _context.Areas)
             {
                 if (selectedOptionsHS.Contains(s.ID.ToString())) //if selected
                 {
@@ -377,7 +377,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     {
                         userGroupToUpdate.RoomUserGroupPermissions.Add(new RoomUserGroupPermission
                         {
-                            RoomGroupID = s.ID,
+                            AreaID = s.ID,
                             UserGroupID = userGroupToUpdate.ID
                         });
                     }
@@ -386,7 +386,7 @@ namespace BRTF_Room_Booking_App.Controllers
                 {
                     if (currentOptionsHS.Contains(s.ID))//remove if currently in the UserGroup's collection
                     {
-                        RoomUserGroupPermission specToRemove = userGroupToUpdate.RoomUserGroupPermissions.FirstOrDefault(d => d.RoomGroupID == s.ID);
+                        RoomUserGroupPermission specToRemove = userGroupToUpdate.RoomUserGroupPermissions.FirstOrDefault(d => d.AreaID == s.ID);
                         _context.Remove(specToRemove);
                     }
                 }

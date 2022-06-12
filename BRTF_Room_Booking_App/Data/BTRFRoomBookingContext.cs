@@ -38,13 +38,13 @@ namespace BRTF_Room_Booking_App.Data
         public DbSet<GlobalSetting> GlobalSettings { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomBooking> RoomBookings { get; set; }
-        public DbSet<RoomGroup> RoomGroups { get; set; }
+        public DbSet<Area> Areas { get; set; }
         public DbSet<RoomUserGroupPermission> RoomUserGroupPermissions { get; set; }
         public DbSet<TermAndProgram> TermAndPrograms { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<BookingSummary> BookingSummaries { get; set; }
-        public DbSet<RoomGroupApprover> RoomGroupApprovers { get; set; }
+        public DbSet<AreaApprover> AreaApprovers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace BRTF_Room_Booking_App.Data
 
             //Add a composite primary key to RoomUserGroupPermission
             modelBuilder.Entity<RoomUserGroupPermission>()
-                .HasKey(p => new { p.UserGroupID, p.RoomGroupID });
+                .HasKey(p => new { p.UserGroupID, p.AreaID });
 
             //Prevent Cascade Delete from TermAndProgram to User
             //so we are prevented from deleting a TermAndProgram with
@@ -79,22 +79,22 @@ namespace BRTF_Room_Booking_App.Data
                 .HasForeignKey(p => p.UserGroupID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Prevent Cascade Delete from RoomGroup to RoomUserGroupPermissions
-            //so we are prevented from deleting a RoomGroup with
+            //Prevent Cascade Delete from Area to RoomUserGroupPermissions
+            //so we are prevented from deleting a Area with
             //RoomUserGroupPermissions assigned
-            modelBuilder.Entity<RoomGroup>()
+            modelBuilder.Entity<Area>()
                 .HasMany<RoomUserGroupPermission>(d => d.RoomUserGroupPermissions)
-                .WithOne(p => p.RoomGroup)
-                .HasForeignKey(p => p.RoomGroupID)
+                .WithOne(p => p.Area)
+                .HasForeignKey(p => p.AreaID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Prevent Cascade Delete from RoomGroup to Room
-            //so we are prevented from deleting a RoomGroup with
+            //Prevent Cascade Delete from Area to Room
+            //so we are prevented from deleting a Area with
             //Rooms assigned
-            modelBuilder.Entity<RoomGroup>()
+            modelBuilder.Entity<Area>()
                 .HasMany<Room>(d => d.Rooms)
-                .WithOne(p => p.RoomGroup)
-                .HasForeignKey(p => p.RoomGroupID)
+                .WithOne(p => p.Area)
+                .HasForeignKey(p => p.AreaID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //Prevent Cascade Delete from Room to RoomBooking
@@ -125,32 +125,32 @@ namespace BRTF_Room_Booking_App.Data
                .HasIndex(p => p.Email )
                .IsUnique();
 
-            //Add a unique index to the RoomGroup Name
-            modelBuilder.Entity<RoomGroup>()
+            //Add a unique index to the Area Name
+            modelBuilder.Entity<Area>()
                 .HasIndex(p => p.AreaName)
                 .IsUnique();
 
-            //Add a unique index to the combined RoomGroupID and Room Name
+            //Add a unique index to the combined AreaID and Room Name
             modelBuilder.Entity<Room>()
-                .HasIndex(p => new { p.RoomGroupID, p.RoomName })
+                .HasIndex(p => new { p.AreaID, p.RoomName })
                 .IsUnique();
 
-            modelBuilder.Entity<RoomGroupApprover>()
-                .HasKey(p => new { p.RoomGroupID, p.UserID });
+            modelBuilder.Entity<AreaApprover>()
+                .HasKey(p => new { p.AreaID, p.UserID });
 
-            modelBuilder.Entity<RoomGroup>()
-                .HasMany(p => p.RoomGroupApprovers)
-                .WithOne(p => p.RoomGroup)
-                .HasForeignKey(p => p.RoomGroupID);
+            modelBuilder.Entity<Area>()
+                .HasMany(p => p.AreaApprovers)
+                .WithOne(p => p.Area)
+                .HasForeignKey(p => p.AreaID);
 
-            //modelBuilder.Entity<RoomGroupApprover>()
-            //    .HasOne<RoomGroup>(p => p.RoomGroup)
-            //    .WithMany(p => p.RoomGroupApprovers)
-            //    .HasForeignKey(p => p.RoomGroupID);
+            //modelBuilder.Entity<AreaApprover>()
+            //    .HasOne<Area>(p => p.Area)
+            //    .WithMany(p => p.AreaApprovers)
+            //    .HasForeignKey(p => p.AreaID);
 
-            //modelBuilder.Entity<RoomGroupApprover>()
+            //modelBuilder.Entity<AreaApprover>()
             //    .HasOne<User>(p => p.User)
-            //    .WithMany(p => p.RoomGroupApprovers)
+            //    .WithMany(p => p.AreaApprovers)
             //    .HasForeignKey(p => p.UserID);
         }
 

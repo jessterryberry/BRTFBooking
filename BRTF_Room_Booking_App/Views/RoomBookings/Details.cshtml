@@ -41,7 +41,7 @@
                             <div class="card-text mb-3"><strong>Special Notes: </strong> @Html.DisplayFor(model => model.SpecialNotes)</div>
                             <div class="card-text mb-3"><strong>Start: </strong> @Html.DisplayFor(model => model.StartDate)</div>
                             <div class="card-text mb-3"><strong>End: </strong> @Html.DisplayFor(model => model.EndDate)</div>
-                            <div class="card-text mb-3"><strong>Area: </strong> @Html.DisplayFor(model => model.Room.RoomGroup.AreaName)</div>
+                            <div class="card-text mb-3"><strong>Area: </strong> @Html.DisplayFor(model => model.Room.Area.AreaName)</div>
                             <div class="card-text mb-3"><strong>Room: </strong> @Html.DisplayFor(model => model.Room.RoomName)</div>
                             <div class="card-text"><strong>Approval Status: </strong> @Html.DisplayFor(model => model.ApprovalStatus)</div>
                             <br />
@@ -97,11 +97,11 @@
                 </div>
                 <div class="row">
                     <div class="col-6 text-right pt-2">
-                        <label asp-for="Room.RoomGroup.AreaName" class="label">Area</label>
+                        <label asp-for="Room.Area.AreaName" class="label">Area</label>
                     </div>
                     <div class="col-6 pt-2">
-                        @*<select asp-for="Room.RoomGroupID" class="form-control" asp-items="ViewBag.RoomGroupID" disabled></select>*@
-                        @Html.DisplayFor(model => model.Room.RoomGroup.AreaName)
+                        @*<select asp-for="Room.AreaID" class="form-control" asp-items="ViewBag.AreaID" disabled></select>*@
+                        @Html.DisplayFor(model => model.Room.Area.AreaName)
                     </div>
                 </div>
                 <div class="row">

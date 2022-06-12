@@ -30,7 +30,7 @@ namespace BRTF_Room_Booking_App.Controllers
         }
 
         // GET: Rooms
-        public async Task<IActionResult> Index(string SearchRoom, string sortFieldID, string sortDirectionCheck, int? RoomGroupID, int? page, int? pageSizeID,
+        public async Task<IActionResult> Index(string SearchRoom, string sortFieldID, string sortDirectionCheck, int? AreaID, int? page, int? pageSizeID,
             string actionButton, string sortDirection = "asc", string sortField = "Is Enabled", string EnabledFilterString = "All")
         {
             //Clear the sort/filter/paging URL Cookie for Controller
@@ -40,7 +40,7 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["Filtering"] = "btn-outline-secondary"; //Assume nothing is filtered initially
 
             //Array for sort options
-            string[] sortOptions = new[] { "Room", "Room Group", "Is Enabled" };
+            string[] sortOptions = new[] { "Room", "Area", "Is Enabled" };
 
             PopulateDropDownLists(); //data for Room Filter DDL
 
@@ -48,7 +48,7 @@ namespace BRTF_Room_Booking_App.Controllers
             // IQueryable<> so we can add filter and sort 
             // options later.
             var rooms = from t in _context.Rooms
-                .Include(t => t.RoomGroup).Where(t =>
+                .Include(t => t.Area).Where(t =>
             (t.Enabled == true && EnabledFilterString == "True") || (t.Enabled == false && EnabledFilterString == "False") || (EnabledFilterString == "All"))
                 .AsNoTracking()
                         select t;
@@ -58,9 +58,9 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 ViewData["Filtering"] = "btn-danger";
             }
-            if (RoomGroupID.HasValue)
+            if (AreaID.HasValue)
             {
-                rooms = rooms.Where(r => r.RoomGroupID == RoomGroupID);
+                rooms = rooms.Where(r => r.AreaID == AreaID);
                 ViewData["Filtering"] = "btn-danger";
             }
             if (!String.IsNullOrEmpty(SearchRoom))
@@ -106,12 +106,12 @@ namespace BRTF_Room_Booking_App.Controllers
                 if (sortDirection == "asc")
                 {
                     rooms = rooms
-                        .OrderBy(r => r.RoomGroup);
+                        .OrderBy(r => r.Area);
                 }
                 else
                 {
                     rooms = rooms
-                        .OrderByDescending(r => r.RoomGroup);
+                        .OrderByDescending(r => r.Area);
                 }
             }
             else //Sorting by Enabled
@@ -155,7 +155,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var room = await _context.Rooms
-                .Include(t => t.RoomGroup)
+                .Include(t => t.Area)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (room == null)
@@ -183,7 +183,7 @@ namespace BRTF_Room_Booking_App.Controllers
         [Authorize(Roles = "Top-level Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,RoomName,RoomMaxHoursTotal,RoomGroupID,Enabled")] Room room)
+        public async Task<IActionResult> Create([Bind("ID,RoomName,RoomMaxHoursTotal,AreaID,Enabled")] Room room)
         {
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
@@ -258,7 +258,7 @@ namespace BRTF_Room_Booking_App.Controllers
             // Try updating it with the values posted
             if (await TryUpdateModelAsync<Room>(roomToUpdate, "",
                 p => p.RoomName, p => p.RoomMaxHoursTotal,
-                p => p.RoomGroupID, p => p.Enabled))
+                p => p.AreaID, p => p.Enabled))
             {
                 try
                 {
@@ -307,7 +307,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var room = await _context.Rooms
-                .Include(t => t.RoomGroup)
+                .Include(t => t.Area)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (room == null)
@@ -328,7 +328,7 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewDataReturnURL();
 
             var room = await _context.Rooms
-                .Include(t => t.RoomGroup)
+                .Include(t => t.Area)
                 .FirstOrDefaultAsync(m => m.ID == id);
             try
             {
@@ -341,7 +341,7 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (dex.GetBaseException().Message.Contains("FOREIGN KEY constraint failed"))
                 {
-                    ModelState.AddModelError("", "Unable to delete. You cannot delete a Room that has a Room Group assigned.");
+                    ModelState.AddModelError("", "Unable to delete. You cannot delete a Room that has a Area assigned.");
                 }
                 else
                 {
@@ -351,7 +351,7 @@ namespace BRTF_Room_Booking_App.Controllers
             return View(room);
         }
 
-        public IActionResult BookingSummary(DateTime? start, DateTime? end, string? SearchRoom, int? RoomGroupID)
+        public IActionResult BookingSummary(DateTime? start, DateTime? end, string? SearchRoom, int? AreaID)
         {
             //Clear the sort/filter/paging URL Cookie for Controller
             CookieHelper.CookieSet(HttpContext, ControllerName() + "URL", "", -1);
@@ -362,9 +362,9 @@ namespace BRTF_Room_Booking_App.Controllers
             //Change colour of the button when filtering by setting this default
             ViewData["Filter"] = "btn-outline-secondary";
 
-            ViewData["RoomGroupID"] = RoomGroupSelectList(RoomGroupID);
+            ViewData["AreaID"] = AreaSelectList(AreaID);
 
-            var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+            var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                .Where(a => a.StartDate >= start && a.EndDate <= end)
                .OrderBy(p => p.Room.RoomName)
                .AsNoTracking()
@@ -373,14 +373,14 @@ namespace BRTF_Room_Booking_App.Controllers
             //  Filtering
             if (start == null && end == null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
                 .ToList();
             }
             else if (start == null && end != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .Where(a => a.EndDate <= end)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
@@ -390,7 +390,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             else if (start != null && end == null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .Where(a => a.StartDate >= start)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
@@ -400,7 +400,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             if (!String.IsNullOrEmpty(SearchRoom))
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                .Where(r => r.Room.RoomName.ToUpper().Contains(SearchRoom.ToUpper()))
                .OrderBy(p => p.Room.RoomName)
                .AsNoTracking()
@@ -409,10 +409,10 @@ namespace BRTF_Room_Booking_App.Controllers
                 ViewData["Filter"] = "btn-danger";
 
             }
-            if (RoomGroupID.HasValue)
+            if (AreaID.HasValue)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
-                .Where(r => r.Room.RoomGroupID == RoomGroupID)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                .Where(r => r.Room.AreaID == AreaID)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
                 .ToList();
@@ -423,14 +423,14 @@ namespace BRTF_Room_Booking_App.Controllers
 
             //Now do the grouping
             var sumQ = filtered
-                .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.RoomGroup.AreaName })
+                .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.Area.AreaName })
                 .Select(grp => new BookingSummary
                 {
                     ID = grp.Key.RoomID,
                     RoomName = grp.Key.RoomName,
                     NumberOfAppointments = grp.Count(),
                     TotalHours = (int)grp.Sum(a => a.EndDate.Subtract(a.StartDate).TotalHours),
-                    RoomGroup = grp.Key.AreaName
+                    Area = grp.Key.AreaName
 
                 });
 
@@ -447,11 +447,11 @@ namespace BRTF_Room_Booking_App.Controllers
 
         }
 
-        public IActionResult DownloadBookings(DateTime? start, DateTime? end, string? SearchRoom, int? RoomGroupID)
+        public IActionResult DownloadBookings(DateTime? start, DateTime? end, string? SearchRoom, int? AreaID)
         {
             ////Get the bookings
-            //var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
-            //   .OrderBy(p => p.Room.RoomName).OrderBy(p => p.Room.RoomGroup)
+            //var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+            //   .OrderBy(p => p.Room.RoomName).OrderBy(p => p.Room.Area)
             //   .AsNoTracking()
             //   .ToList();
 
@@ -464,9 +464,9 @@ namespace BRTF_Room_Booking_App.Controllers
             //Change colour of the button when filtering by setting this default
             ViewData["Filter"] = "btn-outline-secondary";
 
-            ViewData["RoomGroupID"] = RoomGroupSelectList(RoomGroupID);
+            ViewData["AreaID"] = AreaSelectList(AreaID);
 
-            var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+            var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                .Where(a => a.StartDate >= start && a.EndDate <= end)
                .OrderBy(p => p.Room.RoomName)
                .AsNoTracking()
@@ -475,14 +475,14 @@ namespace BRTF_Room_Booking_App.Controllers
             //  Filtering
             if (start == null && end == null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
                 .ToList();
             }
             else if (start == null && end != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .Where(a => a.EndDate <= end)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
@@ -492,7 +492,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             else if (start != null && end == null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                 .Where(a => a.StartDate >= start)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
@@ -502,7 +502,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             if (!String.IsNullOrEmpty(SearchRoom))
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
                .Where(r => r.Room.RoomName.ToUpper().Contains(SearchRoom.ToUpper()))
                .OrderBy(p => p.Room.RoomName)
                .AsNoTracking()
@@ -511,10 +511,10 @@ namespace BRTF_Room_Booking_App.Controllers
                 ViewData["Filter"] = "btn-danger";
 
             }
-            if (RoomGroupID.HasValue)
+            if (AreaID.HasValue)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.RoomGroup)
-                .Where(r => r.Room.RoomGroupID == RoomGroupID)
+                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                .Where(r => r.Room.AreaID == AreaID)
                 .OrderBy(p => p.Room.RoomName)
                 .AsNoTracking()
                 .ToList();
@@ -524,12 +524,12 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var appts = filtered
-                .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.RoomGroup.AreaName })
+                .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.Area.AreaName })
                 .Select(grp => new BookingSummary
                 {
                     ID = grp.Key.RoomID,
                     RoomName = grp.Key.RoomName,
-                    RoomGroup = grp.Key.AreaName,
+                    Area = grp.Key.AreaName,
                     NumberOfAppointments = grp.Count(),
                     TotalHours = (int)grp.Sum(a => a.EndDate.Subtract(a.StartDate).TotalHours)
                 });
@@ -626,22 +626,22 @@ namespace BRTF_Room_Booking_App.Controllers
         //  and one method to put them all into ViewData.
         //This approach allows for AJAX requests to refresh
         //DDL Data at a later date.
-        private SelectList RoomGroupSelectList(int? selectedId)
+        private SelectList AreaSelectList(int? selectedId)
         {
-            return new SelectList(_context.RoomGroups
+            return new SelectList(_context.Areas
                 .OrderBy(u => u.AreaName), "ID", "AreaName", selectedId);
         }
 
         private SelectList EnabledSelectList(int? selectedId)
         {
-            return new SelectList(_context.RoomGroups
+            return new SelectList(_context.Areas
                 .OrderBy(u => u.Enabled), "ID", "Enabled", selectedId);
         }
 
         private void PopulateDropDownLists(Room room = null)
         {
-            ViewData["RoomGroupID"] = RoomGroupSelectList(room?.RoomGroupID);
-            ViewData["Enabled"] = EnabledSelectList(room?.RoomGroupID);
+            ViewData["AreaID"] = AreaSelectList(room?.AreaID);
+            ViewData["Enabled"] = EnabledSelectList(room?.AreaID);
 
         }
 

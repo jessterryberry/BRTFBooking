@@ -23,10 +23,10 @@
                         <div class="media-body ml-2">
                             <div class="card-text mb-3"><strong>User Group: </strong> @Html.DisplayFor(model => model.UserGroupName)</div>
                             <p class="card-text">
-                                <strong>Room Group Permissions:</strong> <br />
+                                <strong>Area Permissions:</strong> <br />
                                 @foreach (var r in Model.RoomUserGroupPermissions)
                                 {
-                                    @r.RoomGroup.AreaName <br />
+                                    @r.Area.AreaName <br />
                                 }<br />
                             </p>
                         </div>
@@ -59,12 +59,12 @@
                 </div>
                 <div class="row">
                     <div class="col-6 text-right pt-2">
-                        <label class="label">Room Group Permissions</label>
+                        <label class="label">Area Permissions</label>
                     </div>
                     <div class="col-6 pt-2">
                         @foreach (var r in Model.RoomUserGroupPermissions)
                         {
-                            @r.RoomGroup.AreaName <br />
+                            @r.Area.AreaName <br />
                         }
                     </div>
                 </div>

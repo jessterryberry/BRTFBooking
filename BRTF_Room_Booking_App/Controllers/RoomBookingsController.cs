@@ -37,7 +37,7 @@ namespace BRTF_Room_Booking_App.Controllers
         // GET: RoomBookings
         public async Task<IActionResult> Index(int? page, int? pageSizeID, /* Paging */
             string[] bookingsToBulkDelete, /* Bulk deletion */
-            int? RoomGroupID, int? RoomID, string SearchAfterDate, string SearchBeforeDate, string SearchUsername, string SearchFullName, string SearchApprovalStatus, /* Filters/Search */
+            int? AreaID, int? RoomID, string SearchAfterDate, string SearchBeforeDate, string SearchUsername, string SearchFullName, string SearchApprovalStatus, /* Filters/Search */
             string actionButton, string sortDirectionCheck, string sortFieldID, string sortDirection = "asc", string sortField = "Start Date" /*Sorting*/)
         {
             // Ensure cookies are refreshed when user visits Bookings index
@@ -61,8 +61,8 @@ namespace BRTF_Room_Booking_App.Controllers
             //NOTE: make sure this array has matching values to the column headings being sorted
             string[] sortOptions = new[] { "Start Date" };
 
-            ViewData["RoomGroupID"] = RoomGroupSelectList(RoomGroupID);    // Room data is loaded separately from other dropdownlists, since it is sometimes connected to a multiselect
-            ViewData["RoomID"] = RoomSelectList(RoomGroupID, RoomID);
+            ViewData["AreaID"] = AreaSelectList(AreaID);    // Room data is loaded separately from other dropdownlists, since it is sometimes connected to a multiselect
+            ViewData["RoomID"] = RoomSelectList(AreaID, RoomID);
 
             // Start with Includes but make sure your expression returns an
             // IQueryable<> so we can add filter and sort 
@@ -120,9 +120,9 @@ namespace BRTF_Room_Booking_App.Controllers
                 ViewData["Filtering"] = "btn-danger";
                 filtered = true;
             }
-            if (RoomGroupID.HasValue)
+            if (AreaID.HasValue)
             {
-                roombookings = roombookings.Where(r => r.Room.RoomGroupID == RoomGroupID);
+                roombookings = roombookings.Where(r => r.Room.AreaID == AreaID);
                 ViewData["Filtering"] = "btn-danger";
                 filtered = true;
             }
@@ -277,7 +277,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var roomBooking = await _context.RoomBookings
-                .Include(r => r.Room).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.Room).ThenInclude(r => r.Area)
                 .Include(r => r.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -295,8 +295,8 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
             }
 
-            ViewData["RoomGroupID"] = RoomGroupSelectList(roomBooking.Room.RoomGroupID);    // Room data is loaded separately from other dropdownlists, since it is sometimes connected to a multiselect
-            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.RoomGroupID, roomBooking.RoomID);
+            ViewData["AreaID"] = AreaSelectList(roomBooking.Room.AreaID);    // Room data is loaded separately from other dropdownlists, since it is sometimes connected to a multiselect
+            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.AreaID, roomBooking.RoomID);
             PopulateDropDownLists(roomBooking);
             return View(roomBooking);
         }
@@ -320,10 +320,10 @@ namespace BRTF_Room_Booking_App.Controllers
             RoomBooking blankBooking = new RoomBooking();
             blankBooking.UserID = _context.Users.Where(u => u.Username == User.Identity.Name).Select(u => u.ID).FirstOrDefault();
 
-            var roomGroupSelectList = PermittedRoomGroupSelectList();    // Generate the Select List of rooms before putting it in ViewData, so that the populated room data can match the select list
-            ViewData["RoomGroupID"] = roomGroupSelectList;
-            PopulateSelectedRoomData(Convert.ToInt32(roomGroupSelectList.FirstOrDefault().Value));
-            ViewData["RoomID"] = RoomSelectList(Convert.ToInt32(roomGroupSelectList.FirstOrDefault().Value));
+            var areaSelectList = PermittedAreaSelectList();    // Generate the Select List of rooms before putting it in ViewData, so that the populated room data can match the select list
+            ViewData["AreaID"] = areaSelectList;
+            PopulateSelectedRoomData(Convert.ToInt32(areaSelectList.FirstOrDefault().Value));
+            ViewData["RoomID"] = RoomSelectList(Convert.ToInt32(areaSelectList.FirstOrDefault().Value));
             ViewData["RepeatType"] = RepeatTypeSelectList();
             PopulateDropDownLists(blankBooking);
             return View();
@@ -335,7 +335,7 @@ namespace BRTF_Room_Booking_App.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,UserID,SpecialNotes,StartDate,EndDate")] RoomBooking roomBooking,
-            string[] selectedOptions, int RoomGroupID, string chkRepeat, string RepeatInterval, string RepeatType,
+            string[] selectedOptions, int AreaID, string chkRepeat, string RepeatInterval, string RepeatType,
             string Monday, string Tuesday, string Wednesday, string Thursday, string Friday, string Saturday, string Sunday,
             string RepeatEndDate, int RoomID)
         {
@@ -453,16 +453,16 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             // Check time-of-day rules
-            var roomGroup = _context.RoomGroups.Where(r => r.ID == RoomGroupID).FirstOrDefault();
-            if (roomGroup.TimeOfDayRestrictions == true)
+            var area = _context.Areas.Where(r => r.ID == AreaID).FirstOrDefault();
+            if (area.TimeOfDayRestrictions == true)
             {
-                if (roomBooking.StartDate.TimeOfDay < roomGroup.EarliestTime.TimeOfDay)
+                if (roomBooking.StartDate.TimeOfDay < area.EarliestTime.TimeOfDay)
                 {
-                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + roomGroup.EarliestTime.ToString("h:mm tt"));
+                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + area.EarliestTime.ToString("h:mm tt"));
                 }
-                if (roomBooking.EndDate.TimeOfDay > roomGroup.LatestTime.TimeOfDay || (roomBooking.EndDate - roomBooking.StartDate.Date).TotalDays >= 1)
+                if (roomBooking.EndDate.TimeOfDay > area.LatestTime.TimeOfDay || (roomBooking.EndDate - roomBooking.StartDate.Date).TotalDays >= 1)
                 {
-                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + roomGroup.LatestTime.ToString("h:mm tt"));
+                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + area.LatestTime.ToString("h:mm tt"));
                 }
             }
 
@@ -534,7 +534,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     foreach (string roomID in selectedOptions)
                     {
                         // Get User's pre-existing booked time in this Room
-                        var thisRoom = _context.Rooms.Include(r => r.RoomGroup).Where(r => r.ID == Convert.ToInt32(roomID)).FirstOrDefault();
+                        var thisRoom = _context.Rooms.Include(r => r.Area).Where(r => r.ID == Convert.ToInt32(roomID)).FirstOrDefault();
                         var existingBookingsForThisRoom = _context.RoomBookings
                             .Where(b => (b.UserID == roomBooking.UserID) && (b.RoomID == Convert.ToInt32(roomID))
                             && (b.EndDate >= DateTime.Today)
@@ -547,7 +547,7 @@ namespace BRTF_Room_Booking_App.Controllers
                         TimeSpan timeAddedByNewBookings = TimeSpan.Zero;
 
                         // Store this Area ID so we know to check this area's rules afterwards
-                        overallListOfAreaIDsBooked.Add(thisRoom.RoomGroupID);
+                        overallListOfAreaIDsBooked.Add(thisRoom.AreaID);
 
                         // We will check their existing time totals and compare after generating their new bookings
 
@@ -623,11 +623,11 @@ namespace BRTF_Room_Booking_App.Controllers
 
                             // Auto-approve bookings made by Users possessing approval permissions or bookins in areas that don't require approval
                             string approvalString = "Pending";
-                            var approverUsernames = _context.RoomGroupApprovers // Get names of approvers for this Area
+                            var approverUsernames = _context.AreaApprovers // Get names of approvers for this Area
                                 .Include(r => r.User)
-                                .Where(r => r.RoomGroupID == thisRoom.RoomGroupID)
+                                .Where(r => r.AreaID == thisRoom.AreaID)
                                 .Select(r => r.User.Username);
-                            if (approverUsernames.Contains(User.Identity.Name) || User.IsInRole("Top-level Admin") || thisRoom.RoomGroup.NeedsApproval == false)
+                            if (approverUsernames.Contains(User.Identity.Name) || User.IsInRole("Top-level Admin") || thisRoom.Area.NeedsApproval == false)
                             {
                                 approvalString = "Approved";
                             }
@@ -663,7 +663,7 @@ namespace BRTF_Room_Booking_App.Controllers
                             // After generating the new bookings for this room, we compare it to the User's previously existing time
 
                             // Check if the time length for a single Booking was exceeded
-                            var thisArea = _context.RoomGroups.Where(r => r.ID == newBookingForThisRoom.Room.RoomGroupID).FirstOrDefault();
+                            var thisArea = _context.Areas.Where(r => r.ID == newBookingForThisRoom.Room.AreaID).FirstOrDefault();
                             if (thisArea.MaxHoursPerSingleBooking != null)
                             {
                                 if ((newBookingForThisRoom.EndDate - newBookingForThisRoom.StartDate).TotalHours > thisArea.MaxHoursPerSingleBooking)
@@ -723,9 +723,9 @@ namespace BRTF_Room_Booking_App.Controllers
                     foreach (int areaID in overallListOfAreaIDsBooked)
                     {
                         // Get User's pre-existing booked time in this Area
-                        var thisArea = _context.RoomGroups.Where(r => r.ID == areaID).FirstOrDefault();
+                        var thisArea = _context.Areas.Where(r => r.ID == areaID).FirstOrDefault();
                         var existingBookingsForThisArea = _context.RoomBookings.Include(b => b.Room)
-                            .Where(b => (b.UserID == roomBooking.UserID) && (b.Room.RoomGroupID == areaID)
+                            .Where(b => (b.UserID == roomBooking.UserID) && (b.Room.AreaID == areaID)
                             && (b.EndDate >= DateTime.Today)
                             && (b.ApprovalStatus == "Approved" || b.ApprovalStatus == "Pending"));
 
@@ -733,7 +733,7 @@ namespace BRTF_Room_Booking_App.Controllers
                         TimeSpan existingTotalTimeInThisArea = GetTotalDurationOfBookings(existingBookingsForThisArea.ToList());
 
                         // Get User's new hours from new bookings
-                        var newBookingsInThisArea = overallNewBookingsToAdd.Where(b => (b.Room.RoomGroupID == areaID) && (b.EndDate >= DateTime.Today));
+                        var newBookingsInThisArea = overallNewBookingsToAdd.Where(b => (b.Room.AreaID == areaID) && (b.EndDate >= DateTime.Today));
 
                         // Tally up the new time added by User's new bookings
                         TimeSpan timeAddedByNewBookings = GetTotalDurationOfBookings(newBookingsInThisArea.ToList());
@@ -883,9 +883,9 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
             }
 
-            ViewData["RoomGroupID"] = PermittedRoomGroupSelectList(RoomGroupID); // Reload room data separately from other dropdownlists, since it is connected to a multiselect
-            PopulateSelectedRoomData(RoomGroupID, selectedOptions);
-            ViewData["RoomID"] = RoomSelectList(RoomGroupID, RoomID);
+            ViewData["AreaID"] = PermittedAreaSelectList(AreaID); // Reload room data separately from other dropdownlists, since it is connected to a multiselect
+            PopulateSelectedRoomData(AreaID, selectedOptions);
+            ViewData["RoomID"] = RoomSelectList(AreaID, RoomID);
             ViewData["RepeatType"] = RepeatTypeSelectList(RepeatType);
             PopulateDropDownLists();
             return View(roomBooking);
@@ -913,7 +913,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var roomBooking = await _context.RoomBookings
-                .Include(r => r.Room).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.Room).ThenInclude(r => r.Area)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (roomBooking == null)
@@ -931,9 +931,9 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             // Get names of approvers for this Area and disable Approval Status selection for non-approvers
-            var approverUsernames = _context.RoomGroupApprovers
+            var approverUsernames = _context.AreaApprovers
                 .Include(r => r.User)
-                .Where(r => r.RoomGroupID == roomBooking.Room.RoomGroupID)
+                .Where(r => r.AreaID == roomBooking.Room.AreaID)
                 .Select(r => r.User.Username);
             if ((!approverUsernames.Contains(User.Identity.Name) && !User.IsInRole("Top-level Admin")) || roomBooking.ApprovalStatus == "Approved")
             {
@@ -944,8 +944,8 @@ namespace BRTF_Room_Booking_App.Controllers
                 ViewData["DisableSelectApprovalStatus"] = false;
             }
 
-            ViewData["RoomGroupID"] = PermittedRoomGroupSelectList(roomBooking.Room.RoomGroupID);
-            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.RoomGroupID, roomBooking.RoomID);
+            ViewData["AreaID"] = PermittedAreaSelectList(roomBooking.Room.AreaID);
+            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.AreaID, roomBooking.RoomID);
             PopulateDropDownLists(roomBooking);
             return View(roomBooking);
         }
@@ -955,7 +955,7 @@ namespace BRTF_Room_Booking_App.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int RoomGroupID, DateTime StartDate, DateTime EndDate)
+        public async Task<IActionResult> Edit(int id, int AreaID, DateTime StartDate, DateTime EndDate)
         {
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
@@ -986,22 +986,22 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             // Check time-of-day rules
-            var roomGroup = _context.RoomGroups.Where(r => r.ID == RoomGroupID).FirstOrDefault();
-            if (roomGroup.TimeOfDayRestrictions == true)
+            var area = _context.Areas.Where(r => r.ID == AreaID).FirstOrDefault();
+            if (area.TimeOfDayRestrictions == true)
             {
-                if (StartDate.TimeOfDay < roomGroup.EarliestTime.TimeOfDay)
+                if (StartDate.TimeOfDay < area.EarliestTime.TimeOfDay)
                 {
-                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + roomGroup.EarliestTime.ToString("h:mm tt"));
+                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + area.EarliestTime.ToString("h:mm tt"));
                 }
-                if (EndDate.TimeOfDay > roomGroup.LatestTime.TimeOfDay || (EndDate - StartDate.Date).TotalDays >= 1)
+                if (EndDate.TimeOfDay > area.LatestTime.TimeOfDay || (EndDate - StartDate.Date).TotalDays >= 1)
                 {
-                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + roomGroup.LatestTime.ToString("h:mm tt"));
+                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + area.LatestTime.ToString("h:mm tt"));
                 }
             }
 
             // Get the RoomBooking to update
             var roomBookingToUpdate = await _context.RoomBookings
-                .Include(r => r.Room).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.Room).ThenInclude(r => r.Area)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(p => p.ID == id);
 
@@ -1021,9 +1021,9 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             // Get names of approvers for this Area and disable Approval Status selection for non-approvers
-            var approverUsernames = _context.RoomGroupApprovers
+            var approverUsernames = _context.AreaApprovers
                 .Include(r => r.User)
-                .Where(r => r.RoomGroupID == roomBookingToUpdate.Room.RoomGroupID)
+                .Where(r => r.AreaID == roomBookingToUpdate.Room.AreaID)
                 .Select(r => r.User.Username);
             if ((!approverUsernames.Contains(User.Identity.Name) && !User.IsInRole("Top-level Admin")) || roomBookingToUpdate.ApprovalStatus == "Approved")
             {
@@ -1099,10 +1099,10 @@ namespace BRTF_Room_Booking_App.Controllers
 
                     // Get User's pre-existing booked time in this Area
                     var thisRoom = _context.Rooms.Where(r => r.ID == roomBookingToUpdate.RoomID).FirstOrDefault();
-                    var thisArea = _context.RoomGroups.Where(r => r.ID == thisRoom.RoomGroupID).FirstOrDefault();
+                    var thisArea = _context.Areas.Where(r => r.ID == thisRoom.AreaID).FirstOrDefault();
                     var existingBookingsForThisArea = _context.RoomBookings.Include(b => b.Room)
                         .Where(b => (b.UserID == roomBookingToUpdate.UserID)
-                               && (b.Room.RoomGroupID == thisArea.ID)
+                               && (b.Room.AreaID == thisArea.ID)
                                && (b.EndDate >= DateTime.Today)
                                && (b.ApprovalStatus == "Approved" || b.ApprovalStatus == "Pending")
                                && (b.ID != roomBookingToUpdate.ID) /* Exclude this updated booking from the query, since we will compare using local variables */
@@ -1296,8 +1296,8 @@ namespace BRTF_Room_Booking_App.Controllers
                     }
                 }
             }
-            ViewData["RoomGroupID"] = PermittedRoomGroupSelectList(RoomGroupID);
-            ViewData["RoomID"] = RoomSelectList(RoomGroupID, roomBookingToUpdate.RoomID);
+            ViewData["AreaID"] = PermittedAreaSelectList(AreaID);
+            ViewData["RoomID"] = RoomSelectList(AreaID, roomBookingToUpdate.RoomID);
             PopulateDropDownLists(roomBookingToUpdate);
             return View(roomBookingToUpdate);
         }
@@ -1314,7 +1314,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var roomBooking = await _context.RoomBookings
-                .Include(r => r.Room).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.Room).ThenInclude(r => r.Area)
                 .Include(r => r.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
@@ -1332,8 +1332,8 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
             }
 
-            ViewData["RoomGroupID"] = RoomGroupSelectList(roomBooking.Room.RoomGroupID);
-            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.RoomGroupID, roomBooking.RoomID);
+            ViewData["AreaID"] = AreaSelectList(roomBooking.Room.AreaID);
+            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.AreaID, roomBooking.RoomID);
             PopulateDropDownLists(roomBooking);
             return View(roomBooking);
         }
@@ -1347,7 +1347,7 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewDataReturnURL();
 
             var roomBooking = await _context.RoomBookings
-                .Include(r => r.Room).ThenInclude(r => r.RoomGroup)
+                .Include(r => r.Room).ThenInclude(r => r.Area)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(m => m.ID == id);
 
@@ -1389,8 +1389,8 @@ namespace BRTF_Room_Booking_App.Controllers
                 //Note: there is really no reason a delete should fail if you can "talk" to the database.
                 ModelState.AddModelError("", "Unable to delete. Try again, and if the problem persists, see your system administrator.");
             }
-            ViewData["RoomGroupID"] = RoomGroupSelectList(roomBooking.Room.RoomGroupID);
-            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.RoomGroupID, roomBooking.RoomID);
+            ViewData["AreaID"] = AreaSelectList(roomBooking.Room.AreaID);
+            ViewData["RoomID"] = RoomSelectList(roomBooking.Room.AreaID, roomBooking.RoomID);
             PopulateDropDownLists(roomBooking);
             return View(roomBooking);
         }
@@ -1404,7 +1404,7 @@ namespace BRTF_Room_Booking_App.Controllers
         [HttpGet]
         public JsonResult GetArea(int? ID)
         {
-            var area = _context.RoomGroups.Where(r => r.ID == ID.GetValueOrDefault()).FirstOrDefault();
+            var area = _context.Areas.Where(r => r.ID == ID.GetValueOrDefault()).FirstOrDefault();
             return Json(area);
         }
 
@@ -1412,13 +1412,13 @@ namespace BRTF_Room_Booking_App.Controllers
         public JsonResult GetDurations(int? ID, string selectedValue)
         {
             // Get values from database (substitute nulls with Max Int32)
-            RoomGroup roomGroup = _context.RoomGroups.Where(r => r.ID == ID.GetValueOrDefault()).FirstOrDefault();
-            int roomGroupMaxHours = Math.Min((roomGroup.MaxHoursPerSingleBooking.GetValueOrDefault() == 0) ? Int32.MaxValue : roomGroup.MaxHoursPerSingleBooking.GetValueOrDefault(),
-                (roomGroup.MaxHoursTotal.GetValueOrDefault() == 0) ? Int32.MaxValue : roomGroup.MaxHoursTotal.GetValueOrDefault());
-            int roomsMaxHours = _context.Rooms.Where(r => r.RoomGroupID == ID.GetValueOrDefault()).Select(r => r.RoomMaxHoursTotal).Min().GetValueOrDefault();
+            Area area = _context.Areas.Where(r => r.ID == ID.GetValueOrDefault()).FirstOrDefault();
+            int areaMaxHours = Math.Min((area.MaxHoursPerSingleBooking.GetValueOrDefault() == 0) ? Int32.MaxValue : area.MaxHoursPerSingleBooking.GetValueOrDefault(),
+                (area.MaxHoursTotal.GetValueOrDefault() == 0) ? Int32.MaxValue : area.MaxHoursTotal.GetValueOrDefault());
+            int roomsMaxHours = _context.Rooms.Where(r => r.AreaID == ID.GetValueOrDefault()).Select(r => r.RoomMaxHoursTotal).Min().GetValueOrDefault();
 
             // Determine highest duration as the lowest of these values (substitute nulls with Max Int32)
-            int overallMaxDuration = Math.Min((roomGroupMaxHours == 0) ? Int32.MaxValue : roomGroupMaxHours,
+            int overallMaxDuration = Math.Min((areaMaxHours == 0) ? Int32.MaxValue : areaMaxHours,
                 (roomsMaxHours == 0) ? Int32.MaxValue : roomsMaxHours);
 
             // Manually generate SelectList
@@ -1504,15 +1504,15 @@ namespace BRTF_Room_Booking_App.Controllers
                     || (RepeatType == "Days"))  // Generate booking if the RepeatType is Days, since it includes all days of the week
                 {
                     // Get Room data
-                    var thisRoom = _context.Rooms.Include(r => r.RoomGroup).Where(r => r.ID == RoomID).FirstOrDefault();
+                    var thisRoom = _context.Rooms.Include(r => r.Area).Where(r => r.ID == RoomID).FirstOrDefault();
 
                     // Auto-approve bookings made by Users possessing approval permissions or bookins in areas that don't require approval
                     string approvalString = "Pending";
-                    var approverUsernames = _context.RoomGroupApprovers // Get names of approvers for this Area
+                    var approverUsernames = _context.AreaApprovers // Get names of approvers for this Area
                         .Include(r => r.User)
-                        .Where(r => r.RoomGroupID == thisRoom.RoomGroupID)
+                        .Where(r => r.AreaID == thisRoom.AreaID)
                         .Select(r => r.User.Username);
-                    if (approverUsernames.Contains(User.Identity.Name) || User.IsInRole("Top-level Admin") || thisRoom.RoomGroup.NeedsApproval == false)
+                    if (approverUsernames.Contains(User.Identity.Name) || User.IsInRole("Top-level Admin") || thisRoom.Area.NeedsApproval == false)
                     {
                         approvalString = "Approved";
                     }
@@ -1554,7 +1554,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     }
 
                     // Check if the length of time for a single Booking was exceeded
-                    var thisArea = _context.RoomGroups.Where(r => r.ID == newBooking.Room.RoomGroupID).FirstOrDefault();
+                    var thisArea = _context.Areas.Where(r => r.ID == newBooking.Room.AreaID).FirstOrDefault();
                     if (thisArea.MaxHoursPerSingleBooking != null)
                     {
                         if (duration.TotalHours > thisArea.MaxHoursPerSingleBooking)
@@ -1615,10 +1615,10 @@ namespace BRTF_Room_Booking_App.Controllers
             return overallNewBookingsToAdd;   // Return list of generated bookings
         }
 
-        private void PopulateSelectedRoomData(int? RoomGroupID = null, string[] selectedOptions = null)
+        private void PopulateSelectedRoomData(int? AreaID = null, string[] selectedOptions = null)
         {
             // Get all Rooms within this area
-            var allOptions = _context.Rooms.Where(r => r.RoomGroupID == RoomGroupID.GetValueOrDefault() && r.Enabled == true);
+            var allOptions = _context.Rooms.Where(r => r.AreaID == AreaID.GetValueOrDefault() && r.Enabled == true);
 
             // Remember which options were selected so we can re-select them
             int[] currentOptionsHS = new int[0];
@@ -1687,13 +1687,13 @@ namespace BRTF_Room_Booking_App.Controllers
 
             return new SelectList(repeatTypes, "Value", "Text", selectedId);
         }
-        private SelectList RoomGroupSelectList(int? selectedId = null)
+        private SelectList AreaSelectList(int? selectedId = null)
         {
-            return new SelectList(_context.RoomGroups
+            return new SelectList(_context.Areas
                 .Where(d => d.Enabled == true)
                 .OrderBy(d => d.AreaName), "ID", "AreaName", selectedId);
         }
-        private SelectList PermittedRoomGroupSelectList(int? selectedId = null)
+        private SelectList PermittedAreaSelectList(int? selectedId = null)
         {
             string loggedInUsername = User.Identity.Name;   // Get logged-in User's name
 
@@ -1704,17 +1704,17 @@ namespace BRTF_Room_Booking_App.Controllers
 
             bool loggedInUserIsAdmin = User.IsInRole("Top-level Admin") || User.IsInRole("Admin");  // Determine whether logged-in User as an Admin
 
-            return new SelectList(_context.RoomGroups
+            return new SelectList(_context.Areas
                 .Include(r => r.RoomUserGroupPermissions)
                 .Where(r => (r.Enabled == true) /* Only show Enabled Areas */
                          && (r.RoomUserGroupPermissions.Where(p => p.UserGroupID == loggedInUserGroupID).Count() > 0 /* Don't show Areas that a permission for the logged-in User's Group doesn't exist */
                           || loggedInUserIsAdmin /* Show Areas regardless of permission if the User is an Admin */))
                 .OrderBy(r => r.AreaName), "ID", "AreaName", selectedId);
         }
-        private SelectList RoomSelectList(int? RoomGroupID = null, int? selectedId = null)
+        private SelectList RoomSelectList(int? AreaID = null, int? selectedId = null)
         {
-            var query = from c in _context.Rooms.Include(c => c.RoomGroup)
-                        where c.RoomGroupID == RoomGroupID.GetValueOrDefault() && c.Enabled == true
+            var query = from c in _context.Rooms.Include(c => c.Area)
+                        where c.AreaID == AreaID.GetValueOrDefault() && c.Enabled == true
                         select c;
             return new SelectList(query.OrderBy(p => p.RoomName), "ID", "RoomName", selectedId);
         }
@@ -1735,14 +1735,14 @@ namespace BRTF_Room_Booking_App.Controllers
         {
             var rooms = bookings
                 .Include(r => r.Room)
-                .ThenInclude(r => r.RoomGroup)
+                .ThenInclude(r => r.Area)
                 .Select(r => r.Room)
                 .Distinct();
 
             if (!filtered)
             {
                 rooms = from r in _context.Rooms
-                        .Include(r => r.RoomGroup)
+                        .Include(r => r.Area)
                         select r;
             }
 
@@ -1750,7 +1750,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             foreach (Room r in rooms)
             {
-                roomList.Add(new RoomJSON { id = r.ID, building = r.RoomGroup.AreaName, title = r.RoomName });
+                roomList.Add(new RoomJSON { id = r.ID, building = r.Area.AreaName, title = r.RoomName });
             }
 
             ViewData["RoomList"] = JsonConvert.SerializeObject(roomList);
@@ -1812,7 +1812,7 @@ namespace BRTF_Room_Booking_App.Controllers
         private bool BookingViolatesBlackoutTime(RoomBooking newBooking, out RoomBooking conflictBooking, int bookingIdToIgnore = -1)
         {
             // Look up this area's blackout time
-            int blackoutTimeForThisArea = _context.RoomGroups.Where(r => r.ID == newBooking.Room.RoomGroupID).Select(r => r.BlackoutTime).FirstOrDefault();
+            int blackoutTimeForThisArea = _context.Areas.Where(r => r.ID == newBooking.Room.AreaID).Select(r => r.BlackoutTime).FirstOrDefault();
 
             // There is no need to compare Bookings if the blackout time is zero
             if (blackoutTimeForThisArea <= 0)

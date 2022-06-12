@@ -36,7 +36,7 @@
                     <div class="card-body">
                         <div class="media-body ml-2 mb-3">
                             <div class="card-text mb-3"><strong>Room: </strong>@Html.DisplayFor(model => model.RoomName) </div>
-                            <div class="card-text mb-3"><strong>Area: </strong>@Html.DisplayFor(model => model.RoomGroup.AreaName) </div>
+                            <div class="card-text mb-3"><strong>Area: </strong>@Html.DisplayFor(model => model.Area.AreaName) </div>
                             <div class="card-text mb-3"><strong>Maximum Total Hours That Can Be Booked in This Room: </strong>@Html.DisplayFor(model => model.RoomMaxHoursTotal) </div>
                             <div class="card-text">
                                 <strong>Is Enabled: </strong>
@@ -78,10 +78,10 @@
                     </div>
                     <div class="row">
                         <div class="col-6 text-right py-2">
-                            <label asp-for="RoomGroupID" class="label">Area</label>
+                            <label asp-for="AreaID" class="label">Area</label>
                         </div>
                         <div class="col-6 py-2">
-                            @Html.DisplayFor(model => model.RoomGroup.AreaName)
+                            @Html.DisplayFor(model => model.Area.AreaName)
                         </div>
                     </div>
                     <div class="row">

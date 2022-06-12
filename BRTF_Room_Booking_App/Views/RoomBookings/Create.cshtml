@@ -607,8 +607,8 @@
                         </div>
 
                         <div class="form-group text-left">
-                            <label for="RoomGroupID" class="label"><strong>Area *</strong></label>
-                            <select id="RoomGroupID" name="RoomGroupID" class="form-control" asp-items="ViewBag.RoomGroupID"></select>
+                            <label for="AreaID" class="label"><strong>Area *</strong></label>
+                            <select id="AreaID" name="AreaID" class="form-control" asp-items="ViewBag.AreaID"></select>
                         </div>
 
                         <div id="areaDescription" class="alert alert-dark" role="alert">
@@ -869,9 +869,9 @@
 
         // Refresh DDL of time durations when duration selection control is clicked
         $('#durationPicker').click(function () {
-            var selectedRoomGroup = $("#RoomGroupID").val();
+            var selectedArea = $("#AreaID").val();
             var selectedDuration = $("#durationPicker").val();
-            var URL = "/RoomBookings/GetDurations/?ID=" + selectedRoomGroup + "&selectedValue=" + selectedDuration;
+            var URL = "/RoomBookings/GetDurations/?ID=" + selectedArea + "&selectedValue=" + selectedDuration;
             refreshDDL('durationPicker', URL);
             if (selectedDuration == null || selectedDuration.length() == 0) {
                 $("#durationPicker").val($("#durationPicker option:first").val());
@@ -881,15 +881,15 @@
     </script>
     <script type="text/javascript">
         // Refresh User DDL of available rooms when Area is changed
-        $('#RoomGroupID').change(function () {
-            var selectedRoomGroup = $("#RoomGroupID").val();
-            var URL = "/RoomBookings/GetRooms/" + selectedRoomGroup;
+        $('#AreaID').change(function () {
+            var selectedArea = $("#AreaID").val();
+            var URL = "/RoomBookings/GetRooms/" + selectedArea;
             refreshDDL('RoomID', URL, true, "There are no Rooms available in this Area.", true, "-Select a Room-", true);
         });
         // Refresh Admin Listbox of available rooms when Area is changed
-        $('#RoomGroupID').change(function () {
-            var selectedRoomGroup = $("#RoomGroupID").val();
-            var URL = "/RoomBookings/GetRooms/" + selectedRoomGroup;
+        $('#AreaID').change(function () {
+            var selectedArea = $("#AreaID").val();
+            var URL = "/RoomBookings/GetRooms/" + selectedArea;
             $("#selectedOptions").empty();  // Empty previously selected rooms because the area changed
             refreshListbox('availOptions', URL, true, 'There are no Rooms available in this Area.', true);
             $("#selectedOptions").fadeToggle(400, function () {
@@ -900,8 +900,8 @@
     <script type="text/javascript">
         // Load initial Area description when page loads
         $('document').ready(function () {
-            var selectedRoomGroup = $("#RoomGroupID").val();
-            var URL = "/RoomBookings/GetArea/" + selectedRoomGroup;
+            var selectedArea = $("#AreaID").val();
+            var URL = "/RoomBookings/GetArea/" + selectedArea;
             $.getJSON(URL, function (data) {
                 if (data !== null && !jQuery.isEmptyObject(data)) {
                     $("#areaDescription_Title").text(data.areaName);
@@ -913,9 +913,9 @@
             });
         });
         // Refresh Area description when Area is changed
-        $('#RoomGroupID').change(function () {
-            var selectedRoomGroup = $("#RoomGroupID").val();
-            var URL = "/RoomBookings/GetArea/" + selectedRoomGroup;
+        $('#AreaID').change(function () {
+            var selectedArea = $("#AreaID").val();
+            var URL = "/RoomBookings/GetArea/" + selectedArea;
             $.getJSON(URL, function (data) {
                 if (data !== null && !jQuery.isEmptyObject(data)) {
                     $("#areaDescription_Title").text(data.areaName);

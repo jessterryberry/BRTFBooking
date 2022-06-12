@@ -10,7 +10,7 @@ namespace BRTF_Room_Booking_App.Models
     {
         //public User()
         //{
-        //    this.RoomGroupApprovers = new HashSet<RoomGroupApprover>();
+        //    this.AreaApprovers = new HashSet<AreaApprover>();
         //}
 
         public int ID { get; set; }
@@ -68,6 +68,6 @@ namespace BRTF_Room_Booking_App.Models
         public TermAndProgram TermAndProgram { get; set; }
         
         [Display(Name = "Areas this user is allowed to approve Bookings in.")]
-        public ICollection<RoomGroupApprover> RoomGroupApprovers { get; set; }
+        public ICollection<AreaApprover> AreaApprovers { get; set; }
     }
 }

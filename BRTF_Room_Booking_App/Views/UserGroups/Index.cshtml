@@ -86,10 +86,10 @@
                                         <div class="card-body">
                                             <div class="media-body ml-2">
                                                 <p class="card-text">
-                                                    <strong>Room Group Permissions:</strong> <br />
+                                                    <strong>Area Permissions:</strong> <br />
                                                     @foreach (var r in item.RoomUserGroupPermissions)
                                                     {
-                                                        @r.RoomGroup.AreaName <br />
+                                                        @r.Area.AreaName <br />
                                                     }<br />
                                                 </p>
 
@@ -118,7 +118,7 @@
                                     <input type="submit" name="actionButton" value="User Group" class="btn btn-link" style="font-weight:700" />
                                 </th>
                                 <th>
-                                    <input type="submit" disabled="disabled" value="Room Group Permissions" class="btn btn-link" style="font-weight:700" />
+                                    <input type="submit" disabled="disabled" value="Area Permissions" class="btn btn-link" style="font-weight:700" />
                                 </th>
                                 <th></th>
                                 <th></th>
@@ -134,7 +134,7 @@
                                     <td>
                                         @foreach (var r in item.RoomUserGroupPermissions)
                                         {
-                                            @r.RoomGroup.AreaName <br />
+                                            @r.Area.AreaName <br />
                                         }
                                     </td>
                                     <td>

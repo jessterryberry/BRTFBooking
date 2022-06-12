@@ -41,8 +41,8 @@
                                     @Html.TextBox("SearchRoom", null, new { @class = "form-control" })
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label class="control-label">Search by Room Group:</label>
-                                    @Html.DropDownList("RoomGroupID", null, "All Room Groups", htmlAttributes: new { @class = "form-control" })
+                                    <label class="control-label">Search by Area:</label>
+                                    @Html.DropDownList("AreaID", null, "All Areas", htmlAttributes: new { @class = "form-control" })
                                 </div>
                             </div>
                             <div class="row">
@@ -70,7 +70,7 @@
                     @Html.DisplayNameFor(model => model.RoomName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.RoomGroup)
+                    @Html.DisplayNameFor(model => model.Area)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.NumberOfAppointments)
@@ -89,7 +89,7 @@
                         @Html.DisplayFor(modelItem => item.RoomName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RoomGroup)
+                        @Html.DisplayFor(modelItem => item.Area)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NumberOfAppointments)

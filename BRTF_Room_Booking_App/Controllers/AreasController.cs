@@ -15,19 +15,19 @@ using BRTF_Room_Booking_App.ViewModels;
 namespace BRTF_Room_Booking_App.Controllers
 {
     [Authorize(Roles = "Top-level Admin, Admin")]
-    public class RoomGroupsController : Controller
+    public class AreasController : Controller
     {
         private readonly BTRFRoomBookingContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public RoomGroupsController(BTRFRoomBookingContext context, UserManager<IdentityUser> userManager)
+        public AreasController(BTRFRoomBookingContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
 
-        // GET: RoomGroups
+        // GET: Areas
         public async Task<IActionResult> Index(string SearchName, string sortFieldID, string sortDirectionCheck, int? page, int? pageSizeID,
             string actionButton, string sortDirection = "asc", string sortField = "Is Enabled", string EnabledFilterString = "All")
         {
@@ -41,7 +41,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             PopulateDropDownLists(); //data for User Filter DDL
 
-            var roomGroups = from u in _context.RoomGroups.Where(u =>
+            var areas = from u in _context.Areas.Where(u =>
             (u.Enabled == true && EnabledFilterString == "True") || (u.Enabled == false && EnabledFilterString == "False") || (EnabledFilterString == "All"))
                              select u;
 
@@ -52,7 +52,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             if (!String.IsNullOrEmpty(SearchName))
             {
-                roomGroups = roomGroups.Where(r => r.AreaName.ToUpper().Contains(SearchName.ToUpper()));
+                areas = areas.Where(r => r.AreaName.ToUpper().Contains(SearchName.ToUpper()));
                 ViewData["Filtering"] = "btn-danger";
             }
 
@@ -78,12 +78,12 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (sortDirection == "asc")
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderBy(r => r.AreaName);
                 }
                 else
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderByDescending(r => r.AreaName);
                 }
             }
@@ -91,12 +91,12 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (sortDirection == "asc")
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderBy(r => r.NeedsApproval);
                 }
                 else
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderByDescending(r => r.NeedsApproval);
                 }
             }
@@ -104,12 +104,12 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (sortDirection == "asc")
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderByDescending(r => r.Enabled);
                 }
                 else
                 {
-                    roomGroups = roomGroups
+                    areas = areas
                         .OrderBy(r => r.Enabled);
                 }
             }
@@ -123,13 +123,13 @@ namespace BRTF_Room_Booking_App.Controllers
             int pageSize = PageSizeHelper.SetPageSize(HttpContext, pageSizeID, ControllerName());
             ViewData["pageSizeID"] = PageSizeHelper.PageSizeList(pageSize);
 
-            var pagedData = await PaginatedList<RoomGroup>.CreateAsync(roomGroups.AsNoTracking(), page ?? 1, pageSize);
+            var pagedData = await PaginatedList<Area>.CreateAsync(areas.AsNoTracking(), page ?? 1, pageSize);
 
             return View(pagedData);
         }
 
 
-        // GET: RoomGroups/Details/5
+        // GET: Areas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             //URL with the last filter, sort and page parameters for this controller
@@ -140,38 +140,38 @@ namespace BRTF_Room_Booking_App.Controllers
                 return NotFound();
             }
 
-            var roomGroup = await _context.RoomGroups
-                .Include(r => r.RoomGroupApprovers)
+            var area = await _context.Areas
+                .Include(r => r.AreaApprovers)
                 .ThenInclude(r => r.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
-            if (roomGroup == null)
+            if (area == null)
             {
                 return NotFound();
             }
 
-            return View(roomGroup);
+            return View(area);
         }
 
-        // GET: RoomGroups/Create
+        // GET: Areas/Create
         [Authorize(Roles = "Top-level Admin")]
         public IActionResult Create()
         {
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
 
-            RoomGroup roomGroup = new RoomGroup();
-            PopulateAdminList(roomGroup);
-            return View(roomGroup);
+            Area area = new Area();
+            PopulateAdminList(area);
+            return View(area);
         }
 
-        // POST: RoomGroups/Create
+        // POST: Areas/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize(Roles = "Top-level Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,AreaName,Description,BlackoutTime,MaxHoursPerSingleBooking,MaxHoursTotal,MaxNumberOfBookings,EarliestTime,LatestTime,Enabled,NeedsApproval")] RoomGroup roomGroup, string[] selectedOptions)
+        public async Task<IActionResult> Create([Bind("ID,AreaName,Description,BlackoutTime,MaxHoursPerSingleBooking,MaxHoursTotal,MaxNumberOfBookings,EarliestTime,LatestTime,Enabled,NeedsApproval")] Area area, string[] selectedOptions)
         {
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
@@ -185,35 +185,35 @@ namespace BRTF_Room_Booking_App.Controllers
                         foreach (string s in selectedOptions)
                         {
                             User approver = _context.Users.Where(u => u.ID == Int32.Parse(s)).FirstOrDefault();
-                            roomGroup.RoomGroupApprovers.Add(new RoomGroupApprover
+                            area.AreaApprovers.Add(new AreaApprover
                             {
                                 UserID = approver.ID,
-                                RoomGroupID = roomGroup.ID
+                                AreaID = area.ID
                             });
                         }
                     }
-                    _context.Add(roomGroup);
+                    _context.Add(area);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Room Group created successfully!";
+                    TempData["Message"] = "Area created successfully!";
                     return RedirectToAction("Index");
                 }
             }
             catch (DbUpdateException dex)
             {
-                if (dex.GetBaseException().Message.Contains("UNIQUE constraint failed: RoomGroups.AreaName"))
+                if (dex.GetBaseException().Message.Contains("UNIQUE constraint failed: Areas.AreaName"))
                 {
-                    ModelState.AddModelError("AreaName", "Unable to save changes. A Room Group with this Name already exists.");
+                    ModelState.AddModelError("AreaName", "Unable to save changes. A Area with this Name already exists.");
                 }
                 else
                 {
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            PopulateAdminList(roomGroup);
-            return View(roomGroup);
+            PopulateAdminList(area);
+            return View(area);
         }
 
-        // GET: RoomGroups/Edit/5
+        // GET: Areas/Edit/5
         [Authorize(Roles = "Top-level Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -225,24 +225,24 @@ namespace BRTF_Room_Booking_App.Controllers
                 return NotFound();
             }
 
-            var roomGroup = await _context.RoomGroups
-                .Include(r => r.RoomGroupApprovers)
+            var area = await _context.Areas
+                .Include(r => r.AreaApprovers)
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(r => r.ID == id);
 
-            if (roomGroup == null)
+            if (area == null)
             {
                 return NotFound();
             }
             
-            ViewData["collapseApprovers"] = roomGroup.NeedsApproval ? " show " : "";
-            ViewData["collapseTimeRestrictions"] = roomGroup.TimeOfDayRestrictions ? " show " : "";
+            ViewData["collapseApprovers"] = area.NeedsApproval ? " show " : "";
+            ViewData["collapseTimeRestrictions"] = area.TimeOfDayRestrictions ? " show " : "";
 
-            PopulateAdminList(roomGroup);
-            return View(roomGroup);
+            PopulateAdminList(area);
+            return View(area);
         }
 
-        // POST: RoomGroups/Edit/5
+        // POST: Areas/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize(Roles = "Top-level Admin")]
@@ -253,19 +253,19 @@ namespace BRTF_Room_Booking_App.Controllers
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
 
-            var roomGroupToUpdate = await _context.RoomGroups
-                .Include(r => r.RoomGroupApprovers)
+            var areaToUpdate = await _context.Areas
+                .Include(r => r.AreaApprovers)
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(r => r.ID == id);
 
-            if (roomGroupToUpdate == null)
+            if (areaToUpdate == null)
             {
                 return NotFound();
             }
 
-            UpdateRoomGroupApprovers(selectedOptions, roomGroupToUpdate);
+            UpdateAreaApprovers(selectedOptions, areaToUpdate);
 
-            if (await TryUpdateModelAsync<RoomGroup>(roomGroupToUpdate, "",
+            if (await TryUpdateModelAsync<Area>(areaToUpdate, "",
                 r => r.AreaName, r => r.Description, r => r.BlackoutTime,
                 r => r.MaxHoursPerSingleBooking, r => r.MaxHoursTotal,
                 r => r.MaxNumberOfBookings, r => r.TimeOfDayRestrictions, r => r.EarliestTime, r => r.LatestTime,
@@ -274,12 +274,12 @@ namespace BRTF_Room_Booking_App.Controllers
                 try
                 {
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Room Group edited successfully!";
-                    return RedirectToAction("Details", new { roomGroupToUpdate.ID });
+                    TempData["Message"] = "Area edited successfully!";
+                    return RedirectToAction("Details", new { areaToUpdate.ID });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RoomGroupExists(roomGroupToUpdate.ID))
+                    if (!AreaExists(areaToUpdate.ID))
                     {
                         return NotFound();
                     }
@@ -290,7 +290,7 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
                 catch (DbUpdateException dex)
                 {
-                    if (dex.GetBaseException().Message.Contains("UNIQUE constraint failed: RoomGroups.AreaName"))
+                    if (dex.GetBaseException().Message.Contains("UNIQUE constraint failed: Areas.AreaName"))
                     {
                         ModelState.AddModelError("AreaName", "Unable to save changes. An area with this Name already exists.");
                     }
@@ -300,12 +300,12 @@ namespace BRTF_Room_Booking_App.Controllers
                     }
                 }
             }
-            PopulateAdminList(roomGroupToUpdate);
-            return View(roomGroupToUpdate);
+            PopulateAdminList(areaToUpdate);
+            return View(areaToUpdate);
 
         }
 
-        // GET: RoomGroups/Delete/5
+        // GET: Areas/Delete/5
         [Authorize(Roles = "Top-level Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -317,20 +317,20 @@ namespace BRTF_Room_Booking_App.Controllers
                 return NotFound();
             }
 
-            var roomGroup = await _context.RoomGroups
-                .Include(r => r.RoomGroupApprovers)
+            var area = await _context.Areas
+                .Include(r => r.AreaApprovers)
                 .ThenInclude(r => r.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
-            if (roomGroup == null)
+            if (area == null)
             {
                 return NotFound();
             }
 
-            return View(roomGroup);
+            return View(area);
         }
 
-        // POST: RoomGroups/Delete/5
+        // POST: Areas/Delete/5
         [Authorize(Roles = "Top-level Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -339,43 +339,43 @@ namespace BRTF_Room_Booking_App.Controllers
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
 
-            var roomGroup = await _context.RoomGroups.FindAsync(id);
+            var area = await _context.Areas.FindAsync(id);
             try
             {
-                _context.RoomGroups.Remove(roomGroup);
+                _context.Areas.Remove(area);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Room Group deleted successfully!";
+                TempData["Message"] = "Area deleted successfully!";
                 return Redirect(ViewData["returnURL"].ToString());
             }
             catch (DbUpdateException dex)
             {
                 if (dex.GetBaseException().Message.Contains("FOREIGN KEY constraint failed"))
                 {
-                    ModelState.AddModelError("", "Unable to delete. You cannot delete a Room Group that has Rooms assigned.");
+                    ModelState.AddModelError("", "Unable to delete. You cannot delete a Area that has Rooms assigned.");
                 }
                 else
                 {
                     ModelState.AddModelError("", "Unable to delete. Try again, and if the problem persists, see your system administrator.");
                 }
             }
-            return View(roomGroup);
+            return View(area);
         }
         private SelectList EnabledSelectList(int? selectedId)
         {
-            return new SelectList(_context.RoomGroups
+            return new SelectList(_context.Areas
                 .OrderBy(u => u.Enabled), "ID", "Enabled", selectedId);
         }
 
-        private void PopulateDropDownLists(RoomGroup roomGroup = null)
+        private void PopulateDropDownLists(Area area = null)
         {
-            ViewData["Enabled"] = EnabledSelectList(roomGroup?.ID);
+            ViewData["Enabled"] = EnabledSelectList(area?.ID);
         }
 
-        private void PopulateAdminList(RoomGroup roomGroup)
+        private void PopulateAdminList(Area area)
         {
             var allUsers = _context.Users;
             var allAdmins = new HashSet<User>();
-            var currentOptionsHS = new HashSet<int>(roomGroup.RoomGroupApprovers.Select(b => b.UserID));
+            var currentOptionsHS = new HashSet<int>(area.AreaApprovers.Select(b => b.UserID));
 
             var selected = new List<ListOptionVM>();
             var available = new List<ListOptionVM>();
@@ -415,17 +415,17 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["availOpts"] = new MultiSelectList(available.OrderBy(s => s.DisplayText), "ID", "DisplayText");
         }
 
-        //Update the Room Group's assigned Approvers
-        private void UpdateRoomGroupApprovers(string[] selectedOptions, RoomGroup roomGroupToUpdate)
+        //Update the Area's assigned Approvers
+        private void UpdateAreaApprovers(string[] selectedOptions, Area areaToUpdate)
         {
             if (selectedOptions == null)
             {
-                roomGroupToUpdate.RoomGroupApprovers = new List<RoomGroupApprover>();
+                areaToUpdate.AreaApprovers = new List<AreaApprover>();
                 return;
             }
 
             var selectedOptionsHS = new HashSet<string>(selectedOptions);
-            var currentOptionsHS = new HashSet<int>(roomGroupToUpdate.RoomGroupApprovers.Select(b => b.UserID));
+            var currentOptionsHS = new HashSet<int>(areaToUpdate.AreaApprovers.Select(b => b.UserID));
 
             foreach (var u in _context.Users)
             {
@@ -433,10 +433,10 @@ namespace BRTF_Room_Booking_App.Controllers
                 {
                     if (!currentOptionsHS.Contains(u.ID)) //add if not in the Usergroup's collection
                     {
-                        roomGroupToUpdate.RoomGroupApprovers.Add(new RoomGroupApprover
+                        areaToUpdate.AreaApprovers.Add(new AreaApprover
                         {
                             UserID = u.ID,
-                            RoomGroupID = roomGroupToUpdate.ID
+                            AreaID = areaToUpdate.ID
                         });
                     }
                 }
@@ -444,7 +444,7 @@ namespace BRTF_Room_Booking_App.Controllers
                 {
                     if (currentOptionsHS.Contains(u.ID))//remove if currently in the UserGroup's collection
                     {
-                        RoomGroupApprover approverToRemove = roomGroupToUpdate.RoomGroupApprovers.FirstOrDefault(d => d.UserID == u.ID);
+                        AreaApprover approverToRemove = areaToUpdate.AreaApprovers.FirstOrDefault(d => d.UserID == u.ID);
                         _context.Remove(approverToRemove);
                     }
                 }
@@ -461,9 +461,9 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["returnURL"] = MaintainURL.ReturnURL(HttpContext, ControllerName());
         }
 
-        private bool RoomGroupExists(int id)
+        private bool AreaExists(int id)
         {
-            return _context.RoomGroups.Any(e => e.ID == id);
+            return _context.Areas.Any(e => e.ID == id);
         }
     }
 }

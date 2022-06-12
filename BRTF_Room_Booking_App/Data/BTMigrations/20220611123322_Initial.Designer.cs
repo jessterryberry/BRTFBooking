@@ -9,111 +9,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BRTF_Room_Booking_App.Data.BTMigrations
 {
     [DbContext(typeof(BTRFRoomBookingContext))]
-    [Migration("20220409154345_Initial")]
+    [Migration("20220611123322_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.22");
+                .HasAnnotation("ProductVersion", "3.1.23");
 
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.GlobalSetting", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("EmailBookingNotificationsOverride")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("EmailCancelNotificationsOverride")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndOfTermDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("LatestAllowableFutureBookingDay")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("PreventBookingNotificationsOverride")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("PreventCancelNotificationsOverride")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartOfTermDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("GlobalSettings");
-                });
-
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.Room", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RoomGroupID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("RoomMaxHoursTotal")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("RoomName")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(50);
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RoomGroupID", "RoomName")
-                        .IsUnique();
-
-                    b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomBooking", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ApprovalStatus")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RoomID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("SpecialNotes")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(1000);
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RoomID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("RoomBookings");
-                });
-
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomGroup", b =>
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.Area", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -160,22 +65,117 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                     b.HasIndex("AreaName")
                         .IsUnique();
 
-                    b.ToTable("RoomGroups");
+                    b.ToTable("Areas");
                 });
 
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomGroupApprover", b =>
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.AreaApprover", b =>
                 {
-                    b.Property<int>("RoomGroupID")
+                    b.Property<int>("AreaID")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("UserID")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("RoomGroupID", "UserID");
+                    b.HasKey("AreaID", "UserID");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RoomGroupApprovers");
+                    b.ToTable("AreaApprovers");
+                });
+
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.GlobalSetting", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("EmailBookingNotificationsOverride")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("EmailCancelNotificationsOverride")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndOfTermDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LatestAllowableFutureBookingDay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PreventBookingNotificationsOverride")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PreventCancelNotificationsOverride")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartOfTermDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("GlobalSettings");
+                });
+
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.Room", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AreaID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RoomMaxHoursTotal")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RoomName")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(50);
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AreaID", "RoomName")
+                        .IsUnique();
+
+                    b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomBooking", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ApprovalStatus")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RoomID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SpecialNotes")
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(1000);
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("RoomID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("RoomBookings");
                 });
 
             modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomUserGroupPermission", b =>
@@ -183,12 +183,12 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                     b.Property<int>("UserGroupID")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("RoomGroupID")
+                    b.Property<int>("AreaID")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("UserGroupID", "RoomGroupID");
+                    b.HasKey("UserGroupID", "AreaID");
 
-                    b.HasIndex("RoomGroupID");
+                    b.HasIndex("AreaID");
 
                     b.ToTable("RoomUserGroupPermissions");
                 });
@@ -296,11 +296,26 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                     b.ToTable("UserGroups");
                 });
 
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.AreaApprover", b =>
+                {
+                    b.HasOne("BRTF_Room_Booking_App.Models.Area", "Area")
+                        .WithMany("AreaApprovers")
+                        .HasForeignKey("AreaID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BRTF_Room_Booking_App.Models.User", "User")
+                        .WithMany("AreaApprovers")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BRTF_Room_Booking_App.Models.Room", b =>
                 {
-                    b.HasOne("BRTF_Room_Booking_App.Models.RoomGroup", "RoomGroup")
+                    b.HasOne("BRTF_Room_Booking_App.Models.Area", "Area")
                         .WithMany("Rooms")
-                        .HasForeignKey("RoomGroupID")
+                        .HasForeignKey("AreaID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -320,26 +335,11 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomGroupApprover", b =>
-                {
-                    b.HasOne("BRTF_Room_Booking_App.Models.RoomGroup", "RoomGroup")
-                        .WithMany("RoomGroupApprovers")
-                        .HasForeignKey("RoomGroupID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BRTF_Room_Booking_App.Models.User", "User")
-                        .WithMany("RoomGroupApprovers")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BRTF_Room_Booking_App.Models.RoomUserGroupPermission", b =>
                 {
-                    b.HasOne("BRTF_Room_Booking_App.Models.RoomGroup", "RoomGroup")
+                    b.HasOne("BRTF_Room_Booking_App.Models.Area", "Area")
                         .WithMany("RoomUserGroupPermissions")
-                        .HasForeignKey("RoomGroupID")
+                        .HasForeignKey("AreaID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

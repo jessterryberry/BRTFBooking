@@ -33,7 +33,7 @@
                     <div class="col-md-8">
                         <div class="row">
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Current Room Group Permissions</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
+                                <label class="label"> Current Area Permissions</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
                                     <strong>-</strong>
                                 </button>
                                 @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control" })
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Add Room Group Permissions</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
+                                <label class="label"> Add Area Permissions</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
                                     <strong>+</strong>
                                 </button>
                                 @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control" })
@@ -77,7 +77,7 @@
         console.log($("#selectedOptions").val().length)
         if ($("#selectedOptions").val().length == 1) {
             console.log("hi!")
-            $("#selectedOptionsError").html("User Groups need at least 1 Room Group for a permission.");
+            $("#selectedOptionsError").html("User Groups need at least 1 Area for a permission.");
         }
         else {
             $("#selectedOptionsError").html("");
