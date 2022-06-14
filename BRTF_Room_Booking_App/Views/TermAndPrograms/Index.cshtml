@@ -88,17 +88,12 @@
                                             @*<p class="card-text">*@
                                             <div class="card-text mb-2"><strong>Program Code:</strong> @Html.DisplayFor(modelItem => item.ProgramCode)</div>
                                             <div class="card-text mb-2"><strong>Term:</strong> @Html.DisplayFor(modelItem => item.ProgramLevel)</div>
-                                            <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.UserGroup.UserGroupName)</div>
+                                            <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.AssignedUserGroup.UserGroup.UserGroupName)</div>
                                             <br />
                                             @*</p>*@
 
                                         </div>
                                         <div class="card-footer d-flex justify-content-center">
-                                            @if (User.IsInRole("Top-level Admin"))
-                                            {
-                                                <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                            }
-                                            <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
                                             @if (User.IsInRole("Top-level Admin"))
                                             {
                                                 <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
@@ -142,19 +137,14 @@
                                     @Html.DisplayFor(modelItem => item.ProgramLevel)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.UserGroup.UserGroupName)
+                                    @Html.DisplayFor(modelItem => item.AssignedUserGroup.UserGroup.UserGroupName)
                                 </td>
                                 <td>
                                     @if (User.IsInRole("Top-level Admin"))
                                     {
-                                        <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                    }
-                                    <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
-                                    @if (User.IsInRole("Top-level Admin"))
-                                    {
                                         <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
                                     }
-                                    </td>
+                                </td>
                             </tr>
                         }
                     </tbody>

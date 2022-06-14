@@ -42,7 +42,7 @@ namespace BRTF_Room_Booking_App.Controllers
             // IQueryable<> so we can add filter and sort 
             // options later.
             var termAndPrograms = (from t in _context.TermAndPrograms
-                .Include(t => t.UserGroup)
+                .Include(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 select t).AsNoTracking();
 
             //adding filters
@@ -109,7 +109,22 @@ namespace BRTF_Room_Booking_App.Controllers
                         .OrderByDescending(u => u.ProgramName);
                 }
             }
-            if (sortField == "Term")//sorting by program name
+            if (sortField == "User Group") //sorting by User Group
+            {
+                if (sortDirection == "asc")
+                {
+                    termAndPrograms = termAndPrograms
+                        .OrderBy(u => u.AssignedUserGroup.UserGroup.UserGroupName)
+                        .ThenBy(u => u.ProgramCode);
+                }
+                else
+                {
+                    termAndPrograms = termAndPrograms
+                        .OrderByDescending(u => u.AssignedUserGroup.UserGroup.UserGroupName)
+                        .ThenBy(u => u.ProgramCode);
+                }
+            }
+            if (sortField == "Term")//sorting by program code > level
             {
                 if (sortDirection == "asc")
                 {
@@ -124,19 +139,19 @@ namespace BRTF_Room_Booking_App.Controllers
                         .ThenBy(u => u.ProgramCode);
                 }
             }
-            else //sorting by User Group
+            else//sorting by program code > level
             {
                 if (sortDirection == "asc")
                 {
                     termAndPrograms = termAndPrograms
-                        .OrderBy(u => u.UserGroup.UserGroupName)
-                        .ThenBy(u => u.ProgramCode);
+                        .OrderBy(u => u.ProgramCode)
+                        .ThenBy(u => u.ProgramLevel);
                 }
                 else
                 {
                     termAndPrograms = termAndPrograms
-                        .OrderByDescending(u => u.UserGroup.UserGroupName)
-                        .ThenBy(u => u.ProgramCode);
+                        .OrderByDescending(u => u.ProgramCode)
+                        .ThenBy(u => u.ProgramLevel);
                 }
             }
             //now to set the sort for the next time
@@ -166,7 +181,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var termAndProgram = await _context.TermAndPrograms
-                .Include(t => t.UserGroup)
+                .Include(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (termAndProgram == null)
@@ -258,7 +273,9 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewDataReturnURL();
 
             // Get the TermAndProgram to update
-            var termAndProgramToUpdate = await _context.TermAndPrograms.FirstOrDefaultAsync(p => p.ID == id);
+            var termAndProgramToUpdate = await _context.TermAndPrograms
+                                                .Include(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
+                                                .FirstOrDefaultAsync(p => p.ID == id);
 
             // Check that you got it or exit with a not found error
             if (termAndProgramToUpdate == null)
@@ -268,8 +285,7 @@ namespace BRTF_Room_Booking_App.Controllers
             
             // Try updating it with the values posted
             if (await TryUpdateModelAsync<TermAndProgram>(termAndProgramToUpdate, "",
-                p => p.ProgramName, p => p.ProgramCode, p => p.ProgramLevel,
-                p => p.UserGroupID))
+                p => p.ProgramName, p => p.ProgramCode, p => p.ProgramLevel))
             {
                 try
                 {
@@ -318,7 +334,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var termAndProgram = await _context.TermAndPrograms
-                .Include(t => t.UserGroup)
+                .Include(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (termAndProgram == null)
@@ -335,8 +351,11 @@ namespace BRTF_Room_Booking_App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+            ViewDataReturnURL();
+
             var termAndProgram = await _context.TermAndPrograms
-                .Include(t => t.UserGroup)
+                .Include(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .FirstOrDefaultAsync(m => m.ID == id);
             try
             {
@@ -371,7 +390,7 @@ namespace BRTF_Room_Booking_App.Controllers
         }
         private void PopulateDropDownLists(TermAndProgram termAndProgram = null)
         {
-            ViewData["UserGroupID"] = UserGroupSelectList(termAndProgram?.UserGroupID);
+            ViewData["UserGroupID"] = UserGroupSelectList(termAndProgram?.AssignedUserGroup.UserGroupID);
         }
 
         private string ControllerName()

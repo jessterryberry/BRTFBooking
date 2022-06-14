@@ -4,34 +4,35 @@
 @*For Cookies*@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<ul style="list-style-type: none;">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        var userName = HttpContextAccessor.HttpContext.Request.Cookies["userName"] ?? UserManager.GetUserName(User);
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarIDDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="color: #E4E6E6">
-                Hello&nbsp;@userName!&nbsp;<b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarIDDropdown">
-                @if (!String.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Cookies["userID"]))
-                {
-                    <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Details" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Manage Account</a></li>
-                    <li class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="UsersBookings" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Your Bookings</a></li>
-                    <li class="dropdown-divider"></li>
-                }
-                <li>
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="dropdown-item my-2" style="color: #E4E6E6">Logout</button>
+@if (SignInManager.IsSignedIn(User))
+{
+    var userName = HttpContextAccessor.HttpContext.Request.Cookies["userName"] ?? UserManager.GetUserName(User);
+    <li>
+        <div class="container justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left ">
+            <div class="row justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left p-0">
+                <div class="col ml-sm-4 p-sm-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left">
+                    <a class="navbar-text justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left p-0" style="color: #E4E6E6"><b>Hello&nbsp;@userName!</b></a>
+                </div>
+            </div>
+            <div class="row p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left">
+                <div class="col ml-sm-4 p-sm-0">
+                    @if (!String.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Cookies["userID"]))
+                    {
+                        <a class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Manage Account</a>
+                    }
+                    <form id="frmLogout" class="justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <a href="javascript:$('#frmLogout').submit();" type="submit" class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" style="color: #E4E6E6">Logout&nbsp;</a>
                     </form>
-                </li>
-            </ul>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" style="color: #E4E6E6">Login</a>
-        </li>
-    }
-</ul>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" style="color: #E4E6E6">Login</a>
+    </li>
+}

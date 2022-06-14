@@ -25,7 +25,7 @@
                             <div class="card-text mb-2"><strong>Last Name:</strong> @Html.DisplayFor(model => model.LastName)</div>
                             <div class="card-text mb-2"><strong>Email:</strong> @Html.DisplayFor(model => model.Email)</div>
                             <div class="card-text mb-2"><strong>Term and Program:</strong> @Html.DisplayFor(model => model.TermAndProgram.TermAndProgramSummary)</div>
-                            <div class="card-text mb-2"><strong>Role:</strong> @Html.DisplayFor(model => model.TermAndProgram.UserGroup.UserGroupName)</div>
+                            <div class="card-text mb-2"><strong>Role:</strong> @Html.DisplayFor(model => model.TermAndProgram.AssignedUserGroup.UserGroup.UserGroupName)</div>
                             <div class="card-text">
                                 <strong>Email Notification:</strong>
                                 <div class="form-group form-check mt-2">

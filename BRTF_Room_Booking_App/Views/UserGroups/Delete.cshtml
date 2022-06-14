@@ -28,6 +28,13 @@
                                 {
                                     @r.Area.AreaName <br />
                                 }<br />
+                            </p>                            
+                            <p class="card-text">
+                                <strong>Term And Programs:</strong> <br />
+                                @foreach (var r in Model.AssignedTermAndPrograms)
+                                {
+                                    @r.TermAndProgram.TermAndProgramSummary <br />
+                                }<br />
                             </p>
                         </div>
                         <div class="card-footer d-flex justify-content-center">
@@ -66,6 +73,17 @@
                         {
                             @r.Area.AreaName <br />
                         }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right pt-2">
+                        <label class="label">Terms And Programs</label>
+                    </div>
+                    <div class="col-6 pt-2">
+                        @foreach (var r in Model.AssignedTermAndPrograms)
+                        {
+                            @r.TermAndProgram.TermAndProgramSummary <br />
+                        }<br />
                     </div>
                 </div>
             </div>

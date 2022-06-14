@@ -40,9 +40,9 @@
                         <span asp-validation-for="ProgramLevel" id="progLevelError" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="UserGroupID" class="label">User Group *</label>
-                        <select asp-for="UserGroupID" class="form-control" asp-items="ViewBag.UserGroupID"></select>
-                        <span asp-validation-for="UserGroupID" class="text-danger"></span>
+                        <label asp-for="AssignedUserGroup.UserGroupID" class="label">User Group *</label>
+                        <select asp-for="AssignedUserGroup.UserGroupID" class="form-control" asp-items="ViewBag.UserGroupID"></select>
+                        <span asp-validation-for="AssignedUserGroup.UserGroupID" class="text-danger"></span>
                     </div>
                 </div>
             </div>

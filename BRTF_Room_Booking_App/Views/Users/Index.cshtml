@@ -136,7 +136,7 @@
                                             @*<p class="card-text">*@
                                                 <div class="card-text mb-2"><strong>Username:</strong> @Html.DisplayFor(modelItem => item.Username)</div>
                                                 <div class="card-text mb-2"><strong>Email:</strong> @Html.DisplayFor(modelItem => item.Email)</div>
-                                                <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.TermAndProgram.UserGroup.UserGroupName)</div>
+                                                <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.TermAndProgram.AssignedUserGroup.UserGroup.UserGroupName)</div>
                                                 <br />
                                             @*</p>*@
 
@@ -187,7 +187,7 @@
                                     @Html.DisplayFor(modelItem => item.Email)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.TermAndProgram.UserGroup.UserGroupName)
+                                    @Html.DisplayFor(modelItem => item.TermAndProgram.AssignedUserGroup.UserGroup.UserGroupName)
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>

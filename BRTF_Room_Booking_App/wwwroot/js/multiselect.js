@@ -22,8 +22,33 @@ $('#btnLeft').click(function (e) {
     e.preventDefault();
 });
 
+$('#btnRightTP').click(function (e) {
+    var selectedOptsTP = $('#selectedOptionsTP option:selected');
+    if (selectedOptsTP.length == 0) {
+        alert("Nothing to move.");
+        e.preventDefault();
+    }
+
+    $('#availOptionsTP').append($(selectedOptsTP).clone());
+    $(selectedOptsTP).remove();
+    e.preventDefault();
+});
+
+$('#btnLeftTP').click(function (e) {
+    var selectedOptsTP = $('#availOptionsTP option:selected');
+    if (selectedOptsTP.length == 0) {
+        alert("Nothing to move.");
+        e.preventDefault();
+    }
+
+    $('#selectedOptionsTP').append($(selectedOptsTP).clone());
+    $(selectedOptsTP).remove();
+    e.preventDefault();
+});
+
 $(document).on("click", "#btnSubmit", function (e) {
     $('#selectedOptions option').prop('selected', true);
+    $('#selectedOptionsTP option').prop('selected', true);
 });
 
 ////let DDLforChosen = document.getElementById("selectedOptions");

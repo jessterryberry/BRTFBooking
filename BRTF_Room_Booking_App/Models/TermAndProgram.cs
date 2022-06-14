@@ -11,6 +11,7 @@ namespace BRTF_Room_Booking_App.Models
         public TermAndProgram()
         {
             this.Users = new HashSet<User>();
+            this.AssignedUserGroup = null;
         }
 
         public int ID { get; set; }
@@ -43,11 +44,7 @@ namespace BRTF_Room_Booking_App.Models
         public int ProgramLevel { get; set; }
 
         [Display(Name = "User Group")]
-        [Required(ErrorMessage = "You must assign a User Group.")]        
-        public int UserGroupID { get; set; }
-
-        [Display(Name = "User Group")]
-        public UserGroup UserGroup { get; set; }
+        public UserGroupTermAndProgram AssignedUserGroup { get; set; }
 
         [Display(Name = "Users")]
         public ICollection<User> Users { get; set; }

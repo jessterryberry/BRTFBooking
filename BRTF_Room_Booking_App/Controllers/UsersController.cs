@@ -59,14 +59,14 @@ namespace BRTF_Room_Booking_App.Controllers
             // IQueryable<> so we can add filter and sort 
             // options later.
             var users = from u in _context.Users
-                .Include(u => u.TermAndProgram).ThenInclude(t => t.UserGroup)
+                .Include(u => u.TermAndProgram).ThenInclude(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                         select u;
 
             //adding filters
             if (UserGroupID.HasValue)
             {
-                users = users.Where(u => u.TermAndProgram.UserGroupID == UserGroupID);
+                users = users.Where(u => u.TermAndProgram.AssignedUserGroup.UserGroupID == UserGroupID);
                 ViewData["Filtering"] = "btn-danger";
             }
             if (!String.IsNullOrEmpty(SearchName))
@@ -120,12 +120,12 @@ namespace BRTF_Room_Booking_App.Controllers
                 if (sortDirection == "asc")
                 {
                     users = users
-                        .OrderBy(u => u.TermAndProgram.UserGroup.UserGroupName);
+                        .OrderBy(u => u.TermAndProgram.AssignedUserGroup.UserGroup.UserGroupName);
                 }
                 else
                 {
                     users = users
-                        .OrderByDescending(u => u.TermAndProgram.UserGroup.UserGroupName);
+                        .OrderByDescending(u => u.TermAndProgram.AssignedUserGroup.UserGroup.UserGroupName);
                 }
             }
             //now to set the sort for the next time
@@ -156,7 +156,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var user = await _context.Users
-                .Include(u => u.TermAndProgram).ThenInclude(t => t.UserGroup)
+                .Include(u => u.TermAndProgram).ThenInclude(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             var identityUser = await _identityContext.Users.Where(u => u.UserName == user.Username).FirstOrDefaultAsync();
@@ -328,7 +328,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var user = await _context.Users
-                .Include(u => u.TermAndProgram).ThenInclude(t => t.UserGroup)
+                .Include(u => u.TermAndProgram).ThenInclude(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             var identityUser = await _identityContext.Users.Where(u => u.UserName == user.Username).FirstOrDefaultAsync();
@@ -495,7 +495,7 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             var user = await _context.Users
-                .Include(u => u.TermAndProgram).ThenInclude(t => t.UserGroup)
+                .Include(u => u.TermAndProgram).ThenInclude(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             var identityUser = await _identityContext.Users.Where(u => u.UserName == user.Username).FirstOrDefaultAsync();
@@ -533,7 +533,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
             // Get the User to delete from BTRF Context and Identity
             var user = await _context.Users
-                .Include(u => u.TermAndProgram).ThenInclude(t => t.UserGroup)
+                .Include(u => u.TermAndProgram).ThenInclude(t => t.AssignedUserGroup).ThenInclude(t => t.UserGroup)
                 .FirstOrDefaultAsync(m => m.ID == id);
             var identityUser = await _identityContext.Users.Where(u => u.UserName == user.Username).FirstOrDefaultAsync();
 
@@ -656,7 +656,7 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 // Get Terms and Programs corresponding to the selected User Groups
                 var selectedTermsAndPrograms = from t in _context.TermAndPrograms
-                    .Where(t => selectedGroups.Contains(t.UserGroupID))
+                    .Where(t => selectedGroups.Contains(t.AssignedUserGroup.UserGroupID))
                                                select t.ID;
 
                 var users = from u in _context.Users select u;
@@ -1103,7 +1103,7 @@ namespace BRTF_Room_Booking_App.Controllers
         private void PopulateDropDownLists(User user = null)
         {
             ViewData["TermAndProgramID"] = TermAndProgramSelectList(user?.TermAndProgramID);
-            ViewData["UserGroupID"] = UserGroupsSelectList(user?.TermAndProgram.UserGroupID);
+            ViewData["UserGroupID"] = UserGroupsSelectList(user?.TermAndProgram.AssignedUserGroup.UserGroupID);
         }
 
         private string ControllerName()

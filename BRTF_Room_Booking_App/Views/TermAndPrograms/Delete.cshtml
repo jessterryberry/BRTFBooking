@@ -23,7 +23,7 @@
                             <div class="card-text mb-3"><strong>Program Name: </strong> @Html.DisplayFor(model => model.ProgramName)</div>
                             <div class="card-text mb-3"><strong>Program Code: </strong> @Html.DisplayFor(model => model.ProgramCode)</div>
                             <div class="card-text mb-3"><strong>Term: </strong> @Html.DisplayFor(model => model.ProgramLevel)</div>
-                            <div class="card-text"><strong>User Group: </strong> @Html.DisplayFor(model => model.UserGroup.UserGroupName)</div>
+                            <div class="card-text"><strong>User Group: </strong> @Html.DisplayFor(model => model.AssignedUserGroup.UserGroup.UserGroupName)</div>
                             <br />
                         </div>
                         <div class="card-footer d-flex justify-content-center">
@@ -75,10 +75,10 @@
                     </div>
                     <div class="row">
                         <div class="col-6 text-right pt-2">
-                            <label asp-for="UserGroupID" class="label"></label>
+                            <label asp-for="AssignedUserGroup.UserGroupID" class="label"></label>
                         </div>
                         <div class="col-6 pt-2">
-                            @Html.DisplayFor(model => model.UserGroup.UserGroupName)
+                            @Html.DisplayFor(model => model.AssignedUserGroup.UserGroup.UserGroupName)
                         </div>
                     </div>
                 </div>

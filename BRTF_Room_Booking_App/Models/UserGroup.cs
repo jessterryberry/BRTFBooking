@@ -10,7 +10,7 @@ namespace BRTF_Room_Booking_App.Models
     {
         public UserGroup()
         {
-            this.TermAndPrograms = new HashSet<TermAndProgram>();
+            this.AssignedTermAndPrograms = new HashSet<UserGroupTermAndProgram>();
             this.RoomUserGroupPermissions = new HashSet<RoomUserGroupPermission>();
         }
 
@@ -22,7 +22,7 @@ namespace BRTF_Room_Booking_App.Models
         public string UserGroupName { get; set; }
 
         [Display(Name = "Terms and Programs")]
-        public ICollection<TermAndProgram> TermAndPrograms { get; set; }
+        public ICollection<UserGroupTermAndProgram> AssignedTermAndPrograms { get; set; }
 
         [Display(Name = "Area Permissions")]
         public ICollection<RoomUserGroupPermission> RoomUserGroupPermissions { get; set; }

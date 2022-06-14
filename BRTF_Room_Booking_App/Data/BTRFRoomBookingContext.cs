@@ -45,6 +45,7 @@ namespace BRTF_Room_Booking_App.Data
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<BookingSummary> BookingSummaries { get; set; }
         public DbSet<AreaApprover> AreaApprovers { get; set; }
+        public DbSet<UserGroupTermAndProgram> UserGroupTermAndPrograms { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -61,6 +62,9 @@ namespace BRTF_Room_Booking_App.Data
             modelBuilder.Entity<RoomUserGroupPermission>()
                 .HasKey(p => new { p.UserGroupID, p.AreaID });
 
+            modelBuilder.Entity<UserGroupTermAndProgram>()
+                .HasKey(p => new { p.TermAndProgramID, p.UserGroupID });
+
             //Prevent Cascade Delete from TermAndProgram to User
             //so we are prevented from deleting a TermAndProgram with
             //Users assigned
@@ -70,14 +74,20 @@ namespace BRTF_Room_Booking_App.Data
                 .HasForeignKey(p => p.TermAndProgramID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Prevent Cascade Delete from UserGroup to TermAndProgram
-            //so we are prevented from deleting a UserGroup with
-            //TermAndPrograms assigned
-            modelBuilder.Entity<UserGroup>()
-                .HasMany<TermAndProgram>(d => d.TermAndPrograms)
-                .WithOne(p => p.UserGroup)
-                .HasForeignKey(p => p.UserGroupID)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<TermAndProgram>()
+            //    .HasOne<UserGroupTermAndProgram>(d => d.AssignedUserGroup)
+            //    .WithOne(p => p.TermAndProgram)
+            //    .HasForeignKey<UserGroupTermAndProgram>(p => p.TermAndProgramID)
+            //    .OnDelete(DeleteBehavior.Restrict);
+
+            ////Prevent Cascade Delete from UserGroup to UserGroupTermAndProgram
+            ////so we are prevented from deleting a UserGroup with
+            ////TermAndPrograms assigned
+            //modelBuilder.Entity<UserGroup>()
+            //    .HasMany<UserGroupTermAndProgram>(d => d.AssignedTermAndPrograms)
+            //    .WithOne(p => p.UserGroup)
+            //    .HasForeignKey(p => p.UserGroupID)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             //Prevent Cascade Delete from Area to RoomUserGroupPermissions
             //so we are prevented from deleting a Area with
