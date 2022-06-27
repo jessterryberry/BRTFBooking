@@ -23,15 +23,37 @@ namespace BRTF_Room_Booking_App.Models
         [Display(Name = "Start Date")]
         [Required(ErrorMessage = "Cannot be blank.")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", HtmlEncode = false, ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy HH:mm}", HtmlEncode = false, ApplyFormatInEditMode = false)]
         public DateTime StartDate { get; set; }
+
+        [Display(Name = "Start Date")]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy HH:mm}", HtmlEncode = false, ApplyFormatInEditMode = false)]
+        public DateTime RoundedStartDate 
+        { 
+            get
+            {
+                return RoundUp(StartDate, TimeSpan.FromMinutes(30));
+            } 
+        }
 
 
         [Display(Name = "End Date")]
         [Required(ErrorMessage = "Cannot be blank.")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", HtmlEncode = false, ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy HH:mm}", HtmlEncode = false, ApplyFormatInEditMode = false)]
         public DateTime EndDate { get; set; }
+
+        [Display(Name = "Start Date")]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy HH:mm}", HtmlEncode = false, ApplyFormatInEditMode = false)]
+        public DateTime RoundedEndDate
+        {
+            get
+            {
+                return RoundUp(EndDate, TimeSpan.FromMinutes(30));
+            }
+        }
 
 
         [Display(Name = "Room")]
@@ -55,6 +77,11 @@ namespace BRTF_Room_Booking_App.Models
             {
                 yield return new ValidationResult("End Time must be later than Start Time.", new[] { "EndDate" });
             }
+        }
+
+        private DateTime RoundUp(DateTime dt, TimeSpan d)
+        {
+            return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
         }
     }
 }

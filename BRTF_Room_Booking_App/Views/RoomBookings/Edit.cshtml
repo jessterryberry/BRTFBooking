@@ -9,7 +9,7 @@
 <body style="background-color:#E4E6E6" class="justify-content-center">
 
     <br />
-    <h1 class="mb-4 text-center">Edit</h1>
+    <h1 class="mb-4 text-center">Edit this Booking</h1>
     <br />
 
     <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 80%; margin: auto " class="px-5 py-2 my-3">
@@ -61,17 +61,17 @@
                         @:>
                             @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
                             @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))</td>
-                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedStartDate.ToShortTimeString()))</td>
                             @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))</td>
-                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedEndDate.ToShortTimeString()))</td>
                             @:<td></td>
                             if (conflictBookings[i] != null)
                             {
                                 @:<td>@(Html.Raw(conflictBookings[i].Room.RoomName))&nbsp;</td>
                                 @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedStartDate.ToShortTimeString()))</td>
                                 @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedEndDate.ToShortTimeString()))</td>
                             }
                             else
                             {
@@ -134,16 +134,16 @@
                         @:>
                             @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
                             @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))</td>
-                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedStartDate.ToShortTimeString()))</td>
                             @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))</td>
-                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedEndDate.ToShortTimeString()))</td>
                             @:<td></td>
                             if (conflictBookings[i] != null)
                             {
                                 @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedStartDate.ToShortTimeString()))</td>
                                 @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedEndDate.ToShortTimeString()))</td>
                                 @:<td>@(Html.Raw(conflictBookings[i].User.FullName))</td>
                             }
                             else
@@ -336,16 +336,16 @@
                         @:>
                             @:<td>@(Html.Raw(yourBookings[i].Room.RoomName))&nbsp;</td>
                             @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortDateString()))&nbsp;</td>
-                            @:<td>@(Html.Raw(yourBookings[i].StartDate.ToShortTimeString()))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedStartDate.ToShortTimeString()))&nbsp;</td>
                             @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortDateString()))&nbsp;</td>
-                            @:<td>@(Html.Raw(yourBookings[i].EndDate.ToShortTimeString()))&nbsp;</td>
+                            @:<td>@(Html.Raw(yourBookings[i].RoundedEndDate.ToShortTimeString()))&nbsp;</td>
                             @:<td></td>
                             if (conflictBookings[i] != null)
                             {
                                 @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortDateString()))&nbsp;</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].StartDate.ToShortTimeString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedStartDate.ToShortTimeString()))&nbsp;</td>
                                 @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortDateString()))&nbsp;</td>
-                                @:<td>@(Html.Raw(conflictBookings[i].EndDate.ToShortTimeString()))&nbsp;</td>
+                                @:<td>@(Html.Raw(conflictBookings[i].RoundedEndDate.ToShortTimeString()))&nbsp;</td>
                                 @:<td>@(Html.Raw(Math.Min(Math.Abs((yourBookings[i].StartDate - conflictBookings[i].EndDate).TotalHours),
                                                     Math.Abs((conflictBookings[i].StartDate - yourBookings[i].EndDate).TotalHours))
                                                 .ToString("0.##"))) hours&nbsp;</td>
@@ -365,8 +365,6 @@
         }
         
         <div>
-            <br />
-            <h4 class="text-center">Edit this Booking</h4>
             <br />
         </div>
         <div>
@@ -565,7 +563,7 @@
                         <br />
                         <div class="d-flex justify-content-center">
                             <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
-                            <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Bookings</a>
+                            <button type="button" onclick="history.back()" class="btn btn-secondary mx-2">Back to Bookings</button>
                         </div>
                         <br />
                     </div>
@@ -594,7 +592,10 @@
         // Load initial booking time when page loads
         $('document').ready(function () {
             // Grab initial start datetime from the true Start Datetime picker
-            var startDatetime = new Date(document.getElementById("startDateInput").value);
+            var startDateFormatted = document.getElementById("startDateInput").value.split(" ")[0].split(".");
+            startDateFormatted = startDateFormatted[2] + "-" + startDateFormatted[1] + "-" + startDateFormatted[0];
+            startDateFormatted = startDateFormatted + "T" + document.getElementById("startDateInput").value.split(" ")[1];
+            var startDatetime = new Date(startDateFormatted);
             var startDay = parseInt(startDatetime.getDate());
             var startMonth = parseInt(startDatetime.getMonth() + 1);
             var startYear = parseInt(startDatetime.getFullYear());
@@ -622,7 +623,10 @@
             document.getElementById("startTimePicker").value = startTimeString;
 
             // Grab initial end datetime from the true End Datetime picker
-            var endDatetime = new Date(document.getElementById("endDateInput").value);
+            var endDateFormatted = document.getElementById("endDateInput").value.split(" ")[0].split(".");
+            endDateFormatted = endDateFormatted[2] + "-" + endDateFormatted[1] + "-" + endDateFormatted[0];
+            endDateFormatted = endDateFormatted + "T" + document.getElementById("endDateInput").value.split(" ")[1];
+            var endDatetime = new Date(endDateFormatted);
 
             // Get the difference
             var startEndDifference = Math.abs(endDatetime - startDatetime); // Difference between start and end time in milliseconds
@@ -678,6 +682,26 @@
             endDatetimeString = endDatetimeString + endHour + ":" + endMinute;
 
             document.getElementById('endDateInput').value = endDatetimeString;   // Set Actual end datetime input
+
+            //Re-create endDatetimeString with rounded time (to nearest 30min) for display only
+            endDatetimeString = endYear + "-";
+            if (endMinute == 59) {
+                endHour = endHour + 1;
+                endMinute = 0;
+            }
+            if (endMinute == 29) {
+                endMinute = 30;
+            }
+
+            if (endMonth < 10) { endDatetimeString = endDatetimeString + "0" }
+            endDatetimeString = endDatetimeString + endMonth + "-";
+            if (endDay < 10) { endDatetimeString = endDatetimeString + "0" }
+            endDatetimeString = endDatetimeString + endDay + "T";
+            if (endHour < 10) { endDatetimeString = endDatetimeString + "0"; }
+            endDatetimeString = endDatetimeString + endHour + ":";
+            if (endMinute < 10) { endDatetimeString = endDatetimeString + "0"; }
+            endDatetimeString = endDatetimeString + endMinute;
+
             document.getElementById('endDateDisplay').value = endDatetimeString;   // Set Display-only end datetime
 
             // Flash displays

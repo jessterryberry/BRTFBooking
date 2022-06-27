@@ -1,27 +1,4 @@
-﻿<partial name="_PageSizeModal" />
-@{
-    if (Model.TotalPages == 0)
-    {
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            <li class="page-item">
-                <button type="button" title="Click to change page size." data-toggle="modal" data-target="#pageSizeModal" class="btn btn-primary">
-                    No Data to Show
-                </button>
-            </li>
-        </ul>
-    }
-    else if (Model.TotalPages == 1)
-    {
-        <ul class="pagination justify-content-center" style="margin:20px 0">
-            <li class="page-item">
-                <button type="button" title="Click to change page size." data-toggle="modal" data-target="#pageSizeModal" class="btn btn-primary">
-                    Page @Model.PageIndex of @Model.TotalPages
-                </button>
-            </li>
-        </ul>
-    }
-    else
-    {
+﻿@{
         var jumpAmount = (Model.TotalPages > 25) ? 10 : 5;
         var prevDisabled = !Model.HasPreviousPage ? "disabled='disabled'" : "";
         var nextDisabled = !Model.HasNextPage ? "disabled='disabled'" : "";
@@ -45,9 +22,7 @@
                 </button>
             </li>
             <li class="page-item">
-                <button type="button" title="Click to change page size." data-toggle="modal" data-target="#pageSizeModal" class="btn btn-primary">
-                    <span class="d-none d-md-inline">Pg. </span>@Model.PageIndex of @Model.TotalPages
-                </button>
+                @Html.DropDownList("pageSizeID", null, htmlAttributes: new { @class = "form-control btn btn-primary select-add-placeholder", @onchange = "this.form.submit()" })
             </li>
             <li class="page-item">
                 <button type="submit" name="page" @nextDisabled value="@(Model.PageIndex + 1)" class="btn page-link">
@@ -65,5 +40,12 @@
                 </button>
             </li>
         </ul>
-    }
 }
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".select-add-placeholder").prepend("<option value='' disabled selected>Pg. @Model.PageIndex of @Model.TotalPages</option>");
+    });
+
+</script>

@@ -12,6 +12,7 @@
     <title>@ViewData["Title"] - BRTF Room Booking App</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <style>
         /* Change hover-over colour for Bootstrap dropdown-menu list items. */
@@ -20,12 +21,18 @@
             background-color: dodgerblue;
         }
     </style>
+
+    <!-- Syncfusion ASP.NET Core controls styles -->
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/20.1.55/fluent.css" />
+    <!-- Syncfusion ASP.NET Core controls scripts -->
+    <script src="https://cdn.syncfusion.com/ej2/20.1.55/dist/ej2.min.js"></script>
+
 </head>
 <body>
     <header style="background-color: #2F7DBB; color: #E4E6E6;">
         <div class="justify-content-lg-center justify-content-sm-right">
             <nav class="navbar navbar-expand-lg  justify-content-lg-center justify-content-sm-right ">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img style="height:50%; width:225px;" src="~/img/Logo.png" alt="Logo of BRTF" /></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img style="height:50%; width:225px;" src="~/img/Logo.png" alt="Logo of BRTF"/></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
                     <span><img src="~/img/navbar-toggler-icon.png" width="40" height="40" /></span>
                 </button>
@@ -36,52 +43,53 @@
                                 @if (SignInManager.IsSignedIn(User))
                                 {
                                     <li class="dropdown-divider d-lg-none"></li>
-                                    <li class="nav-item ml-4"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="UsersBookings" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Your Bookings</a></li="nav-item>
+                                    <li class="nav-item ml-4"><a class="nav-link" tabindex="51" asp-area="" asp-controller="Home" asp-action="UsersBookings" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Room Bookings</a></li>
                                 }
-                                <li class="dropdown-divider d-lg-none"></li>
-                                <li class="nav-item ml-4"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Help" style="color: #E4E6E6">Help</a></li>
 
                                 @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                                 {
                                     <li class="dropdown-divider d-lg-none"></li>
                                     <li class="nav-item ml-4">
-                                        <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Create" style="color: #E4E6E6">Register User</a>
+                                        <a class="nav-link" tabindex="52" asp-area="" asp-controller="Users" asp-action="Create" style="color: #E4E6E6">Register User</a>
                                     </li>
                                     <li class="dropdown-divider d-lg-none"></li>
                                     <li class="nav-item ml-4">
-                                        <a class="nav-link" asp-area="" asp-controller="Rooms" asp-action="BookingSummary" style="color: #E4E6E6">Admin Reports</a>
+                                        <a class="nav-link" tabindex="53" asp-area="" asp-controller="Rooms" asp-action="BookingSummary" style="color: #E4E6E6">Admin Reports</a>
                                     </li>
                                 }
-                                @if (User.IsInRole("User"))
-                                {
-                                    <li class="dropdown-divider d-lg-none"></li>
-                                    <li class="nav-item ml-4">
-                                        <a class="nav-link" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6">Bookings</a>
-                                    </li>
-                                }
+                                <li class="dropdown-divider d-lg-none"></li>
+                                <li class="nav-item ml-4"><a tabindex="54" class="nav-link" asp-area="" asp-controller="Home" asp-action="Help" style="color: #E4E6E6">Help</a></li>
+
+                                @*@if (User.IsInRole("User"))
+                                    {
+                                        <li class="dropdown-divider d-lg-none"></li>
+                                        <li class="nav-item ml-4">
+                                            <a class="nav-link" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6">Bookings</a>
+                                        </li>
+                                    }*@
                                 @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                                 {
                                     <li class="dropdown-divider d-lg-none"></li>
                                     <li class="nav-item dropdown ml-4">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" style="color: #E4E6E6">
+                                        <a tabindex="55" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" style="color: #E4E6E6">
                                             Lists<b class="caret"></b>
                                         </a>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index" style="color: #E4E6E6;">Users</a>
+                                            <a tabindex="56" class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index" style="color: #E4E6E6;">Users</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" asp-area="" asp-controller="UserGroups" asp-action="Index" style="color: #E4E6E6;">User&nbsp;Groups</a>
+                                            <a tabindex="57" class="dropdown-item" asp-area="" asp-controller="UserGroups" asp-action="Index" style="color: #E4E6E6;">User&nbsp;Groups</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" asp-area="" asp-controller="TermAndPrograms" asp-action="Index" style="color: #E4E6E6;">Terms&nbsp;and&nbsp;Programs</a>
+                                            <a tabindex="58" class="dropdown-item" asp-area="" asp-controller="TermAndPrograms" asp-action="Index" style="color: #E4E6E6;">Terms&nbsp;and&nbsp;Programs</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6;">Bookings</a>
+                                            <a tabindex="59" class="dropdown-item" asp-area="" asp-controller="RoomBookings" asp-action="Index" style="color: #E4E6E6;">Bookings</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Areas" asp-action="Index" style="color: #E4E6E6;">Areas</a>
+                                            <a tabindex="60" class="dropdown-item" asp-area="" asp-controller="Areas" asp-action="Index" style="color: #E4E6E6;">Areas</a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Rooms" asp-action="Index" style="color: #E4E6E6;">Rooms</a>
+                                            <a tabindex="61" class="dropdown-item" asp-area="" asp-controller="Rooms" asp-action="Index" style="color: #E4E6E6;">Rooms</a>
                                             @if (User.IsInRole("Top-level Admin"))
                                             {
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" style="color: #E4E6E6;">Global Settings</a>
+                                                <a tabindex="62" class="dropdown-item" asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" style="color: #E4E6E6;">Global Settings</a>
                                             }
                                         </div>
                                     </li>
@@ -103,7 +111,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container" style="text-align: center;">
-            &copy; 2022 - BRTF Room Booking App - <a asp-area="" asp-controller="Home" asp-action="Privacy" style="color: dimgrey">Privacy</a>
+            &copy; 2022 - BRTF Room Booking App - <a  tabindex="66" asp-area="" asp-controller="Home" asp-action="Privacy" style="color: dimgrey">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -119,5 +127,9 @@
         })
     </script>
     @RenderSection("Scripts", required: false)
+
+    <!-- Syncfusion ASP.NET Core Script Manager -->
+    <ejs-scripts></ejs-scripts>
+
 </body>
 </html>

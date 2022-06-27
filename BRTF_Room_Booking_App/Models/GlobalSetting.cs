@@ -13,13 +13,13 @@ namespace BRTF_Room_Booking_App.Models
         [Display(Name = "Start of Term Date")]
         [Required(ErrorMessage = "The start of term date cannot be after the end of term date.")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}", ApplyFormatInEditMode = false)]
         public DateTime StartOfTermDate { get; set; }
 
         [Display(Name = "End of Term Date")]
         [Required(ErrorMessage = "The end of term date cannot be before the start of term date.")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}", ApplyFormatInEditMode = false)]
         public DateTime EndOfTermDate { get; set; }
 
         [Display(Name = "Latest Allowable Day When Making Repeat Bookings")]

@@ -26,13 +26,13 @@
 
 <body style="background-color:#E4E6E6" class="justify-content-left">
     <br />
-    <h1 class="mb-4 text-center">Details</h1>
+    <h1 class="mb-4 text-center">User Details</h1>
     <br />
     <div class="container-fluid d-block d-lg-none" style="display:block;">
             <div class="card-deckwrapper">
                 <div class="card-deck">
                     <div class="card mb-sm-3" style="min-width: 18rem;">
-                        <h5 class="card-header text-center">User Details</h5>
+                        <br />
                         <div class="card-body">
                             <div class="media-body ml-2">
                                 <div class="card-text mb-3"><strong>Username:</strong> @Html.DisplayFor(model => model.Username)</div>
@@ -51,6 +51,12 @@
                                         <input class="form-check-input" asp-for="EmailCancelNotifications" disabled="disabled" />@Html.DisplayNameFor(model => model.EmailCancelNotifications)
                                     </div>
                                 </div>
+                                <div class="card-text">
+                                    <strong>Time Setting:</strong>
+                                    <div class="form-group form-check mt-3">
+                                        <input class="form-check-input" asp-for="TimeFormat24Hours" disabled="disabled" />@Html.DisplayNameFor(model => model.TimeFormat24Hours)
+                                    </div>
+                                </div>
                                 <br />
                             </div>
                             <div class="card-footer d-flex justify-content-center">
@@ -67,8 +73,6 @@
     </div>
     <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 55%; margin:auto" class="px-1 py-2 my-3 d-none d-lg-block">
         <div>
-            <br />
-            <h4 class="text-center">User Details</h4>
             <br />
         </div>
             <div class="row justify-content-center">
@@ -141,6 +145,16 @@
                             </div>
                             <div class="form-group form-check">
                                 <input class="form-check-input" asp-for="EmailCancelNotifications" disabled="disabled" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-right pt-2">
+                            <label asp-for="EmailBookingNotifications" class="label">Time Setting</label>
+                        </div>
+                        <div class="col-6 pt-2">
+                            <div class="form-group form-check">
+                                <input class="form-check-input" asp-for="TimeFormat24Hours" disabled="disabled" /> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
                             </div>
                         </div>
                     </div>

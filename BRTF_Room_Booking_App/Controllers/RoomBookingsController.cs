@@ -68,7 +68,7 @@ namespace BRTF_Room_Booking_App.Controllers
             // IQueryable<> so we can add filter and sort 
             // options later.
             var roombookings = from r in _context.RoomBookings
-                               .Include(r => r.Room)
+                               .Include(r => r.Room).ThenInclude(r => r.Area)
                                .Include(r => r.User)
                                select r;
 
@@ -80,13 +80,11 @@ namespace BRTF_Room_Booking_App.Controllers
                 roombookings = roombookings.Where(r => afterDate <= r.StartDate);
                 if (afterDate != DateTime.Today)   // Only make filter button red if start date is different than today's date, which is the default state
                     ViewData["Filtering"] = "btn-danger";
-                filtered = true;
             }
             if (!String.IsNullOrEmpty(SearchBeforeDate) && DateTime.TryParse(SearchBeforeDate, out DateTime beforeDate))
             {
                 roombookings = roombookings.Where(r => r.StartDate <= beforeDate);
                 ViewData["Filtering"] = "btn-danger";
-                filtered = true;
             }
             if (!String.IsNullOrEmpty(SearchUsername))
             {
@@ -105,7 +103,6 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 roombookings = roombookings.Where(b => b.ApprovalStatus == "Approved" || b.ApprovalStatus == "Pending");
                 // Do not make filter button red, because this is the default state
-                filtered = true;
             }
             else    // Approval status filter is not empty, search by what it contains
             {
@@ -188,7 +185,7 @@ namespace BRTF_Room_Booking_App.Controllers
                             }
                         }
                         await _context.SaveChangesAsync();
-                        TempData["Message"] =  deletedCount.ToString() + " Bookings deleted successfully!";
+                        TempData["Message"] = deletedCount.ToString() + " Bookings deleted successfully!";
 
                         foreach (string email in usersToEmail)
                         {
@@ -256,20 +253,83 @@ namespace BRTF_Room_Booking_App.Controllers
             foreach (var booking in bookingsThatMatchFilters)
             {
                 idsThatMatchFilters.Add(new ListOptionVM
+                {
+                    ID = booking.ID,
+                    DisplayText = "Booking ID " + booking.ID.ToString() + " - by User ID " + booking.UserID.ToString()    // This display text is useful for debugging. The User doesn't see it
+                }); ;
+            }
+            ViewData["bookingsToBulkDelete"] = new MultiSelectList(idsThatMatchFilters.OrderBy(s => s.DisplayText), "ID", "DisplayText");
+
+
+            //Populate calendar
+
+            //Lists for Area and Room data for the Calendar
+            List<AreaData> areas = new List<AreaData>();
+            List<RoomData> rooms = new List<RoomData>();
+
+            //Create Calendar items for every booking
+            List<BookingsData> resourceData = new List<BookingsData>();
+            foreach (var b in roombookings.Include(b => b.User).Include(b => b.Room).ThenInclude(b => b.Area))
+            {
+                resourceData.Add(new BookingsData
+                { Id = b.ID, Subject = b.User.FullName, StartTime = b.RoundedStartDate, EndTime = b.RoundedEndDate, RoomId = b.RoomID, AreaId = b.Room.AreaID, Description = b.SpecialNotes });
+
+                //If Bookings are filtered (except for date filters), add their Room/Area to the lists if not there already. 
+                //unfilitered is handled below
+                if (filtered)
+                {
+                    AreaData a = new AreaData { text = b.Room.Area.AreaName, id = b.Room.Area.ID, color = "#2F7DBB" };
+                    if (!areas.Exists(x => x.id == a.id))
                     {
-                        ID = booking.ID,
-                        DisplayText = "Booking ID " + booking.ID.ToString() + " - by User ID " + booking.UserID.ToString()    // This display text is useful for debugging. The User doesn't see it
-                });;
-            }ViewData["bookingsToBulkDelete"] = new MultiSelectList(idsThatMatchFilters.OrderBy(s => s.DisplayText), "ID", "DisplayText");
+                        areas.Add(a);
+                    }
+                    RoomData r = new RoomData { text = b.Room.RoomName, id = b.Room.ID, groupId = b.Room.AreaID, color = "#2F7DBB" };
+                    if (!rooms.Exists(x => x.id == r.id))
+                    {
+                        rooms.Add(r);
+                    }
+                }
+            }
+
+            //If Bookings are not filtered, display all Areas and Rooms
+            if (!filtered)
+            {
+                var allAreas = _context.Areas.Select(a => a);
+                var allRooms = _context.Rooms.Select(r => r);
+
+                foreach (Area a in allAreas.OrderBy(a => a.AreaName))
+                {
+                    areas.Add(new AreaData { text = a.AreaName, id = a.ID, color = "#2F7DBB" });
+                }
+
+                foreach (Room r in allRooms.OrderBy(r => r.RoomName))
+                {
+                    rooms.Add(new RoomData { text = r.RoomName, id = r.ID, groupId = r.AreaID, color = "#2F7DBB" });
+                }
+            }
+
+            //Add Calendar data to the ViewBag
+            ViewBag.datasource = resourceData;
+            ViewBag.Areas = areas;
+            ViewBag.Rooms = rooms;
+            ViewBag.Resources = new string[] { "Areas", "Rooms" };
+            ViewBag.workDays = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+
 
             return View(pagedData);
         }
+
 
         // GET: RoomBookings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
+
+            int userID = int.Parse(Request.Cookies["userID"]);
+            User loggedInUser = _context.Users.Where(u => u.ID == userID).FirstOrDefault();
+
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
 
             if (id == null)
             {
@@ -1897,6 +1957,31 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             return sum;
+        }
+
+        private class RoomData
+        {
+            public int id { set; get; }
+            public int groupId { set; get; }
+            public string text { set; get; }
+            public string color { set; get; }
+        }
+        private class AreaData
+        {
+            public int id { set; get; }
+            public string text { set; get; }
+            public string color { set; get; }
+        }
+
+        public class BookingsData
+        {
+            public int Id { get; set; }
+            public string Subject { get; set; }
+            public DateTime StartTime { get; set; }
+            public DateTime EndTime { get; set; }
+            public int RoomId { get; set; }
+            public int AreaId { get; set; }
+            public string Description { get; set; }
         }
     }
 }

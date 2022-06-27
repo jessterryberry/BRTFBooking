@@ -11,17 +11,17 @@
         <div class="container justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left ">
             <div class="row justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left p-0">
                 <div class="col ml-sm-4 p-sm-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left">
-                    <a class="navbar-text justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left p-0" style="color: #E4E6E6"><b>Hello&nbsp;@userName!</b></a>
+                    <a tabindex="63" class="navbar-text justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left p-0" style="color: #E4E6E6"><b>Hello&nbsp;@userName!</b></a>
                 </div>
             </div>
             <div class="row p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left">
                 <div class="col ml-sm-4 p-sm-0">
                     @if (!String.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Cookies["userID"]))
                     {
-                        <a class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Manage Account</a>
+                        <a tabindex="64" class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@HttpContextAccessor.HttpContext.Request.Cookies["userID"]" style="color: #E4E6E6">Manage Account</a>
                     }
                     <form id="frmLogout" class="justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <a href="javascript:$('#frmLogout').submit();" type="submit" class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" style="color: #E4E6E6">Logout&nbsp;</a>
+                        <a tabindex="65" href="javascript:$('#frmLogout').submit();" type="submit" class="nav-link p-0 justify-content-lg-right text-lg-right justify-content-sm-left text-sm-left" style="color: #E4E6E6">Logout&nbsp;</a>
                     </form>
                 </div>
             </div>
@@ -33,6 +33,6 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" style="color: #E4E6E6">Login</a>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" style="color: #E4E6E6" tabindex="62">Login</a>
     </li>
 }

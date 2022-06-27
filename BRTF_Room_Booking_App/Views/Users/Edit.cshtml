@@ -8,13 +8,11 @@
 </head>
 <body class="justify-content-left">
     <br />
-    <h1 class="mb-4 text-center">Edit</h1>
+    <h1 class="mb-4 text-center">Edit this User</h1>
     <br />
 
     <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 75%; margin:auto" class="px-3 py-2 my-3">
         <div>
-            <br />
-            <h4 class="text-center">Edit this User</h4>
             <br />
         </div>
         <form asp-action="Edit">
@@ -45,18 +43,18 @@
                     </div>
                     @if (User.IsInRole("User"))
                     {
-        <div class="form-group">
-            <label asp-for="Email" class="label">Email *</label>
-            <input asp-for="Email" id="emailInput" class="form-control" disabled="disabled" />
-            <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
-        </div>}
+                        <div class="form-group">
+                            <label asp-for="Email" class="label">Email *</label>
+                            <input asp-for="Email" id="emailInput" class="form-control" disabled="disabled" />
+                            <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
+                        </div>}
                     @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                     {
-        <div class="form-group">
-            <label asp-for="Email" class="label">Email *</label>
-            <input asp-for="Email" id="emailInput" class="form-control" />
-            <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
-        </div>}
+                        <div class="form-group">
+                            <label asp-for="Email" class="label">Email *</label>
+                            <input asp-for="Email" id="emailInput" class="form-control" />
+                            <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
+                        </div>}
 
                     <div class="form-group">
                         <label for="Password" class="label">Password</label><br />
@@ -100,6 +98,13 @@
                             <input class="form-check-input" asp-for="EmailCancelNotifications" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label asp-for="TimeFormat24Hours" class="label">Time Display</label>
+                        <div class="form-group form-check">
+                            <input class="form-check-input" asp-for="TimeFormat24Hours" /> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <br />

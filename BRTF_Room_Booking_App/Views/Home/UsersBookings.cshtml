@@ -12,9 +12,6 @@
         <div class="container">
             <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-1 py-3 my-3 mx-auto">
                 <form asp-action="UsersBookings" method="get">
-                    <br />
-                    <h4 class="text-center">Your Upcoming Bookings</h4>
-                    <br />
 
                     <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
                     <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
@@ -23,6 +20,7 @@
                             <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
                         </button>
                             <a asp-action="DownloadUsersBookings" class="btn btn-info mb-3">Download Booking List</a>
+                            <a asp-controller="RoomBookings" asp-action="Create" role="button" class="btn mb-3" style="background: #2F7DBB; color: #E4E6E6;">Book A Room</a>
                         <div class="collapse mb-3" id="collapseFilter" style="margin-bottom:20px;">
                             <div class="card card-body bg-light">
                                 <div class="d-block d-lg-none">
@@ -66,12 +64,12 @@
                                 @foreach (var item in Model)
                                 {
                                     <div class="card mb-sm-3" style="min-width: 18rem;">
-                                        <h5 class="card-header">@Convert.ToDateTime(item.StartDate).ToString("MMMM dd, yyyy - h:mm tt")</h5>
+                                        <h5 class="card-header">@Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy - h:mm tt")</h5>
                                         <div class="card-body">
                                             <div class="media-body ml-2">
                                                 @*<p class="card-text">*@
-                                                <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")</div>
-                                                <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()<br /></div>
+                                                <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")</div>
+                                                <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()<br /></div>
                                                 <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
                                                 @*<div class="card-text mb-2"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>*@
                                                 <div class="card-text"><strong>Approval Status:</strong> @Html.DisplayFor(modelItem => item.ApprovalStatus)</div>
@@ -80,7 +78,6 @@
                                             </div>
                                             <div class="card-footer d-flex justify-content-center">
                                                 <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                                <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
                                                 <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
                                             </div>
                                         </div>
@@ -120,10 +117,10 @@
                             {
                                 <tr>
                                     <td>
-                                        @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")
+                                        @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")
                                     </td>
                                     <td>
-                                        @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()
+                                        @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Room.RoomName)
@@ -139,7 +136,6 @@
                                     }
                                     <td>
                                         <a asp-controller="RoomBookings" asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                        <a asp-controller="RoomBookings" asp-action="Details" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
                                         <a asp-controller="RoomBookings" asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
                                     </td>
                                 </tr>

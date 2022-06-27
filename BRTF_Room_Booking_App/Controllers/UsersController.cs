@@ -199,7 +199,7 @@ namespace BRTF_Room_Booking_App.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Top-level Admin, Admin")]
         public async Task<IActionResult> Create(
-            [Bind("ID,Username,FirstName,MiddleName,LastName,Email,EmailBookingNotifications,EmailCancelNotifications,TermAndProgramID,RoleID")] User user,
+            [Bind("ID,Username,FirstName,MiddleName,LastName,Email,EmailBookingNotifications,EmailCancelNotifications,TermAndProgramID,RoleID,TimeFormat24Hours")] User user,
             string Role)
         {
             //URL with the last filter, sort and page parameters for this controller
@@ -388,7 +388,7 @@ namespace BRTF_Room_Booking_App.Controllers
             if (await TryUpdateModelAsync<User>(userToUpdate, "",
                 p => p.FirstName, p => p.MiddleName, p => p.LastName,
                 p => p.Email, p => p.EmailBookingNotifications, p => p.EmailCancelNotifications,
-                p => p.TermAndProgramID)
+                p => p.TermAndProgramID, p => p.TimeFormat24Hours)
                 )
             {
                 try

@@ -69,5 +69,10 @@ namespace BRTF_Room_Booking_App.Models
         
         [Display(Name = "Areas this user is allowed to approve Bookings in.")]
         public ICollection<AreaApprover> AreaApprovers { get; set; }
+
+        //24 Hour Time Format is enabled by default
+        [Display(Name = "Display times in 24-Hour format")]
+        public bool TimeFormat24Hours { get; set; } = true;
+
     }
 }

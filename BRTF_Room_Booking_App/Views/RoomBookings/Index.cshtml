@@ -2,6 +2,10 @@
 @*For Cookies*@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{ ViewData["Title"] = "Bookings Index"; }
+@using System.Globalization;
+@using BRTF_Room_Booking_App.Models;
+@using Syncfusion.EJ2.Schedule;
+
 
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,6 +13,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" />
     <link href='~/fullcalendar/main.css' rel='stylesheet' />
+    <style type="text/css">
+        .e-schedule:not(.e-device) .e-agenda-view .e-content-wrap table td:first-child {
+            width: 90px;
+        }
+
+        .e-schedule .e-agenda-view .e-resource-column {
+            width: 100px;
+        }
+    </style>
 
 
 </head>
@@ -43,7 +56,35 @@
                 <div class="text-center pb-2 ml-5 d-none d-lg-block">
                     <input type="date" id="calendarDatePicker" onchange="refreshCalendar();" />
                 </div>
-                <div class="d-none d-lg-block" id='calendar'></div>
+
+                <div class="control-section">
+                    <div class="content-wrapper">
+                        <ejs-schedule id="schedule" width="100%" height="650px" currentView="TimelineDay" 
+                                      selectedDate="DateTime.Now" workDays="@ViewBag.workDays" 
+                                      readonly="true" allowInline="false" allowDragAndDrop="false" allowResizing="false" 
+                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="HH:mm">
+                            <e-schedule-views>
+                                <e-schedule-view option="TimelineDay"></e-schedule-view>
+                            </e-schedule-views>
+                            <e-schedule-group resources="@ViewBag.Resources"></e-schedule-group>
+                            <e-schedule-resources>
+                                <e-schedule-resource dataSource="@ViewBag.Areas" field="AreaId" title="Choose Area" name="Areas" textField="text" idField="id" colorField="color"></e-schedule-resource>
+                                <e-schedule-resource dataSource="@ViewBag.Rooms" field="RoomId" title="Room" name="Rooms" textField="text" idField="id" groupIDField='groupId' colorField="color" allowMultiple="true"></e-schedule-resource>
+                            </e-schedule-resources>
+                            <e-schedule-eventsettings dataSource="@ViewBag.datasource" allowAdding="false" allowDeleting="false" allowEditing="false" >
+                                <e-eventsettings-fields>
+                                    <e-field-subject name="Subject" title="Summary"></e-field-subject>
+                                    <e-field-starttime name="StartTime" title="StartTime"></e-field-starttime>
+                                    <e-field-endtime name="EndTime" title="EndTime"></e-field-endtime>
+                                    <e-field-description name="SpecialNotes" title="SpecialNotes"></e-field-description>
+                                </e-eventsettings-fields>
+                            </e-schedule-eventsettings>
+                        </ejs-schedule>
+                    </div>
+                </div>
+                <br />
+
+                @*<div class="d-none d-lg-block" id='calendar'></div>*@
 
                 <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
                 <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
@@ -132,23 +173,20 @@
                                     <h5 class="card-header">@Html.DisplayFor(modelItem => item.User.FullName)</h5>
                                     <div class="card-body">
                                         <div class="media-body ml-2">
-                                            @*<p class="card-text">*@
-                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")</div>
-                                            <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()</div>
+                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")</div>
+                                            <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()</div>
                                             <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
                                             <div class="card-text"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>
                                             <br />
-                                            @*</p>*@
                                         </div>
                                         <div class="card-footer d-flex justify-content-center">
                                             @{ int userID = Convert.ToInt32(HttpContextAccessor.HttpContext.Request.Cookies["userID"]);}
                                             @if ((userID == item.UserID) || (User.IsInRole("Admin") || User.IsInRole("Top-level Admin")))
                                             {
                                                 <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                                <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
                                                 <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
                                             }
-                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             }
@@ -178,10 +216,10 @@
                         {
                             <tr>
                                 <td>
-                                    @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")
+                                    @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")
                                 </td>
                                 <td>
-                                    @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()
+                                    @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Room.RoomName)
@@ -194,7 +232,6 @@
                                     @if ((userID == item.UserID) || (User.IsInRole("Admin") || User.IsInRole("Top-level Admin")))
                                     {
                                         <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                        <a asp-action="Details" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Details</a>
                                         <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
                                     }
                                 </td>
@@ -233,6 +270,7 @@
         </section>
     </div>
 </body>
+
 @section Scripts {
     <script src="~/js/refreshDDL.js"></script>
     <script type="text/javascript">
@@ -363,6 +401,36 @@
 
             calendar.render();
         };
+
+        function OnCellClick() {
+            var schObj = document.getElementById('schedule').ej2_instances[0];
+            console.log(schObj.activeEventData);
+            var bookingID = schObj.activeEventData.event.Id;
+            console.log(bookingID);
+
+            window.location.href = '/RoomBookings/Details/' + bookingID;
+        }
+
+        function onPopupOpen(args) {
+            args.cancel = true;
+        }
+
+        function onDataBound() {
+            console.log("test");
+            var schObj = document.getElementById('schedule').ej2_instances[0];
+            let currTime = new Date();
+            let hours =
+                currTime.getHours() < 10
+                    ? "0" + currTime.getHours().toString()
+                    : currTime.getHours().toString();
+            let minutes = currTime.getMinutes().toString();
+            let time = hours + ":" + minutes;
+            schObj.scrollTo(time);
+        }
+
+        function getDateHeaderText(props) {
+            return this.instance.formatDate(props.date, { skeleton: 'dd MMM yyyy' });
+        }
 
 
     </script>

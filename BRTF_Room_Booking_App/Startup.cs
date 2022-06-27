@@ -93,6 +93,10 @@ namespace BRTF_Room_Booking_App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mgo+DSMBMAY9C3t2VVhhQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRdkNiUX9WdXBURmRdUUY=");
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
