@@ -27,14 +27,14 @@
         @if (User.IsInRole("Top-level Admin"))
         {
             <p>
-                <a asp-action="Create" class="btn btn-primary">Create New</a>
+                <a asp-action="Create" class="btn btn-primary" tabindex="1">Create New</a>
             </p>
         }
             <form asp-action="Index" method="get">
                 <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
                 <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
                 <div class="form-horizontal">
-                    <button class="btn @(ViewData["Filtering"]) mb-3" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                    <button tabindex="2" class="btn @(ViewData["Filtering"]) mb-3" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
                         <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
                     </button>
                     <div class="collapse mb-3" id="collapseFilter">
@@ -45,12 +45,12 @@
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
-                                                <input type="checkbox" class="" value="desc"
+                                                <input type="checkbox" class="" value="desc" tabindex="3"
                                                        @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
                                                        name="sortDirectionCheck" />&nbsp;&nbsp;Descending
                                             </div>
                                         </div>
-                                        <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+                                        <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID" tabindex="4"></select>
                                     </div>
                                 </div>
                             </div>
@@ -58,19 +58,19 @@
                             <div class="row">
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Search by Program Code:</label>
-                                    @Html.TextBox("SearchProgCode", null, new { @class = "form-control" })
+                                    @Html.TextBox("SearchProgCode", null, new { @class = "form-control", @tabindex = "4" })
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Search by Program Name:</label>
-                                    @Html.TextBox("SearchProgName", null, new { @class = "form-control" })
+                                    @Html.TextBox("SearchProgName", null, new { @class = "form-control", @tabindex = "5" })
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Search by Term:</label>
-                                    @Html.TextBox("SearchLevel", null, new { @class = "form-control" })
+                                    @Html.TextBox("SearchLevel", null, new { @class = "form-control", @tabindex = "6" })
                                 </div>
                                 <div class="form-group col-md-4 align-self-end">
-                                    <input type="submit" name="actionButton" value="Apply" class="btn btn-outline-primary" />
-                                    <a asp-action="Index" class="btn btn-outline-dark">Clear</a>
+                                    <input type="submit" name="actionButton" value="Apply" class="btn btn-outline-primary" tabindex="7"/>
+                                    <a asp-action="Index" class="btn btn-outline-dark" tabindex="8">Clear</a>
                                 </div>
                             </div>
                         </div>
@@ -85,18 +85,15 @@
                                     <h5 class="card-header">@Html.DisplayFor(modelItem => item.ProgramName)</h5>
                                     <div class="card-body">
                                         <div class="media-body ml-2">
-                                            @*<p class="card-text">*@
                                             <div class="card-text mb-2"><strong>Program Code:</strong> @Html.DisplayFor(modelItem => item.ProgramCode)</div>
                                             <div class="card-text mb-2"><strong>Term:</strong> @Html.DisplayFor(modelItem => item.ProgramLevel)</div>
                                             <div class="card-text"><strong>User Group:</strong> @Html.DisplayFor(modelItem => item.AssignedUserGroup.UserGroup.UserGroupName)</div>
                                             <br />
-                                            @*</p>*@
-
                                         </div>
                                         <div class="card-footer d-flex justify-content-center">
                                             @if (User.IsInRole("Top-level Admin"))
                                             {
-                                                <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                                <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="9">Delete</a>
                                             }
                                             </div>
                                     </div>
@@ -109,16 +106,16 @@
                     <thead>
                         <tr>
                             <th>
-                                <input type="submit" name="actionButton" value="Program Code" class="btn btn-link" style="font-weight:700" />
+                                <input type="submit" name="actionButton" value="Program Code" class="btn btn-link" style="font-weight:700" tabindex="10" />
                             </th>
                             <th>
-                                <input type="submit" name="actionButton" value="Program Name" class="btn btn-link" style="font-weight:700" />
+                                <input type="submit" name="actionButton" value="Program Name" class="btn btn-link" style="font-weight:700" tabindex="11"/>
                             </th>
                             <th>
-                                <input type="submit" name="actionButton" value="Term" class="btn btn-link" style="font-weight:700" />
+                                <input type="submit" name="actionButton" value="Term" class="btn btn-link" style="font-weight:700" tabindex="12"/>
                             </th>
                             <th>
-                                <input type="submit" name="actionButton" value="User Group" class="btn btn-link" style="font-weight:700" />
+                                <input type="submit" name="actionButton" value="User Group" class="btn btn-link" style="font-weight:700" tabindex="13"/>
                             </th>
                             <th></th>
                         </tr>
@@ -142,7 +139,7 @@
                                 <td>
                                     @if (User.IsInRole("Top-level Admin"))
                                     {
-                                        <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
+                                        <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-2" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="14">Delete</a>
                                     }
                                 </td>
                             </tr>

@@ -60,10 +60,10 @@
                                 <br />
                             </div>
                             <div class="card-footer d-flex justify-content-center">
-                                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-1" style="width:100px;">Edit</a>
+                                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-1" style="width:100px;" tabindex="1">Edit</a>
                                 @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                                 {
-                                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-1">Back to Users</a>
+                                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-1" tabindex="2">Back to Users</a>
                                 }
                             </div>
                         </div>
@@ -162,10 +162,10 @@
             </div>
             <br />
             <div class="d-flex justify-content-center">
-                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-2" style="width:100px;">Edit</a>
+                <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary mx-2" style="width:100px;" tabindex="3">Edit</a>
                 @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                 {
-                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2">Back to Users</a>
+                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2" tabindex="4">Back to Users</a>
                 }
             </div>
         <br />

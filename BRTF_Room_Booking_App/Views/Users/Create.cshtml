@@ -25,12 +25,12 @@
 
                     <div class="form-group">
                         <label for="Role" class="label">Role *</label>
-                        <select id="Role" name="Role" class="form-control" asp-items="ViewBag.Role"></select>
+                        <select id="Role" name="Role" class="form-control" asp-items="ViewBag.Role" tabindex="1" autofocus></select>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="TermAndProgramID" for="termProgramInput" class="label">Term and Program *</label>
-                        <select asp-for="TermAndProgramID" id="termProgramInput" class="form-control" asp-items="ViewBag.TermAndProgramID">
+                        <select asp-for="TermAndProgramID" id="termProgramInput" class="form-control" asp-items="ViewBag.TermAndProgramID" tabindex="2">
                             <option value="">- Select a Term and Program -</option>
                         </select>
                         <span asp-validation-for="TermAndProgramID" id="termProgramError" class="text-danger"></span>
@@ -38,31 +38,31 @@
 
                     <div class="form-group">
                         <label asp-for="Username" for="usernameInput" class="label">Username *</label>
-                        <input asp-for="Username" id="usernameInput" class="form-control" placeholder="0123456" />
+                        <input asp-for="Username" id="usernameInput" class="form-control" placeholder="0123456" tabindex="3"/>
                         <span asp-validation-for="Username" id="usernameError" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="FirstName" for="firstNameInput" class="label">First Name *</label>
-                        <input asp-for="FirstName" id="firstNameInput" class="form-control" placeholder="First Name" />
+                        <input asp-for="FirstName" id="firstNameInput" class="form-control" placeholder="First Name" tabindex="4"/>
                         <span asp-validation-for="FirstName" id="firstNameError" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="MiddleName" for="middleNameInput" class="label"></label>
-                        <input asp-for="MiddleName" id="middleNameInput" class="form-control" placeholder="Middle Name" />
+                        <input asp-for="MiddleName" id="middleNameInput" class="form-control" placeholder="Middle Name" tabindex="5"/>
                         <span asp-validation-for="MiddleName" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="LastName" for="lastNameInput" class="label">Last Name *</label>
-                        <input asp-for="LastName" id="lastNameInput" class="form-control" placeholder="Last Name" />
+                        <input asp-for="LastName" id="lastNameInput" class="form-control" placeholder="Last Name" tabindex="6"/>
                         <span asp-validation-for="LastName" id="lastNameError" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="Email" for="emailInput" class="label">Email *</label>
-                        <input asp-for="Email" id="emailInput" class="form-control" placeholder="username@ncstudents.niagaracollege.ca" />
+                        <input asp-for="Email" id="emailInput" class="form-control" placeholder="username@ncstudents.niagaracollege.ca" tabindex="7"/>
                         <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
                     </div>
 
@@ -70,12 +70,12 @@
                         <label class="label">Email Notification</label>
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" asp-for="EmailBookingNotifications" /> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
+                                <input class="form-check-input" asp-for="EmailBookingNotifications" tabindex="8"/> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
                             </label>
                         </div>
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" asp-for="EmailCancelNotifications" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                                <input class="form-check-input" asp-for="EmailCancelNotifications" tabindex="9"/> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
                             </label>
                         </div>
                     </div>
@@ -83,15 +83,15 @@
                     <div class="form-group">
                         <div class="form-group form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" asp-for="TimeFormat24Hours" /> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
+                                <input class="form-check-input" asp-for="TimeFormat24Hours" tabindex="10"/> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
                             </label>
                         </div>
                     </div>
 
                     <br />
                     <div class="d-flex justify-content-center">
-                        <input type="submit" value="Add User" class="btn btn-primary mx-2" style="width: 100px;" />
-                        <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Users</a>
+                        <input type="submit" value="Add User" class="btn btn-primary mx-2" style="width: 100px;" tabindex="11"/>
+                        <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2" tabindex="12">Back to Users</a>
                     </div>
                     <br />
                 </div>
@@ -112,8 +112,8 @@
                     <div class="col-md-12 text-center">
                         <div class="form-group">
                             <label class="control-label">Upload XLSX/CSV File:</label>
-                            <button type="button" title="Bulk Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right"
-                                    data-content="This bulk upload can only be used to upload student(regular user) data">
+                            <button tab type="button" title="Bulk Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right"
+                                    data-content="This bulk upload can only be used to upload student(regular user) data" tabindex="13">
                                 <img src="~/img/questionmark.png" width="30" height="30" />
                             </button>
                         </div>
@@ -122,12 +122,12 @@
                         </div>*@
                     <div class="col-md-12 text-center">
                         <div class="form-group ml-5 pl-3">
-                            <input type="file" class="" name="theExcel" />
+                            <input type="file" class="" name="theExcel" tabindex="14"/>
                         </div>
                     </div>
                     <div class="col-md-12 text-center">
                         <div class="form-group">
-                            <a asp-action="DownloadExampleExcel" class="btn btn-primary mt-2">Download Example File</a> <button type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="This downloadable Excel file shows the correct format bulk user data should be in prior to uploading. Please ensure all column headers match the exact locations of those in the example file in order to complete a successful bulk user upload.">
+                            <a tabindex="15" asp-action="DownloadExampleExcel" class="btn btn-primary mt-2">Download Example File</a> <button tabindex="16" type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="This downloadable Excel file shows the correct format bulk user data should be in prior to uploading. Please ensure all column headers match the exact locations of those in the example file in order to complete a successful bulk user upload.">
                                 <img src="~/img/questionmark.png" width="30" height="30" />
                             </button>
                         </div>
@@ -136,8 +136,8 @@
 
                 <br />
                 <div class="d-flex justify-content-center">
-                    <input type="submit" value="Add Users" class="btn btn-primary mx-2" style="width: 100px;" />
-                    <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Users</a>
+                    <input type="submit" value="Add Users" class="btn btn-primary mx-2" style="width: 100px;" tabindex="17"/>
+                    <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2" tabindex="18">Back to Users</a>
                 </div>
                 <br />
             </form>

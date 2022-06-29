@@ -264,6 +264,12 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
             }
 
+            int userID = int.Parse(Request.Cookies["userID"]);
+            User loggedInUser = _context.Users.Where(u => u.ID == userID).FirstOrDefault();
+
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
+
+
             //Set sort for next time
             ViewData["sortField"] = sortField;
             ViewData["sortDirection"] = sortDirection;
@@ -276,6 +282,52 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["pageSizeID"] = PageSizeHelper.PageSizeList(pageSize);
 
             var pagedData = await PaginatedList<RoomBooking>.CreateAsync(bookings.AsNoTracking(), page ?? 1, pageSize);
+
+            //Populate calendar
+
+            CookieHelper.CookieSet(HttpContext, "userName", loggedInUser.FirstName, 3200);  // Although this cookie is called userName, it is used to store the user's first name for the welcome message to say Hello
+            CookieHelper.CookieSet(HttpContext, "userID", loggedInUser.ID.ToString(), 3200);
+
+
+            //Lists for Area and Room data for the Calendar
+            List<AreaData> areas = new List<AreaData>();
+            List<RoomData> rooms = new List<RoomData>();
+
+            var roombookings = from r in _context.RoomBookings
+                               .Include(r => r.Room).ThenInclude(r => r.Area)
+                               .Include(r => r.User)
+                               select r;
+
+            //Create Calendar items for every booking
+            List<BookingsData> resourceData = new List<BookingsData>();
+            foreach (var b in roombookings.Include(b => b.User).Include(b => b.Room).ThenInclude(b => b.Area))
+            {
+                resourceData.Add(new BookingsData
+                { Id = b.ID, Subject = b.User.FullName, StartTime = b.RoundedStartDate, EndTime = b.RoundedEndDate, RoomId = b.RoomID, AreaId = b.Room.AreaID, Description = b.SpecialNotes });
+            }
+
+            var allAreas = _context.Areas.Select(a => a);
+            var allRooms = _context.Rooms.Select(r => r);
+
+            foreach (Area a in allAreas.OrderBy(a => a.AreaName))
+            {
+                areas.Add(new AreaData { text = a.AreaName, id = a.ID, color = "#2F7DBB" });
+            }
+
+            foreach (Room r in allRooms.OrderBy(r => r.RoomName))
+            {
+                rooms.Add(new RoomData { text = r.RoomName, id = r.ID, groupId = r.AreaID, color = "#2F7DBB" });
+            }
+
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
+
+
+            //Add Calendar data to the ViewBag
+            ViewData["datasource"] = resourceData;
+            ViewData["Areas"] = areas;
+            ViewData["Rooms"] = rooms;
+            ViewData["Resources"] = new string[] { "Areas", "Rooms" };
+            ViewData["workDays"] = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
 
             return View(pagedData);
 
@@ -293,7 +345,7 @@ namespace BRTF_Room_Booking_App.Controllers
                            .ThenInclude(r => r.Area)
                            .Include(r => r.User)
                            .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
-                           select r;
+                            select r;
 
             //bool filtered = false;
 
@@ -309,14 +361,16 @@ namespace BRTF_Room_Booking_App.Controllers
 
             List<BookingVM> bookings = new List<BookingVM>();
 
-            foreach (RoomBooking b in _bookings){
-                bookings.Add(new BookingVM {
-                        Area = b.Room.Area.AreaName,
-                        Room = b.Room.RoomName,
-                        Start = b.StartDate.ToString("g"),
-                        End = b.EndDate.ToString("g"),
-                        Status = b.ApprovalStatus
-                    }
+            foreach (RoomBooking b in _bookings)
+            {
+                bookings.Add(new BookingVM
+                {
+                    Area = b.Room.Area.AreaName,
+                    Room = b.Room.RoomName,
+                    Start = b.StartDate.ToString("g"),
+                    End = b.EndDate.ToString("g"),
+                    Status = b.ApprovalStatus
+                }
                 );
             }
 
@@ -421,6 +475,53 @@ namespace BRTF_Room_Booking_App.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private void PopulateCalendar()
+        {
+            //Populate calendar
+
+                        User loggedInUser = _context.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+            CookieHelper.CookieSet(HttpContext, "userName", loggedInUser.FirstName, 3200);  // Although this cookie is called userName, it is used to store the user's first name for the welcome message to say Hello
+            CookieHelper.CookieSet(HttpContext, "userID", loggedInUser.ID.ToString(), 3200);
+
+
+            //Lists for Area and Room data for the Calendar
+            List<AreaData> areas = new List<AreaData>();
+            List<RoomData> rooms = new List<RoomData>();
+
+            var roombookings = _context.RoomBookings;
+
+            //Create Calendar items for every booking
+            List<BookingsData> resourceData = new List<BookingsData>();
+            foreach (var b in roombookings.Include(b => b.User).Include(b => b.Room).ThenInclude(b => b.Area))
+            {
+                resourceData.Add(new BookingsData
+                { Id = b.ID, Subject = b.User.FullName, StartTime = b.RoundedStartDate, EndTime = b.RoundedEndDate, RoomId = b.RoomID, AreaId = b.Room.AreaID, Description = b.SpecialNotes });
+            }
+
+            var allAreas = _context.Areas.Select(a => a);
+            var allRooms = _context.Rooms.Select(r => r);
+
+            foreach (Area a in allAreas.OrderBy(a => a.AreaName))
+            {
+                areas.Add(new AreaData { text = a.AreaName, id = a.ID, color = "#2F7DBB" });
+            }
+
+            foreach (Room r in allRooms.OrderBy(r => r.RoomName))
+            {
+                rooms.Add(new RoomData { text = r.RoomName, id = r.ID, groupId = r.AreaID, color = "#2F7DBB" });
+            }
+
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
+
+
+            //Add Calendar data to the ViewBag
+            ViewBag.datasource = resourceData;
+            ViewBag.Areas = areas;
+            ViewBag.Rooms = rooms;
+            ViewBag.Resources = new string[] { "Areas", "Rooms" };
+            ViewBag.workDays = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         }
     }
 }

@@ -30,8 +30,6 @@
     <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 70%; margin:auto" class="px-5 py-2 my-3">
 
         <br />
-        <h4 class="text-center">Edit Details</h4>
-        <br />
 
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -40,17 +38,17 @@
                 <div class="col-lg-8">
                     <div class="form-group">
                         <label asp-for="StartOfTermDate" class="label"> Start of Term Date *</label>
-                        <input asp-for="StartOfTermDate" id="startTermInput" class="form-control" />
+                        <input asp-for="StartOfTermDate" id="startTermInput" class="form-control" tabindex="1" />
                         <span asp-validation-for="StartOfTermDate" id="startTermError" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="EndOfTermDate" class="label"> End of Term Date *</label>
-                        <input asp-for="EndOfTermDate" id="endTermInput" class="form-control" />
+                        <input asp-for="EndOfTermDate" id="endTermInput" class="form-control" tabindex="2"/>
                         <span asp-validation-for="EndOfTermDate" id="endTermError" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="LatestAllowableFutureBookingDay" class="label"> Latest Allowable Future Booking Day *</label>
-                        <input asp-for="LatestAllowableFutureBookingDay" id="latestInput" class="form-control" />
+                        <input asp-for="LatestAllowableFutureBookingDay" id="latestInput" class="form-control" tabindex="3" />
                         <span asp-validation-for="LatestAllowableFutureBookingDay" id="latestError" class="text-danger"></span>
                     </div>
                     <br />
@@ -58,30 +56,30 @@
                     <br />
                     <div class="form-group form-check">
                         <label>
-                            <input class="form-check-input" asp-for="EmailBookingNotificationsOverride" /> @Html.DisplayNameFor(model => model.EmailBookingNotificationsOverride)
+                            <input class="form-check-input" asp-for="EmailBookingNotificationsOverride" tabindex="4"/> @Html.DisplayNameFor(model => model.EmailBookingNotificationsOverride)
                         </label>
                     </div>
                     <div class="form-group form-check">
                         <label>
-                            <input class="form-check-input" asp-for="PreventBookingNotificationsOverride" /> @Html.DisplayNameFor(model => model.PreventBookingNotificationsOverride)
+                            <input class="form-check-input" asp-for="PreventBookingNotificationsOverride" tabindex="5"/> @Html.DisplayNameFor(model => model.PreventBookingNotificationsOverride)
                         </label>
                     </div>
                     <div class="form-group form-check">
                         <label>
-                            <input class="form-check-input" asp-for="EmailCancelNotificationsOverride" /> @Html.DisplayNameFor(model => model.EmailCancelNotificationsOverride)
+                            <input class="form-check-input" asp-for="EmailCancelNotificationsOverride" tabindex="6"/> @Html.DisplayNameFor(model => model.EmailCancelNotificationsOverride)
                         </label>
                     </div>
                     <div class="form-group form-check">
                         <label>
-                            <input class="form-check-input" asp-for="PreventCancelNotificationsOverride" /> @Html.DisplayNameFor(model => model.PreventCancelNotificationsOverride)
+                            <input class="form-check-input" asp-for="PreventCancelNotificationsOverride" tabindex="7"/> @Html.DisplayNameFor(model => model.PreventCancelNotificationsOverride)
                         </label>
                     </div>
                 </div>
             </div>
             <br />
             <div class="d-flex justify-content-center">
-                <input type="submit" value="Save" class="btn btn-primary mx-2 mb-4" style="width:100px" />
-                <a asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" role="button" class="btn btn-secondary mx-2 mb-4" style="width:100px;color: #E4E6E6;">Back</a>
+                <input type="submit" value="Save" class="btn btn-primary mx-2 mb-4" style="width:100px" tabindex="8"/>
+                <a asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" role="button" class="btn btn-secondary mx-2 mb-4" style="width:100px;color: #E4E6E6;" tabindex="9">Back</a>
             </div>
         </form>
     </section>

@@ -12,7 +12,7 @@
 
 <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2); width: 65%; margin:auto;" class="px-5 py-2 my-3">
     <br />
-    <h4 class="text-center">Select Roles or User Groups to delete Users from <button type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="If you would like to delete all users in a specific Role please click on the checkboxes under the first heading. If you would like to delete all users in specific User Groups, please click on the checkboxes under the second heading."><img src="~/img/questionmark.png" width="30" height="30" /></button></h4>
+    <h4 class="text-center">Select Roles or User Groups to delete Users from <button tabindex="1" type="button" title="Bulk User Upload Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="right" data-content="If you would like to delete all users in a specific Role please click on the checkboxes under the first heading. If you would like to delete all users in specific User Groups, please click on the checkboxes under the second heading."><img src="~/img/questionmark.png" width="30" height="30" /></button></h4>
     <p class="text-center" style="margin-bottom: 20px;  margin-top: 20px; font-style: italic;">* Please note that it is not possible to delete your own account *</p>
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -33,7 +33,7 @@
                                     @:</tr><tr>
                                     }
                                     @:<td>
-                                        <input type="checkbox"
+                                        <input type="checkbox" tabindex="2"
                                                name="selectedRoles"
                                                value="@checkbox.DisplayText"
                                                @(Html.Raw(checkbox.Assigned ? "checked=\"checked\"" : "")) />
@@ -60,7 +60,7 @@
                                         @:</tr><tr>
                                         }
                                         @:<td>
-                                            <input type="checkbox"
+                                            <input type="checkbox" tabindex="3"
                                                    name="selectedGroups"
                                                    value="@checkbox.ID"
                                                    @(Html.Raw(checkbox.Assigned ? "checked=\"checked\"" : "")) />
@@ -72,17 +72,10 @@
                             </table>
                         </div>
                     </div>
-                    @*<div>
-                        <input type="checkbox"
-                               name="selectAll"
-                               value="Select All"
-                               onClick="selectAllCheckboxes(this)" />
-                        <b>Select All&nbsp;&nbsp;</b>
-                        </div>*@
                     <br />
                     <div>
-                        <input type="submit" value="Delete Selected" class="btn btn-danger" />
-                        <a asp-action="Index" role="button" class="btn btn-secondary mx-2">Back to Users</a>
+                        <input type="submit" value="Delete Selected" class="btn btn-danger" tabindex="4"/>
+                        <a asp-action="Index" role="button" class="btn btn-secondary mx-2" tabindex="5">Back to Users</a>
                     </div>
                     <br />
                 </form>

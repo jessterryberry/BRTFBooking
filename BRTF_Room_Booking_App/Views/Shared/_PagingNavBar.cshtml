@@ -6,36 +6,36 @@
         var stepForward = (Model.PageIndex + jumpAmount > Model.TotalPages) ? Model.TotalPages : Model.PageIndex + jumpAmount;
         <ul class="pagination justify-content-center" style="margin:20px 0">
             <li class="page-item">
-                <button type="submit" name="page" value="1" @prevDisabled class="btn page-link">
+                <button type="submit" name="page" value="1" @prevDisabled class="btn page-link" tabindex="44">
                     <span aria-hidden="true">&lArr;</span>&nbsp;First
                 </button>
             </li>
             <li class="page-item d-none d-md-inline">
                 <button type="submit" name="page" value="@(stepBack)" @prevDisabled
-                        data-toggle="tooltip" title="Jump Back @(Model.PageIndex-stepBack) Pages" class="btn page-link">
+                        data-toggle="tooltip" title="Jump Back @(Model.PageIndex-stepBack) Pages" class="btn page-link" tabindex="45">
                     <span aria-hidden="true">&lArr;</span>
                 </button>
             </li>
             <li class="page-item">
-                <button type="submit" name="page" @prevDisabled value="@(Model.PageIndex - 1)" class="btn page-link">
+                <button type="submit" name="page" @prevDisabled value="@(Model.PageIndex - 1)" class="btn page-link" tabindex="46">
                     &nbsp;<span aria-hidden="true">&larr;</span>&nbsp;<span class="d-none d-md-inline">Previous</span>
                 </button>
             </li>
             <li class="page-item">
-                @Html.DropDownList("pageSizeID", null, htmlAttributes: new { @class = "form-control btn btn-primary select-add-placeholder", @onchange = "this.form.submit()" })
+                @Html.DropDownList("pageSizeID", null, htmlAttributes: new { @class = "form-control btn btn-primary select-add-placeholder", @onchange = "this.form.submit()", @tabindex = "47" })
             </li>
             <li class="page-item">
-                <button type="submit" name="page" @nextDisabled value="@(Model.PageIndex + 1)" class="btn page-link">
+                <button type="submit" name="page" @nextDisabled value="@(Model.PageIndex + 1)" class="btn page-link" tabindex="48">
                     <span class="d-none d-md-inline">Next</span>&nbsp;<span aria-hidden="true">&rarr;</span>&nbsp;
                 </button>
             </li>
             <li class="page-item d-none d-md-inline">
-                <button type="submit" name="page" @nextDisabled value="@(stepForward)" title="Jump Forward @(stepForward-Model.PageIndex) Pages" class="btn page-link">
+                <button type="submit" name="page" @nextDisabled value="@(stepForward)" title="Jump Forward @(stepForward-Model.PageIndex) Pages" class="btn page-link" tabindex="49">
                     <span aria-hidden="true">&rArr;</span>
                 </button>
             </li>
             <li class="page-item">
-                <button type="submit" name="page" @nextDisabled value="@(Model.TotalPages)" class="btn page-link">
+                <button type="submit" name="page" @nextDisabled value="@(Model.TotalPages)" class="btn page-link" tabindex="50">
                     Last&nbsp;<span aria-hidden="true">&rArr;</span>
                 </button>
             </li>

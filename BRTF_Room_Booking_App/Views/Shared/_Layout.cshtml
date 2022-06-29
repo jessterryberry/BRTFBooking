@@ -89,7 +89,7 @@
                                             @if (User.IsInRole("Top-level Admin"))
                                             {
                                                 <div class="dropdown-divider"></div>
-                                                <a tabindex="62" class="dropdown-item" asp-area="" asp-controller="GlobalSettings" asp-action="Details" asp-route-id="1" style="color: #E4E6E6;">Global Settings</a>
+                                                <a tabindex="62" class="dropdown-item" asp-area="" asp-controller="GlobalSettings" asp-action="Edit" asp-route-id="1" style="color: #E4E6E6;">Global Settings</a>
                                             }
                                         </div>
                                     </li>
@@ -111,7 +111,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container" style="text-align: center;">
-            &copy; 2022 - BRTF Room Booking App - <a  tabindex="66" asp-area="" asp-controller="Home" asp-action="Privacy" style="color: dimgrey">Privacy</a>
+            &copy; 2022 - BRTF Room Booking App
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

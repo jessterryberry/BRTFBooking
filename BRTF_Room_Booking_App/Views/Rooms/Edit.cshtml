@@ -22,30 +22,30 @@
                     <input type="hidden" asp-for="ID" />
                     <div class="form-group">
                         <label asp-for="AreaID" class="label">Area *</label>
-                        <select asp-for="AreaID" class="form-control" asp-items="ViewBag.AreaID"></select>
+                        <select asp-for="AreaID" class="form-control" asp-items="ViewBag.AreaID" tabindex="1"></select>
                     </div>
                     <div class="form-group">
                         <label asp-for="RoomName" class="label">Room Name *</label>
-                        <input asp-for="RoomName" id="roomNameInput" class="form-control" />
+                        <input asp-for="RoomName" id="roomNameInput" class="form-control" tabindex="2"/>
                         <span asp-validation-for="RoomName" id="roomNameError" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="RoomMaxHoursTotal" class="label"></label>
-                        <input asp-for="RoomMaxHoursTotal" class="form-control" />
+                        <input asp-for="RoomMaxHoursTotal" class="form-control" tabindex="3"/>
                         <span asp-validation-for="RoomMaxHoursTotal" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label class="label">Is Enabled</label>
                         <div class="form-group form-check">
-                            <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
+                            <input class="form-check-input" asp-for="Enabled" tabindex="4"/> @Html.DisplayNameFor(model => model.Enabled)
                         </div>
                     </div>
                 </div>
             </div>
             <br />
             <div class="d-flex justify-content-center">
-                <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
-                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Rooms</a>
+                <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" tabindex="5"/>
+                <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2" tabindex="6">Back to Rooms</a>
             </div>
             <br />
         </form>

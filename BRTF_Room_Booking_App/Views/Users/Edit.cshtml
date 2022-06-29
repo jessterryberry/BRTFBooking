@@ -28,17 +28,17 @@
 
                     <div class="form-group">
                         <label asp-for="FirstName" class="label">First Name *</label>
-                        <input asp-for="FirstName" id="firstNameInput" class="form-control" />
+                        <input asp-for="FirstName" id="firstNameInput" class="form-control" tabindex="1" />
                         <span asp-validation-for="FirstName" id="firstNameError" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="MiddleName" class="label"></label>
-                        <input asp-for="MiddleName" class="form-control" />
+                        <input asp-for="MiddleName" class="form-control" tabindex="2" />
                         <span asp-validation-for="MiddleName" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="LastName" class="label">Last Name *</label>
-                        <input asp-for="LastName" id="lastNameInput" class="form-control" />
+                        <input asp-for="LastName" id="lastNameInput" class="form-control" tabindex="3" />
                         <span asp-validation-for="LastName" id="lastNameError" class="text-danger"></span>
                     </div>
                     @if (User.IsInRole("User"))
@@ -52,7 +52,7 @@
                     {
                         <div class="form-group">
                             <label asp-for="Email" class="label">Email *</label>
-                            <input asp-for="Email" id="emailInput" class="form-control" />
+                            <input asp-for="Email" id="emailInput" class="form-control" tabindex="4" />
                             <span asp-validation-for="Email" id="emailError" class="text-danger"></span>
                         </div>}
 
@@ -60,10 +60,10 @@
                         <label for="Password" class="label">Password</label><br />
                         <div class="input-group">
                             <div class="form-floating flex-grow-1">
-                                <input id="Password" name="Password" class="form-control" type="password" />
+                                <input id="Password" name="Password" class="form-control" type="password" tabindex="5" />
                             </div>
                             <div class="input-group-append">
-                                <span class="input-group-text"><i class="bi bi-eye-slash" id="togglePassword" onclick="togglePassword()"></i></span>
+                                <span class="input-group-text"><i class="bi bi-eye-slash" id="togglePassword" onclick="togglePassword()" tabindex="6"></i></span>
                             </div>
                         </div>
                     </div>
@@ -71,11 +71,11 @@
                         <label for="ConfirmPassword" class="label">Confirm Password</label>
                         <div class="input-group">
                             <div class="form-floating flex-grow-1">
-                                <input id="ConfirmPassword" name="ConfirmPassword" class="form-control" type="password"
+                                <input id="ConfirmPassword" name="ConfirmPassword" class="form-control" type="password" tabindex="7"
                                        data-val="true" data-val-equalto="Password and Confirmation Password must match." data-val-equalto-other="*.Password" />
                             </div>
                             <div class="input-group-append">
-                                <span class="input-group-text"><i class="bi bi-eye-slash" id="togglePasswordConfirm" onclick="togglePasswordConfirm()"></i></span>
+                                <span class="input-group-text"><i class="bi bi-eye-slash" id="togglePasswordConfirm" onclick="togglePasswordConfirm()" tabindex="8"></i></span>
                             </div>
                         </div>
                         <span for="ConfirmPassword" class="field-validation-valid error" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true" style="color:red"></span>
@@ -92,16 +92,16 @@
                     <div class="form-group">
                         <label asp-for="EmailBookingNotifications" class="label">Email Notification</label>
                         <div class="form-group form-check">
-                            <input class="form-check-input" asp-for="EmailBookingNotifications" /> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
+                            <input class="form-check-input" asp-for="EmailBookingNotifications" tabindex="9" /> @Html.DisplayNameFor(model => model.EmailBookingNotifications)
                         </div>
                         <div class="form-group form-check">
-                            <input class="form-check-input" asp-for="EmailCancelNotifications" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
+                            <input class="form-check-input" asp-for="EmailCancelNotifications" tabindex="10" /> @Html.DisplayNameFor(model => model.EmailCancelNotifications)
                         </div>
                     </div>
                     <div class="form-group">
                         <label asp-for="TimeFormat24Hours" class="label">Time Display</label>
                         <div class="form-group form-check">
-                            <input class="form-check-input" asp-for="TimeFormat24Hours" /> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
+                            <input class="form-check-input" asp-for="TimeFormat24Hours" tabindex="11" /> @Html.DisplayNameFor(model => model.TimeFormat24Hours)
                         </div>
                     </div>
 
@@ -109,10 +109,11 @@
             </div>
             <br />
             <div class="d-flex justify-content-center">
-                <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
+                <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" tabindex="12" />
                 @if (User.IsInRole("Admin") || User.IsInRole("Top-level Admin"))
                 {
-    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2">Back to Users</a>}
+                    <a href='@ViewData["returnURL"]' class="btn btn-secondary mx-2" tabindex="13">Back to Users</a>
+                }
 
             </div>
             <br />

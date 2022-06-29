@@ -308,6 +308,9 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
             }
 
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
+
+
             //Add Calendar data to the ViewBag
             ViewBag.datasource = resourceData;
             ViewBag.Areas = areas;
@@ -421,6 +424,12 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["Sunday"] = "";
             ViewData["RepeatEndDate"] = "";
 
+            int userID = int.Parse(Request.Cookies["userID"]);
+            User loggedInUser = _context.Users.Where(u => u.ID == userID).FirstOrDefault();
+
+            bool TimeFormat24Hours = loggedInUser.TimeFormat24Hours;
+
+
             // Validate Repeat controls if checkbox is On
             if (chkRepeat == "on")
             {
@@ -518,11 +527,15 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (roomBooking.StartDate.TimeOfDay < area.EarliestTime.TimeOfDay)
                 {
-                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + area.EarliestTime.ToString("h:mm tt"));
+                    string error = "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: ";
+                    error += TimeFormat24Hours ? area.EarliestTime.ToString("HH:mm") : area.EarliestTime.ToString("hh:mm tt");
+                    ModelState.AddModelError("StartDate", error);
                 }
                 if (roomBooking.EndDate.TimeOfDay > area.LatestTime.TimeOfDay || (roomBooking.EndDate - roomBooking.StartDate.Date).TotalDays >= 1)
                 {
-                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + area.LatestTime.ToString("h:mm tt"));
+                    string error = "End Time cannot be after the latest allowed time in this Area. Latest allowed time: ";
+                    error += TimeFormat24Hours ? area.LatestTime.ToString("HH:mm") : area.LatestTime.ToString("hh:mm tt");
+                    ModelState.AddModelError("EndDate", error);
                 }
             }
 
@@ -1020,6 +1033,12 @@ namespace BRTF_Room_Booking_App.Controllers
             //URL with the last filter, sort and page parameters for this controller
             ViewDataReturnURL();
 
+            int userID = int.Parse(Request.Cookies["userID"]);
+            User loggedInUser = _context.Users.Where(u => u.ID == userID).FirstOrDefault();
+
+            bool TimeFormat24Hours = loggedInUser.TimeFormat24Hours;
+
+
             // Disable User selection field for non-Admins
             if (User.IsInRole("Top-level Admin") || User.IsInRole("Admin"))
             {
@@ -1051,11 +1070,15 @@ namespace BRTF_Room_Booking_App.Controllers
             {
                 if (StartDate.TimeOfDay < area.EarliestTime.TimeOfDay)
                 {
-                    ModelState.AddModelError("StartDate", "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: " + area.EarliestTime.ToString("h:mm tt"));
+                    string error = "Start Time cannot be before the earliest allowed time in this Area. Earliest allowed time: ";
+                    error += TimeFormat24Hours ? area.EarliestTime.ToString("HH:mm") : area.EarliestTime.ToString("hh:mm tt");
+                    ModelState.AddModelError("StartDate", error);
                 }
                 if (EndDate.TimeOfDay > area.LatestTime.TimeOfDay || (EndDate - StartDate.Date).TotalDays >= 1)
                 {
-                    ModelState.AddModelError("EndDate", "End Time cannot be after the latest allowed time in this Area. Latest allowed time: " + area.LatestTime.ToString("h:mm tt"));
+                    string error = "End Time cannot be after the latest allowed time in this Area. Latest allowed time: ";
+                    error += TimeFormat24Hours ? area.LatestTime.ToString("HH:mm") : area.LatestTime.ToString("hh:mm tt");
+                    ModelState.AddModelError("EndDate", error);
                 }
             }
 
@@ -1957,31 +1980,6 @@ namespace BRTF_Room_Booking_App.Controllers
             }
 
             return sum;
-        }
-
-        private class RoomData
-        {
-            public int id { set; get; }
-            public int groupId { set; get; }
-            public string text { set; get; }
-            public string color { set; get; }
-        }
-        private class AreaData
-        {
-            public int id { set; get; }
-            public string text { set; get; }
-            public string color { set; get; }
-        }
-
-        public class BookingsData
-        {
-            public int Id { get; set; }
-            public string Subject { get; set; }
-            public DateTime StartTime { get; set; }
-            public DateTime EndTime { get; set; }
-            public int RoomId { get; set; }
-            public int AreaId { get; set; }
-            public string Description { get; set; }
         }
     }
 }

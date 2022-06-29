@@ -1,150 +1,262 @@
 ﻿@model IEnumerable<BRTF_Room_Booking_App.Models.RoomBooking>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Globalization;
+@using BRTF_Room_Booking_App.Models;
+@using Syncfusion.EJ2.Schedule;
+
 
 @{
     ViewData["Title"] = "Your Bookings";
 }
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    @*<link href='~/fullcalendar/main.css' rel='stylesheet' />*@
+    <style type="text/css">
+        .e-schedule:not(.e-device) .e-agenda-view .e-content-wrap table td:first-child {
+            width: 90px;
+        }
 
-<body>
-    <br />
-    <h1 class="text-center">Your Bookings</h1>
-    <br />
-    <div class="row justify-content-center">
-        <div class="container">
-            <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-1 py-3 my-3 mx-auto">
-                <form asp-action="UsersBookings" method="get">
+        .e-schedule .e-agenda-view .e-resource-column {
+            width: 100px;
+        }
+    </style>
 
-                    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
-                    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
-                    <div class="form-horizontal align-items-start text-left justify-content-start">
-                        <button class="btn @(ViewData["Filtering"]) mb-3" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
-                            <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
-                        </button>
-                            <a asp-action="DownloadUsersBookings" class="btn btn-info mb-3">Download Booking List</a>
-                            <a asp-controller="RoomBookings" asp-action="Create" role="button" class="btn mb-3" style="background: #2F7DBB; color: #E4E6E6;">Book A Room</a>
-                        <div class="collapse mb-3" id="collapseFilter" style="margin-bottom:20px;">
-                            <div class="card card-body bg-light">
-                                <div class="d-block d-lg-none">
-                                    <div class="form-group">
-                                        <label class="control-label">Sort By:</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <div class="input-group-text">
-                                                    <input type="checkbox" class="" value="desc"
-                                                           @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
-                                                           name="sortDirectionCheck" />&nbsp;&nbsp;Descending
-                                                </div>
+</head>
+<body class="align-items-center justify-content-center">
+    <br />
+    <h1 class="mb-4 text-center">Your Bookings</h1>
+    <br />
+    <div class="container">
+        <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-1 py-3 my-3 mx-auto">
+            <h4 class="text-left">
+                <a asp-action="Create" class="btn btn-primary mt-3" tabindex="1">Book a Room</a>
+            </h4>
+            <form asp-action="UsersBookings" method="get">
+                <div class="control-section">
+                    <div class="content-wrapper">
+                        <ejs-schedule id="schedule" width="100%" height="650px" currentView="TimelineDay"
+                                      selectedDate="DateTime.Now" workDays="@ViewBag.workDays"
+                                      readonly="true" allowInline="false" allowDragAndDrop="false" allowResizing="false"
+                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="HH:mm">
+                            <e-schedule-views>
+                                <e-schedule-view option="TimelineDay"></e-schedule-view>
+                            </e-schedule-views>
+                            <e-schedule-group resources="@ViewBag.Resources"></e-schedule-group>
+                            <e-schedule-resources>
+                                <e-schedule-resource dataSource="@ViewBag.Areas" field="AreaId" title="Choose Area" name="Areas" textField="text" idField="id" colorField="color"></e-schedule-resource>
+                                <e-schedule-resource dataSource="@ViewBag.Rooms" field="RoomId" title="Room" name="Rooms" textField="text" idField="id" groupIDField='groupId' colorField="color" allowMultiple="true"></e-schedule-resource>
+                            </e-schedule-resources>
+                            <e-schedule-workhours highlight="true" start="00:01" end="23:59"></e-schedule-workhours>
+                            <e-schedule-eventsettings dataSource="@ViewBag.datasource" allowAdding="false" allowDeleting="false" allowEditing="false">
+                                <e-eventsettings-fields>
+                                    <e-field-subject name="Subject" title="Summary"></e-field-subject>
+                                    <e-field-starttime name="StartTime" title="StartTime"></e-field-starttime>
+                                    <e-field-endtime name="EndTime" title="EndTime"></e-field-endtime>
+                                    <e-field-description name="SpecialNotes" title="SpecialNotes"></e-field-description>
+                                </e-eventsettings-fields>
+                            </e-schedule-eventsettings>
+                        </ejs-schedule>
+                    </div>
+                </div>
+                <br />
+
+                <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+                <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+                <div class="form-horizontal align-items-start text-left justify-content-start">
+                    <button class="btn @(ViewData["Filtering"]) mb-3" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" tabindex="2">
+                        <text class="d-none d-lg-inline">Filter/Search</text><text class="d-inline d-lg-none">Filter/Sort</text>
+                    </button>
+                    <a asp-action="DownloadUsersBookings" class="btn btn-info mb-3" tabindex="9">Download Booking List</a>
+                    <div class="collapse mb-3" id="collapseFilter" style="margin-bottom:20px;">
+                        <div class="card card-body bg-light">
+                            <div class="d-block d-lg-none">
+                                <div class="form-group">
+                                    <label class="control-label">Sort By:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" class="" value="desc"
+                                                       @((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+                                                       name="sortDirectionCheck" tabindex="3" />&nbsp;&nbsp;Descending
                                             </div>
-                                            <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
                                         </div>
+                                        <select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID" tabindex="4"></select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="row">
-                                    <div class="form-group col-md-4">
-                                        <label class="control-label">Search After Date:</label>
-                                        @Html.TextBox("SearchAfterDate", null, new { @class = "form-control", @type = "date" })
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label class="control-label">Search Before Date:</label>
-                                        @Html.TextBox("SearchBeforeDate", null, new { @class = "form-control", @type = "date" })
-                                    </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search After Date:</label>
+                                    @Html.TextBox("SearchAfterDate", null, new { @class = "form-control", @type = "date", @tabindex = "5" })
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-md-4 align-self-end">
-                                        <input type="submit" name="actionButton" value="Apply" class="btn btn-outline-primary" />
-                                        <a asp-action="UsersBookings" class="btn btn-outline-dark">Clear</a>
-                                    </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Search Before Date:</label>
+                                    @Html.TextBox("SearchBeforeDate", null, new { @class = "form-control", @type = "date", tabindex = "6" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4 align-self-end">
+                                    <input type="submit" name="actionButton" value="Apply" class="btn btn-outline-primary" tabindex="7" />
+                                    <a asp-action="UsersBookings" class="btn btn-outline-dark" tabindex="8">Clear</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="container-fluid d-block d-lg-none">
-                        <div class="card-deck-wrapper">
-                            <div class="card-deck">
-                                @foreach (var item in Model)
-                                {
-                                    <div class="card mb-sm-3" style="min-width: 18rem;">
-                                        <h5 class="card-header">@Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy - h:mm tt")</h5>
-                                        <div class="card-body">
-                                            <div class="media-body ml-2">
-                                                @*<p class="card-text">*@
-                                                <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")</div>
-                                                <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()<br /></div>
-                                                <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
-                                                @*<div class="card-text mb-2"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>*@
-                                                <div class="card-text"><strong>Approval Status:</strong> @Html.DisplayFor(modelItem => item.ApprovalStatus)</div>
-                                                <br />
-                                                @*</p>*@
-                                            </div>
-                                            <div class="card-footer d-flex justify-content-center">
-                                                <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                                <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                    <table class="table d-none d-lg-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <button type="submit" class="btn btn-link" name="actionButton" value="Start Date"><b>Date</b></button>
-                                </th>
-                                <th>
-                                    <button type="submit" class="btn btn-link" disabled style="color:black"><b>Time</b></button>
-                                </th>
-                                <th>
-                                    <button type="submit" class="btn btn-link" disabled style="color:black"><b>Room</b></button>
-                                </th>
-                                @*<th>
-                                        <button type="submit" class="btn btn-link" disabled style="color:black"><b>User</b></button>
-                                    </th>*@
-                                @if (User.IsInRole("Admin") || User.IsInRole("User") || User.IsInRole("Top-level Admin"))@*i will remove top-admin from this if statement once all top-admin bookings are automatically approved. for now i've left it for demonstration purposes'*@
-                                {
-                                    <th>
-                                        <button type="submit" class="btn btn-link" name="actionButton" value="Approval Status"><b>Approval Status</b></button>
-                                    </th>
-                                }
-                                <th></th>
-                                @*<th></th>*@
-                            </tr>
-                        </thead>
-                        <tbody>
+                </div>
+                <div class="container-fluid d-block d-lg-none">
+                    <div class="card-deck-wrapper">
+                        <div class="card-deck">
                             @foreach (var item in Model)
                             {
-                                <tr>
-                                    <td>
-                                        @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")
-                                    </td>
-                                    <td>
-                                        @Convert.ToDateTime(item.RoundedStartDate).ToShortTimeString() - @Convert.ToDateTime(item.RoundedEndDate).ToShortTimeString()
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Room.RoomName)
-                                    </td>
-                                    @*<td>
-                                            @Html.DisplayFor(modelItem => item.User.FullName)
-                                        </td>*@
-                                    @if (User.IsInRole("Admin") || User.IsInRole("User") || User.IsInRole("Top-level Admin"))@*i will remove top-admin from this if statement once all top-admin bookings are automatically approved. for now i've left it for demonstration purposes'*@
-                                    {
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ApprovalStatus)
-                                        </td>
-                                    }
-                                    <td>
-                                        <a asp-controller="RoomBookings" asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Edit</a>
-                                        <a asp-controller="RoomBookings" asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;">Delete</a>
-                                    </td>
-                                </tr>
+                                <div class="card mb-sm-3" style="min-width: 18rem;">
+                                    <h5 class="card-header">@Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy - h:mm tt")</h5>
+                                    <div class="card-body">
+                                        <div class="media-body ml-2">
+                                            @*<p class="card-text">*@
+                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")</div>
+                                            <div class="card-text mb-2">
+                                                <strong>Time:</strong>
+                                                @if ((string)ViewData["24HrFormat"] == "true")
+                                                {
+                                                    var start = item.RoundedStartDate.ToString("HH:mm");
+                                                    var end = item.RoundedEndDate.ToString("HH:mm");
+                                                    var times = string.Format("{0} - {1}", start, end);
+
+                                                    @times
+
+                                                }
+                                                else
+                                                {
+                                                    var start = item.RoundedStartDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                                    var end = item.RoundedEndDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                                    var times = string.Format("{0} - {1}", start, end);
+
+                                                    @times
+                                                }
+                                                <br />
+                                            </div>
+                                            <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
+                                            @*<div class="card-text mb-2"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>*@
+                                            <div class="card-text"><strong>Approval Status:</strong> @Html.DisplayFor(modelItem => item.ApprovalStatus)</div>
+                                            <br />
+                                            @*</p>*@
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-center">
+                                            <a asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="10">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn mx-1" style="width:75px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="10">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
                             }
-                        </tbody>
-                    </table>
-                    <partial name="_PagingNavBar" />
-                </form>
-            </section>
-        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table d-none d-lg-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button type="submit" class="btn btn-link" name="actionButton" value="Start Date" tabindex="11"><b>Date</b></button>
+                            </th>
+                            <th>
+                                <button type="submit" class="btn btn-link" disabled style="color:black"><b>Time</b></button>
+                            </th>
+                            <th>
+                                <button type="submit" class="btn btn-link" disabled style="color:black"><b>Room</b></button>
+                            </th>
+                            @*<th>
+                            <button type="submit" class="btn btn-link" disabled style="color:black"><b>User</b></button>
+                        </th>*@
+                            @if (User.IsInRole("Admin") || User.IsInRole("User") || User.IsInRole("Top-level Admin"))@*i will remove top-admin from this if statement once all top-admin bookings are automatically approved. for now i've left it for demonstration purposes'*@
+                            {
+                                <th>
+                                    <button type="submit" class="btn btn-link" name="actionButton" value="Approval Status" tabindex="12"><b>Approval Status</b></button>
+                                </th>
+                            }
+                            <th></th>
+                            @*<th></th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")
+                                </td>
+                                <td>
+                                    @if ((string)ViewData["24HrFormat"] == "true")
+                                    {
+                                        var start = item.RoundedStartDate.ToString("HH:mm");
+                                        var end = item.RoundedEndDate.ToString("HH:mm");
+                                        var times = string.Format("{0} - {1}", start, end);
+
+                                        @times
+
+                                    }
+                                    else
+                                    {
+                                        var start = item.RoundedStartDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                        var end = item.RoundedEndDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                        var times = string.Format("{0} - {1}", start, end);
+
+                                        @times
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Room.RoomName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ApprovalStatus)
+                                </td>
+                                <td>
+                                    <a asp-controller="RoomBookings" asp-action="Edit" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="13">Edit</a>
+                                    <a asp-controller="RoomBookings" asp-action="Delete" asp-route-id="@item.ID" role="button" class="btn m-lg-1" style="width:73px; background:#2F7DBB; color:#E4E6E6; font-weight:400;" tabindex="13">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <partial name="_PagingNavBar" />
+            </form>
+        </section>
     </div>
+    <script>
+        function OnCellClick() {
+            var schObj = document.getElementById('schedule').ej2_instances[0];
+            console.log(schObj.activeEventData);
+            var bookingID = schObj.activeEventData.event.Id;
+            console.log(bookingID);
+
+            window.location.href = '/RoomBookings/Details/' + bookingID;
+        }
+
+        function onPopupOpen(args) {
+            args.cancel = true;
+        }
+
+        function onDataBound() {
+            console.log("test");
+            var schObj = document.getElementById('schedule').ej2_instances[0];
+            let currTime = new Date();
+            let hours =
+                currTime.getHours() < 10
+                    ? "0" + currTime.getHours().toString()
+                    : currTime.getHours().toString();
+            let minutes = currTime.getMinutes().toString();
+            let time = hours + ":" + minutes;
+            schObj.scrollTo(time);
+        }
+
+        function getDateHeaderText(props) {
+            return this.instance.formatDate(props.date, { skeleton: 'dd MMM yyyy' });
+        }
+
+
+    </script>
+
 </body>

@@ -25,25 +25,25 @@
                         <input type="hidden" asp-for="ID" />
                         <div class="form-group text-left">
                             <label asp-for="UserGroupName" class="label">User Group *</label>
-                            <input asp-for="UserGroupName" id="userGroupInput" class="form-control" />
+                            <input asp-for="UserGroupName" id="userGroupInput" class="form-control" tabindex="1"/>
                             <span asp-validation-for="UserGroupName" id="userGroupError" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="row">
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Current Area Permissions</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
+                                <label class="label"> Current Area Permissions</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm" tabindex="3">
                                     <strong>-</strong>
                                 </button>
-                                @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control" })
+                                @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control", @tabindex = "2" })
                                 <span id="selectedOptionsError" class="text-danger"></span>
                             </div>
 
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Add Area Permissions</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
+                                <label class="label"> Add Area Permissions</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm" tabindex="5">
                                     <strong>+</strong>
                                 </button>
-                                @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control" })
+                                @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control", @tabindex = "4" })
                             </div>
                         </div>
                     </div>
@@ -54,26 +54,26 @@
                     <div class="col-md-8">
                         <div class="row">
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Current Terms And Programs</label> <button type="button" id="btnRightTP" class="btn btn-danger btn-sm">
+                                <label class="label"> Current Terms And Programs</label> <button type="button" id="btnRightTP" class="btn btn-danger btn-sm" tabindex="7">
                                     <strong>-</strong>
                                 </button>
-                                @Html.ListBox("selectedOptionsTP", (MultiSelectList)ViewBag.selOptsTP, new { @size = 10, @class = "form-control" })
+                                @Html.ListBox("selectedOptionsTP", (MultiSelectList)ViewBag.selOptsTP, new { @size = 10, @class = "form-control", @tabindex="6" })
                                 <span id="selectedOptionsTPError" class="text-danger"></span>
                             </div>
 
                             <div class="form-group col-md-6 text-left">
-                                <label class="label"> Assign Terms And Programs</label> <button type="button" id="btnLeftTP" class="btn btn-success btn-sm">
+                                <label class="label"> Assign Terms And Programs</label> <button type="button" id="btnLeftTP" class="btn btn-success btn-sm" tabindex="9">
                                     <strong>+</strong>
                                 </button>
-                                @Html.ListBox("availOptionsTP", (MultiSelectList)ViewBag.availOptsTP, new { @size = 10, @class = "form-control" })
+                                @Html.ListBox("availOptionsTP", (MultiSelectList)ViewBag.availOptsTP, new { @size = 10, @class = "form-control", @tabindex = "8" })
                             </div>
                         </div>
                     </div>
                 </div>
                 <br />
                 <div class="d-flex justify-content-center">
-                    <input type="submit" id="btnSubmit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
-                    <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to User Groups</a>
+                    <input type="submit" id="btnSubmit" value="Save" class="btn btn-primary mx-2" style="width:100px;" tabindex="10"/>
+                    <a href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2" tabindex="11">Back to User Groups</a>
                 </div>
                 <br />
             </form>
