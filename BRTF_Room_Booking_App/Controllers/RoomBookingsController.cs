@@ -568,6 +568,8 @@ namespace BRTF_Room_Booking_App.Controllers
 
             try
             {
+                TempData["Error"] = 0;
+
                 if (ModelState.IsValid)
                 {
                     // Overall list of bookings to be added. Bookings added at the end
@@ -858,6 +860,7 @@ namespace BRTF_Room_Booking_App.Controllers
                         // Send feedback to User if any time conflicts detected overall
                         TempData["YourBookings"] = overallNewBookingsToAdd;
                         TempData["TimeConflictedBookings"] = overallTimeConflictFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Booking time conflict violation.");    // Break before bookings are added or saved
                     }
@@ -865,6 +868,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     {
                         // Send feedback to User if their new bookings violate the time total for a specific room
                         TempData["RoomHoursViolation"] = overallRoomTimeFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Booking time total violation.");    // Break before bookings are added or saved
                     }
@@ -872,6 +876,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     {
                         // Send feedback to User if their new bookings violate the time total for an area
                         TempData["AreaHoursViolation"] = overallAreaTimeFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Booking time total violation.");    // Break before bookings are added or saved
                     }
@@ -879,6 +884,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     {
                         // Send feedback to User if their new bookings violate the maximum time for a single booking
                         TempData["SingleBookingLengthViolation"] = overallSingleBookingLengthFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Booking time total violation.");    // Break before bookings are added or saved
                     }
@@ -886,6 +892,7 @@ namespace BRTF_Room_Booking_App.Controllers
                     {
                         // Send feedback to User if their new bookings violate the maximum number of bookings allowed in this area
                         TempData["AreaBookingCountViolation"] = overallAreaNumberOfBookingsFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Total Booking count violation.");    // Break before bookings are added or saved
                     }
@@ -895,6 +902,7 @@ namespace BRTF_Room_Booking_App.Controllers
                         TempData["YourBookings"] = overallNewBookingsToAdd;
                         TempData["BlackoutTimeViolation"] = overallBlackoutViolationFeedback;
                         TempData["BlackoutTimeValues"] = overallRoomBlackoutTimes;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Blackout time violation.");    // Break before bookings are added or saved
                     }
@@ -903,6 +911,7 @@ namespace BRTF_Room_Booking_App.Controllers
                         // Send feedback to User if any simultaneous booking violation detected overall
                         TempData["YourBookings"] = overallNewBookingsToAdd;
                         TempData["SimultaneousStudentBookingViolations"] = overallSimultaneousViolationFeedback;
+                        TempData["Error"] = 1;
 
                         throw new DbUpdateException("Booking time conflict violation.");    // Break before bookings are added or saved
                     }
@@ -930,6 +939,8 @@ namespace BRTF_Room_Booking_App.Controllers
             }
             catch (RetryLimitExceededException /* dex */)
             {
+                TempData["Error"] = 1;
+
                 ModelState.AddModelError("", "Unable to save changes after multiple attempts. Try again, and if the problem persists, see your system administrator.");
             }
             catch (DbUpdateException dex)
@@ -952,6 +963,7 @@ namespace BRTF_Room_Booking_App.Controllers
                 }
                 else
                 {
+                    TempData["Error"] = 1;
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
@@ -1127,6 +1139,11 @@ namespace BRTF_Room_Booking_App.Controllers
             roomBookingPreviousState.Room = roomBookingToUpdate.Room;
             roomBookingPreviousState.UserID = roomBookingToUpdate.UserID;
             roomBookingPreviousState.User = roomBookingToUpdate.User;
+
+            if (roomBookingToUpdate.Room.Area.NeedsApproval && User.IsInRole("User"))
+            {
+                roomBookingToUpdate.ApprovalStatus = "Pending";
+            }
 
             // Try updating it with the values posted
             if (await TryUpdateModelAsync<RoomBooking>(roomBookingToUpdate, "",
@@ -1492,29 +1509,107 @@ namespace BRTF_Room_Booking_App.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetDurations(int? ID, string selectedValue)
+        public JsonResult GetStartTimes(int[] ID, string selectedDateString, int? editID)
+        {
+            User loggedInUser = _context.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+
+            // Get values from database (substitute nulls with Max Int32)
+            List<Room> rooms = new List<Room>();
+            foreach (int i in ID)
+            {
+                Room room = _context.Rooms.Where(r => r.ID == i).FirstOrDefault();
+                rooms.Add(room);
+            }
+            DateTime selectedDate = DateTime.Parse(selectedDateString);
+
+            // Manually generate SelectList
+            List<SelectListItem> availStartTimes = new List<SelectListItem>();
+
+            var allBookings = _context.RoomBookings.Where(b => ID.Contains(b.RoomID) && (b.StartDate.Date == selectedDate || b.EndDate.Date == selectedDate));
+
+            if (editID.HasValue)
+            {
+                allBookings = allBookings.Where(b => b.ID != editID);
+            }
+
+            for (double i = 0.0; i < 24.0; i+= 0.5)
+            {
+                DateTime t = selectedDate.AddHours(i);
+                DateTime e = t.AddHours(0.5);
+                if (allBookings.Any(b => (b.StartDate.AddMinutes(-1) > t && b.StartDate < e) ||
+                                         (b.EndDate > t && b.EndDate < e) ||
+                                         (b.StartDate.AddMinutes(-1) < t && b.EndDate > e)))
+                {
+                    continue;
+                }
+                else
+                {
+                    string valStarttime = String.Format("{0:HH:mm}", t);
+                    string txtStarttime = valStarttime;
+                    if (!loggedInUser.TimeFormat24Hours)
+                    {
+                        txtStarttime = t.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                    }
+                    availStartTimes.Add(new SelectListItem() { Text = txtStarttime, Value = valStarttime });
+                }
+            }
+
+            return Json(new SelectList(availStartTimes, "Value", "Text", selectedDateString));
+        }
+
+        [HttpGet]
+        public JsonResult GetDurations(int[] ID, string selectedDate, string selectedTime, int? editID)
         {
             // Get values from database (substitute nulls with Max Int32)
-            Area area = _context.Areas.Where(r => r.ID == ID.GetValueOrDefault()).FirstOrDefault();
+            List<Room> rooms = new List<Room>();
+            foreach (int i in ID)
+            {
+                Room room = _context.Rooms.Where(r => r.ID == i).FirstOrDefault();
+                rooms.Add(room);
+            }
+            Area area = _context.Areas.Where(r => r.ID == rooms[0].AreaID).FirstOrDefault();
+            DateTime selectedDateTime = DateTime.Parse(selectedDate + " " + selectedTime);
+
             int areaMaxHours = Math.Min((area.MaxHoursPerSingleBooking.GetValueOrDefault() == 0) ? Int32.MaxValue : area.MaxHoursPerSingleBooking.GetValueOrDefault(),
                 (area.MaxHoursTotal.GetValueOrDefault() == 0) ? Int32.MaxValue : area.MaxHoursTotal.GetValueOrDefault());
-            int roomsMaxHours = _context.Rooms.Where(r => r.AreaID == ID.GetValueOrDefault()).Select(r => r.RoomMaxHoursTotal).Min().GetValueOrDefault();
+            int roomMaxHours = rooms.Min(r => r.RoomMaxHoursTotal).GetValueOrDefault();
 
             // Determine highest duration as the lowest of these values (substitute nulls with Max Int32)
             int overallMaxDuration = Math.Min((areaMaxHours == 0) ? Int32.MaxValue : areaMaxHours,
-                (roomsMaxHours == 0) ? Int32.MaxValue : roomsMaxHours);
+                (roomMaxHours == 0) ? Int32.MaxValue : roomMaxHours);
 
             // Manually generate SelectList
             List<SelectListItem> durations = new List<SelectListItem>();
 
-            for (double i = 0.5; i <= Math.Min(overallMaxDuration, 24); i += 0.5)
+            var allBookings = _context.RoomBookings.Where(b => ID.Contains(b.RoomID) && (b.StartDate.Date == selectedDateTime.Date || b.EndDate.Date == selectedDateTime.Date));
+
+            if (editID.HasValue)
             {
-                DateTime t = new DateTime();
-                t = t.AddHours(i).AddMinutes(-1);
-                durations.Add(new SelectListItem() { Text = i.ToString() + " hours", Value = t.ToString("HH:mm") });
+                allBookings = allBookings.Where(b => b.ID != editID);
+                var a = _context.RoomBookings.Where(b => b.ID == editID).FirstOrDefault().EndDate;
+                var b = _context.RoomBookings.Where(b => b.ID == editID).FirstOrDefault().StartDate;
+                selectedTime = (a-b).ToString("hh':'mm");
             }
 
-            return Json(new SelectList(durations, "Value", "Text", selectedValue));
+
+            for (double i = 0.5; i <= Math.Min(overallMaxDuration, 24); i += 0.5)
+            {
+                DateTime d = selectedDateTime.AddHours(i);
+                if (allBookings.Any(b => (b.StartDate.AddMinutes(-1) > selectedDateTime && b.StartDate < d) ||
+                                         (b.EndDate > selectedDateTime && b.EndDate < d) ||
+                                         (b.StartDate.AddMinutes(-1) < selectedDateTime && b.EndDate > d)))
+                {
+                    continue;
+                }
+                else
+                {
+                    DateTime t = new DateTime();
+                    t = t.AddHours(i).AddMinutes(-1);
+                    durations.Add(new SelectListItem() { Text = i.ToString() + " hours", Value = t.ToString("HH:mm") });
+                }
+            }
+
+            return Json(new SelectList(durations, "Value", "Text", selectedTime));
         }
 
         private bool RoomBookingExists(int id)

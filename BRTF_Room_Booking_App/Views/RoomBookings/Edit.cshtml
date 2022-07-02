@@ -368,176 +368,30 @@
             <br />
         </div>
         <div>
-            <!--Mobile Screen Sizes View-->
             <div class="container">
                 <form asp-action="Edit">
                     <div class="col-lg-8" style="margin: auto">
                         <div class="form-group text-left">
                             <label asp-for="UserID" class="label">Full Name *</label>
-                            <select asp-for="UserID" class="form-control" asp-items="ViewBag.UserID" disabled="@(ViewBag.UserIdDisabled)"></select>
+                            <select tabindex="1" asp-for="UserID" class="form-control" asp-items="ViewBag.UserID" disabled="@(ViewBag.UserIdDisabled)"></select>
                         </div>
                         <div class="form-group text-left">
                             <label asp-for="SpecialNotes" class="label">Special Notes</label>
-                            <textarea asp-for="SpecialNotes" class="form-control"></textarea>
+                            <textarea tabindex="2" asp-for="SpecialNotes" class="form-control"></textarea>
                             <span asp-validation-for="SpecialNotes" class="text-danger"></span>
-                        </div>
-                        <div class="form-group text-left">
-                            <button type="button" title="Booking Time Help" class="btn btn-sm mr-1" data-container="body" data-toggle="popover" data-placement="left"
-                                    data-content="This time selection to the right sets the beginning and end time for a SINGLE booking. If you want to create MULTIPLE repeat bookings over several days, please use the Repeat settings on the bottom of this page.">
-                                <img src="~/img/questionmark.png" width="30" height="30" />
-                            </button>
-                            <label asp-for="StartDate" class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Booking Time *</strong></label>
-                        </div>
-                        @* First row contains separate pickers for Date, Time, Duration. Javascript updates the datetimes in Third row using these pickers in First row *@
-                        <div class="form-group text-left">
-                            Select Booking Date
-                            <input type="date" class="form-control" id="startDatePicker" onchange="startDatePickerHandler(event);" />
-                        </div>
-                        <div class="form-group text-left">
-                            Select Booking Time
-                            @Html.DropDownList("startTimePicker", new List<SelectListItem>
-                           {
-                               new SelectListItem { Value="00:00", Text="12:00 A.M."},
-                               new SelectListItem { Value="00:30", Text="12:30 A.M."},
-                               new SelectListItem { Value="01:00", Text="1:00 A.M."},
-                               new SelectListItem { Value="01:30", Text="1:30 A.M."},
-                               new SelectListItem { Value="02:00", Text="2:00 A.M."},
-                               new SelectListItem { Value="02:30", Text="2:30 A.M."},
-                               new SelectListItem { Value="03:00", Text="3:00 A.M."},
-                               new SelectListItem { Value="03:30", Text="3:30 A.M."},
-                               new SelectListItem { Value="04:00", Text="4:00 A.M."},
-                               new SelectListItem { Value="04:30", Text="4:30 A.M."},
-                               new SelectListItem { Value="05:00", Text="5:00 A.M."},
-                               new SelectListItem { Value="05:30", Text="5:30 A.M."},
-                               new SelectListItem { Value="06:00", Text="6:00 A.M."},
-                               new SelectListItem { Value="06:30", Text="6:30 A.M."},
-                               new SelectListItem { Value="07:00", Text="7:00 A.M."},
-                               new SelectListItem { Value="07:30", Text="7:30 A.M."},
-                               new SelectListItem { Value="08:00", Text="8:00 A.M."},
-                               new SelectListItem { Value="08:30", Text="8:30 A.M."},
-                               new SelectListItem { Value="09:00", Text="9:00 A.M."},
-                               new SelectListItem { Value="09:30", Text="9:30 A.M."},
-                               new SelectListItem { Value="10:00", Text="10:00 A.M."},
-                               new SelectListItem { Value="10:30", Text="10:30 A.M."},
-                               new SelectListItem { Value="11:00", Text="11:00 A.M."},
-                               new SelectListItem { Value="11:30", Text="11:30 A.M."},
-                               new SelectListItem { Value="12:00", Text="12:00 P.M."},
-                               new SelectListItem { Value="12:30", Text="12:30 P.M."},
-                               new SelectListItem { Value="13:00", Text="1:00 P.M."},
-                               new SelectListItem { Value="13:30", Text="1:30 P.M."},
-                               new SelectListItem { Value="14:00", Text="2:00 P.M."},
-                               new SelectListItem { Value="14:30", Text="2:30 P.M."},
-                               new SelectListItem { Value="15:00", Text="3:00 P.M."},
-                               new SelectListItem { Value="15:30", Text="3:30 P.M."},
-                               new SelectListItem { Value="16:00", Text="4:00 P.M."},
-                               new SelectListItem { Value="16:30", Text="4:30 P.M."},
-                               new SelectListItem { Value="17:00", Text="5:00 P.M."},
-                               new SelectListItem { Value="17:30", Text="5:30 P.M."},
-                               new SelectListItem { Value="18:00", Text="6:00 P.M."},
-                               new SelectListItem { Value="18:30", Text="6:30 P.M."},
-                               new SelectListItem { Value="19:00", Text="7:00 P.M."},
-                               new SelectListItem { Value="19:30", Text="7:30 P.M."},
-                               new SelectListItem { Value="20:00", Text="8:00 P.M."},
-                               new SelectListItem { Value="20:30", Text="8:30 P.M."},
-                               new SelectListItem { Value="21:00", Text="9:00 P.M."},
-                               new SelectListItem { Value="21:30", Text="9:30 P.M."},
-                               new SelectListItem { Value="22:00", Text="10:00 P.M."},
-                               new SelectListItem { Value="22:30", Text="10:30 P.M."},
-                               new SelectListItem { Value="23:00", Text="11:00 P.M."},
-                               new SelectListItem { Value="23:30", Text="11:30 P.M."}
-                           }, htmlAttributes: new { @class = "form-control", @onchange = "startTimePickerHandler(event);" })
-                        </div>
-                        <div class="form-group text-left">
-                            Select Duration
-                            @Html.DropDownList("durationPicker", new List<SelectListItem>
-                           {
-                               new SelectListItem { Value="00:29", Text="0.5 hours"},
-                               new SelectListItem { Value="00:59", Text="1 hours"},
-                               new SelectListItem { Value="01:29", Text="1.5 hours"},
-                               new SelectListItem { Value="01:59", Text="2 hours"},
-                               new SelectListItem { Value="02:29", Text="2.5 hours"},
-                               new SelectListItem { Value="02:59", Text="3 hours"},
-                               new SelectListItem { Value="03:29", Text="3.5 hours"},
-                               new SelectListItem { Value="03:59", Text="4 hours"},
-                               new SelectListItem { Value="04:29", Text="4.5 hours"},
-                               new SelectListItem { Value="04:59", Text="5 hours"},
-                               new SelectListItem { Value="05:29", Text="5.5 hours"},
-                               new SelectListItem { Value="05:59", Text="6 hours"},
-                               new SelectListItem { Value="06:29", Text="6.5 hours"},
-                               new SelectListItem { Value="06:59", Text="7 hours"},
-                               new SelectListItem { Value="07:29", Text="7.5 hours"},
-                               new SelectListItem { Value="07:59", Text="8 hours"},
-                               new SelectListItem { Value="08:29", Text="8.5 hours"},
-                               new SelectListItem { Value="08:59", Text="9 hours"},
-                               new SelectListItem { Value="09:29", Text="9.5 hours"},
-                               new SelectListItem { Value="09:59", Text="10 hours"},
-                               new SelectListItem { Value="10:29", Text="10.5 hours"},
-                               new SelectListItem { Value="10:59", Text="11 hours"},
-                               new SelectListItem { Value="11:29", Text="11.5 hours"},
-                               new SelectListItem { Value="11:59", Text="12 hours"},
-                               new SelectListItem { Value="12:29", Text="12.5 hours"},
-                               new SelectListItem { Value="12:59", Text="13 hours"},
-                               new SelectListItem { Value="13:29", Text="13.5 hours"},
-                               new SelectListItem { Value="13:59", Text="14 hours"},
-                               new SelectListItem { Value="14:29", Text="14.5 hours"},
-                               new SelectListItem { Value="14:59", Text="15 hours"},
-                               new SelectListItem { Value="15:29", Text="15.5 hours"},
-                               new SelectListItem { Value="15:59", Text="16 hours"},
-                               new SelectListItem { Value="16:29", Text="16.5 hours"},
-                               new SelectListItem { Value="16:59", Text="17 hours"},
-                               new SelectListItem { Value="17:29", Text="17.5 hours"},
-                               new SelectListItem { Value="17:59", Text="18 hours"},
-                               new SelectListItem { Value="18:29", Text="18.5 hours"},
-                               new SelectListItem { Value="18:59", Text="19 hours"},
-                               new SelectListItem { Value="19:29", Text="19.5 hours"},
-                               new SelectListItem { Value="19:59", Text="20 hours"},
-                               new SelectListItem { Value="20:29", Text="20.5 hours"},
-                               new SelectListItem { Value="20:59", Text="21 hours"},
-                               new SelectListItem { Value="21:29", Text="21.5 hours"},
-                               new SelectListItem { Value="21:59", Text="22 hours"},
-                               new SelectListItem { Value="22:29", Text="22.5 hours"},
-                               new SelectListItem { Value="22:59", Text="23 hours"},
-                               new SelectListItem { Value="23:29", Text="23.5 hours"},
-                               new SelectListItem { Value="23:59", Text="24 hours"}
-                           }, htmlAttributes: new { @class = "form-control", @onchange = "durationPickerHandler(event);" })
-                        </div>
-                        <div class="form-group">
-                            <div class="text-right pt-2">
-                            </div>
-                            @* Second row contains the REAL inputs for the start and end time, but they are hidden from the user.
-                        User does not edit directly. Javascript on First row edits these.
-                        Also Error Messages for the datetime inputs get displayed here. *@
-                            <div class="text-left">
-                                <input type="hidden" id="startDateInput" asp-for="StartDate" class="form-control" runat="server" />
-                                <input type="hidden" asp-for="EndDate" id="endDateInput" class="form-control" runat="server" />
-                                <span id="startDateError" class="text-danger"></span>
-                                <span id="aspStartDateErrorSpan" asp-validation-for="StartDate" class="text-danger"></span>
-                                <span id="endDateError" class="text-danger"></span>
-                                <span id="aspEndDateErrorSpan" asp-validation-for="EndDate" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="form-group text-left">
-                            <div class="text-right pt-2">
-                            </div>
-                            @* Third row shows the start and end datetimes FOR DISPLAY. User does not edit directly. Javascript on First row edits these *@
-                            <label>Your Chosen Booking Starts At</label>
-                            <input type="datetime-local" id="startDateDisplay" class="form-control" disabled />
-                        </div>
-                        <div class="form-group text-left">
-                            <label>Your Chosen Booking Ends At</label>
-                            <input type="datetime-local" id="endDateDisplay" class="form-control" disabled />
                         </div>
                         <br />
                         <div class="form-group text-left">
-                            <button type="button" title="Room Selection Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="To add a Room to your Booking, first select the Area. You will then be able to select the desired Room in that Area from the Dropdown below.">
+                            <button tabindex="3" type="button" title="Room Selection Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left"
+                                    data-content="To add a Room to your Booking, first select the Area. Then select the desired Room in that Area from the dropdown list below.">
                                 <img src="~/img/questionmark.png" width="30" height="30" />
                             </button>
                             <label class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Select a Room</strong></label>
                         </div>
 
                         <div class="form-group text-left">
-                            <label for="AreaID" class="label">Area *</label>
-                            <select id="AreaID" name="AreaID" class="form-control" asp-items="ViewBag.AreaID"></select>
+                            <label for="AreaID" class="label"><strong>Area *</strong></label>
+                            <select tabindex="4" id="AreaID" name="AreaID" class="form-control" asp-items="ViewBag.AreaID"></select>
                         </div>
 
                         <div id="areaDescription" class="alert alert-dark text-center" role="alert">
@@ -546,10 +400,146 @@
                         </div>
 
                         <div class="form-group text-left">
-                            <label asp-for="RoomID" class="label">Room *</label>
-                            <select asp-for="RoomID" class="form-control" asp-items="ViewBag.RoomID"></select>
-                            <span asp-validation-for="RoomID" class="text-danger"></span>
+                            <label asp-for="RoomID" class="label"><strong>Room *</strong></label>
+                            <select tabindex="6" asp-for="RoomID" id="RoomID" class="form-control" asp-items="ViewBag.RoomID">
+                                <option value="">-Select a Room-</option>
+                            </select>
+                            <span asp-validation-for="RoomID" id="valRoom" class="text-danger"></span>
                         </div>
+                        <br />
+
+                        <div class="form-group text-left">
+
+                            <button tabindex="7" type="button" title="Booking Time Help" class="btn btn-sm mr-1" data-container="body" data-toggle="popover" data-placement="left"
+                                    data-content="First select the desired date for your Booking. This will display any available start times for your chosen Room with at least 30 minutes before the next Booking. Selecting a start time will allow you to choose the duration for the Booking.">
+                                <img src="~/img/questionmark.png" width="30" height="30" />
+                            </button>
+                            <label asp-for="StartDate" class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Booking Time *</strong></label>
+                        </div>
+                        @* First row contains separate pickers for Date, Time, Duration. Javascript updates the datetimes in Third row using these pickers in First row *@
+                        <div class="form-group text-left">
+                            Select Booking Date
+                            <input tabindex="8" type="date" class="form-control" id="startDatePicker" onchange="startDatePickerHandler(event);" />
+                        </div>
+
+                        <div class="form-group text-left" id="starttimeoptions">
+                            Available Booking Start Times
+                            <br />
+                            <span id="nostarttimes"></span>
+                            <div class="container justify-content-center text-center align-content-center" id="starttimes">
+                                <div class="row justify-content-center text-center align-content-center" data-toggle="buttons">
+
+                                    <div class="row justify-content-center text-center align-content-center">
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes1" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes2" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes3" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes4" role="group"></div>
+                                    </div>
+                                    <div class="row justify-content-center text-center align-content-center">
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes5" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes6" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes7" role="group"></div>
+                                        <div class="btn-group btn-group-toggle btn-group-justified" id="starttimes8" role="group"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group text-left" id="duration">
+                            Select Duration
+                            <select tabindex="17" id="durationPicker" class="form-control" onchange="durationPickerHandler(event);"></select>
+                        </div>
+                        <div class="form-group">
+                            <div class="text-right pt-2">
+                            </div>
+                            @* Second row contains the REAL inputs for the start and end time, but they are hidden from the user.
+                User does not edit directly. Javascript on First row edits these.
+                Also Error Messages for the datetime inputs get displayed here. *@
+                            <div class="text-left">
+                                <input type="datetime" id="startDateInput" hidden asp-for="StartDate" class="form-control" runat="server" />
+                                <input type="datetime" asp-for="EndDate" hidden id="endDateInput" class="form-control" runat="server" />
+                                <span id="startDateError" class="text-danger"></span>
+                                <span id="aspStartDateErrorSpan" asp-validation-for="StartDate" class="text-danger"></span>
+                                <span id="endDateError" class="text-danger"></span>
+                                <span id="aspEndDateErrorSpan" asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div hidden aria-hidden="true">
+                            <div class="form-group text-left">
+                                <div class="text-right pt-2">
+                                </div>
+                                @* Third row shows the start and end datetimes FOR DISPLAY. User does not edit directly. Javascript on First row edits these *@
+                                <label>Your Chosen Booking Starts At</label>
+                                <input type="datetime-local" id="startDateDisplay" class="form-control" disabled />
+                            </div>
+                            <div class="form-group text-left">
+                                <label>Your Chosen Booking Ends At</label>
+                                <input type="datetime-local" id="endDateDisplay" class="form-control" disabled />
+                            </div>
+                        </div>
+                        <div id="bookingsummary"></div>
+                        <br />
+                        <div id="repeatsection">
+                            <div class="form-group text-left">
+                                <button tabindex="18" type="button" title="Repeating Bookings Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left"
+                                        data-content="If you want your Booking to be repeated over a period of time, click this checkbox. Then select how frequently you want the Booking to occur. You may choose to repeat bookings every X number of Days or Weeks until your chosen Repeat End Date, and specify which days of the week within that period should be booked.">
+                                    <img src="~/img/questionmark.png" width="30" height="30" />
+                                </button>
+                                <label for="chkRepeat" class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Repeat?</strong></label>
+                                <input tabindex="19" type="checkbox" id="chkRepeat" name="chkRepeat" class="control-label ml-2" @Html.Raw(ViewBag.chkRepeat) data-toggle="collapse" data-target="#collapseRepeat" aria-expanded="false" aria-controls="collapseRepeat" />
+                            </div>
+                            <div class="collapse @(ViewData["RepeatContainer"])" id="collapseRepeat">
+                                <div class="container">
+                                    <div class="form-group text-left">
+                                        <label for="RepeatInterval" class="control-label"><strong>Every *</strong></label>
+                                        <input tabindex="20" type="number" id="RepeatInterval" name="RepeatInterval" step="1" min="1" value="@(ViewData["RepeatInterval"])" class="form-control" />
+                                        <span id="valRepeat" class="text-danger field-validation-valid" data-valmsg-for="RepeatInterval" data-valmsg-replace="true"></span>
+                                        <select tabindex="21" id="RepeatType" name="RepeatType" class="form-control my-4" asp-items="ViewBag.RepeatType"></select>
+                                    </div>
+                                    <div class="container mt-4">
+                                        <div class="collapse @(ViewData["DaysOfWeekContainer"])" id="collapseDaysOfWeekSelection">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <input tabindex="22" type="checkbox" id="Monday" name="Monday" @Html.Raw(ViewBag.Monday) style="width: 20px; height: 20px;" /><br />
+                                                    <label for="Monday" class="control-label">Mon</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="23" type="checkbox" id="Tuesday" name="Tuesday" @Html.Raw(ViewBag.Tuesday) style="width: 20px; height: 20px;" /><br />
+                                                    <label for="Tuesday" class="control-label">Tue</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="24" type="checkbox" id="Wednesday" name="Wednesday" @Html.Raw(ViewBag.Wednesday) style="width: 20px; height: 20px; " /><br />
+                                                    <label for="Wednesday" class="control-label">Wed</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="25" type="checkbox" id="Thursday" name="Thursday" @Html.Raw(ViewBag.Thursday) style="width: 20px; height: 20px; " /><br />
+                                                    <label for="Thursday" class="control-label">Thu</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="26" type="checkbox" id="Friday" name="Friday" @Html.Raw(ViewBag.Friday) style="width: 20px; height: 20px; " /><br />
+                                                    <label for="Friday" class="control-label">Fri</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="27" type="checkbox" id="Saturday" name="Saturday" @Html.Raw(ViewBag.Saturday) style="width: 20px; height: 20px; " /><br />
+                                                    <label for="Saturday" class="control-label">Sat</label>
+                                                </div>
+                                                <div class="col">
+                                                    <input tabindex="28" type="checkbox" id="Sunday" name="Sunday" @Html.Raw(ViewBag.Sunday) style="width: 20px; height: 20px; " /><br />
+                                                    <label for="Sunday" class="control-label">Sun</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group text-left mt-3">
+                                        <label for="RepeatEndDate" class="control-label"><strong>Repeat End Date *</strong></label>
+                                        <input tabindex="29" type="date" id="RepeatEndDate" name="RepeatEndDate" value="@(ViewData["RepeatEndDate"])" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
                         <div class="form-group text-left">
                             <label asp-for="ApprovalStatus" class="label">Approval Status *</label>
                             @Html.DropDownList("ApprovalStatus", new List<SelectListItem>
@@ -557,13 +547,13 @@
                                new SelectListItem { Text="Pending", Value="Pending"},
                                new SelectListItem { Text="Approved", Value="Approved"},
                                new SelectListItem { Text="Declined", Value="Declined"}
-                           }, htmlAttributes: new { @class = "form-control" })
+                           }, htmlAttributes: new { @class = "form-control", @tabindex="30" })
                         </div>
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <br />
                         <div class="d-flex justify-content-center">
-                            <input type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
-                            <button type="button" onclick="history.back()" class="btn btn-secondary mx-2">Back to Bookings</button>
+                            <input tabindex="31" type="submit" value="Save" class="btn btn-primary mx-2" style="width:100px;" />
+                            <a tabindex="32" href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Bookings</a>
                         </div>
                         <br />
                     </div>
@@ -575,10 +565,29 @@
 </body>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/multiselect.js"></script>
+    <script src="~/js/refreshListbox.js"></script>
     <script src="~/js/refreshDDL.js"></script>
-    <script type="text/javascript">
-        // Disable ApprovalStatus dropdown according to ViewData
+    <script tye="text/javascript">
+        var selTime = "";
+        var eID = "";
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+        // Expand Day-of-week checkboxes when repeat type is Weeks
+        $('#RepeatType').change(function () {
+            if ($('#RepeatType').val() == "Days") {
+                $('#collapseDaysOfWeekSelection').collapse('hide');
+            } else if ($('#RepeatType').val() == "Weeks") {
+                $('#collapseDaysOfWeekSelection').collapse('show');
+            }
+        });
+
+        // Load initial booking time when page loads
         $('document').ready(function () {
+            console.log($("#endDatetimeInput").value);
             var disableApprovalStatus = '@ViewData["DisableSelectApprovalStatus"]';
             if (disableApprovalStatus.toLowerCase() == 'true') {
                 document.getElementById("ApprovalStatus").disabled = true;
@@ -586,16 +595,78 @@
             else {
                 document.getElementById("ApprovalStatus").disabled = false;
             }
-        });
-    </script>
-    <script type="text/javascript">
-        // Load initial booking time when page loads
-        $('document').ready(function () {
+
+            eID = "&editID=" + window.location.href.split("Edit/")[1];
+
+
+            var isAdmin = @{
+                string a = User.IsInRole("User") ? "false" : "true";
+                @a;
+            };
+            var SimultaneousStudentBookingViolations = @{
+                int t = TempData["SimultaneousStudentBookingViolations"] == null ? 0 : 1;
+                @t;
+            };
+            var TimeConflictedBookings = @{
+                t = TempData["TimeConflictedBookings"] == null ? 0 : 1;
+                @t;
+            };
+            var AreaHoursViolation = @{
+                t = TempData["AreaHoursViolation"] == null ? 0 : 1;
+                @t;
+            };
+            var RoomHoursViolation = @{
+                t = TempData["RoomHoursViolation"] == null ? 0 : 1;
+                @t;
+            };
+            var SingleBookingLengthViolation = @{
+                t = TempData["SingleBookingLengthViolation"] == null ? 0 : 1;
+                @t;
+            };
+            var AreaBookingCountViolation = @{
+                t = TempData["AreaBookingCountViolation"] == null ? 0 : 1;
+                @t;
+            };
+            var BlackoutTimeViolation = @{
+                t = TempData["BlackoutTimeViolation"] == null ? 0 : 1;
+                @t;
+            };
+
+
+            if (SimultaneousStudentBookingViolations !== 0 || TimeConflictedBookings !== 0 || AreaHoursViolation !== 0 || RoomHoursViolation !== 0 || SingleBookingLengthViolation !== 0 || AreaBookingCountViolation !== 0 || BlackoutTimeViolation !== 0){
+
+            }
+
+            var error = @{
+                t = TempData["Error"] == null ? 0 : (int)TempData["Error"];
+                @t;
+            };
+
+            var valErrors = "";
+            valErrors = valErrors + $("#aspEndDateErrorSpan").html() + $("#aspStartDateErrorSpan").html() + $("#valRoom").html() + $("#valRepeat").html();
+
+            if (error !== 0 || valErrors !== "" || isAdmin) {
+
+            }
+
+            var selectedArea = $("#AreaID").val();
+            var URL = "/RoomBookings/GetArea/" + selectedArea;
+            $.getJSON(URL, function (data) {
+                if (data !== null && !jQuery.isEmptyObject(data)) {
+                    $("#areaDescription_Title").text(data.areaName);
+                    $("#areaDescription_Body").html(data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                } else {
+                    $("#areaDescription_Title").text("Connection Error");
+                    $("#areaDescription_Body").html("Could not load Area description.");
+                }
+            });
+
             // Grab initial start datetime from the true Start Datetime picker
-            var startDateFormatted = document.getElementById("startDateInput").value.split(" ")[0].split(".");
-            startDateFormatted = startDateFormatted[2] + "-" + startDateFormatted[1] + "-" + startDateFormatted[0];
-            startDateFormatted = startDateFormatted + "T" + document.getElementById("startDateInput").value.split(" ")[1];
-            var startDatetime = new Date(startDateFormatted);
+            var startDatetime = new Date(document.getElementById("startDateInput").value);
+            console.log(document.getElementById("startDateInput").value);
+            console.log(document.getElementById("endDateInput").value);
+            console.log(startDatetime);
+
             var startDay = parseInt(startDatetime.getDate());
             var startMonth = parseInt(startDatetime.getMonth() + 1);
             var startYear = parseInt(startDatetime.getFullYear());
@@ -606,6 +677,8 @@
             startDateString = startDateString + startMonth + "-";
             if (startDay < 10) { startDateString = startDateString + "0" }
             startDateString = startDateString + startDay;
+
+            console.log(startDateString);
 
             document.getElementById('startDatePicker').value = startDateString;
 
@@ -620,13 +693,8 @@
             if (startMinute < 10) { startTimeString = startTimeString + "0"; }
             startTimeString = startTimeString + startMinute;
 
-            document.getElementById("startTimePicker").value = startTimeString;
-
             // Grab initial end datetime from the true End Datetime picker
-            var endDateFormatted = document.getElementById("endDateInput").value.split(" ")[0].split(".");
-            endDateFormatted = endDateFormatted[2] + "-" + endDateFormatted[1] + "-" + endDateFormatted[0];
-            endDateFormatted = endDateFormatted + "T" + document.getElementById("endDateInput").value.split(" ")[1];
-            var endDatetime = new Date(endDateFormatted);
+            var endDatetime = new Date(document.getElementById("endDateInput").value);
 
             // Get the difference
             var startEndDifference = Math.abs(endDatetime - startDatetime); // Difference between start and end time in milliseconds
@@ -640,23 +708,34 @@
             dd.selectedIndex = [...dd.options].findIndex(option => option.text === textToFind);
 
             // After setting all controls using values from the true Start/End datetime pickers, update displays
-            updateStartEndDatetimes(false);
+
+            if ($("#startDatePicker").val() !== "") { RefreshAvailTimes(); }
+
+            selTime = startTimeString;
+            updateStartEndDatetimes(false, startTimeString);
+
         });
 
         // Update start and end time using sub controls
-        function updateStartEndDatetimes(flashDisplays) {
+        function updateStartEndDatetimes(flashDisplays, time) {
             // Update startDateInput by a plain string
-            var startDatetimeString = document.getElementById('startDatePicker').value + 'T' + document.getElementById("startTimePicker").value;;
+            var startDatetimeString = document.getElementById('startDatePicker').value + 'T' + time;
+            console.log("xxx");
+            console.log(time);
+            console.log(startDatetimeString);
             document.getElementById('startDateInput').value = startDatetimeString;   // Set Actual start datetime input
             document.getElementById('startDateDisplay').value = startDatetimeString;   // Set Display-only start datetime
 
+
             // Calculate end time using input from select list
-            var startTime = document.getElementById("startTimePicker").value.split(":");
+            var startTime = selTime.split(":");
+
             var startHour = parseInt(startTime[0]);
             var startMinute = parseInt(startTime[1]);
             var durationTime = document.getElementById("durationPicker").value.split(":");
             var endHour = startHour + parseInt(durationTime[0]);
             var endMinute = startMinute + parseInt(durationTime[1]);
+
             if (endMinute >= 60) {
                 endHour = endHour + 1;
                 endMinute = endMinute - 60;
@@ -669,6 +748,7 @@
                 endDatetime.setDate(endDatetime.getDate() + 1);
                 endHour = endHour - 24;
             }
+
             var endDay = parseInt(endDatetime.getDate());
             var endMonth = parseInt(endDatetime.getMonth() + 1);
             var endYear = parseInt(endDatetime.getFullYear());
@@ -681,8 +761,6 @@
             if (endHour < 10) { endDatetimeString = endDatetimeString + "0"; }
             endDatetimeString = endDatetimeString + endHour + ":" + endMinute;
 
-            document.getElementById('endDateInput').value = endDatetimeString;   // Set Actual end datetime input
-
             //Re-create endDatetimeString with rounded time (to nearest 30min) for display only
             endDatetimeString = endYear + "-";
             if (endMinute == 59) {
@@ -692,17 +770,22 @@
             if (endMinute == 29) {
                 endMinute = 30;
             }
-
             if (endMonth < 10) { endDatetimeString = endDatetimeString + "0" }
             endDatetimeString = endDatetimeString + endMonth + "-";
             if (endDay < 10) { endDatetimeString = endDatetimeString + "0" }
-            endDatetimeString = endDatetimeString + endDay + "T";
+            endDatetimeString = endDatetimeString + endDay;
+            endDatetimeString = new Date(endDatetimeString).toShortFormat() + " ";
             if (endHour < 10) { endDatetimeString = endDatetimeString + "0"; }
             endDatetimeString = endDatetimeString + endHour + ":";
             if (endMinute < 10) { endDatetimeString = endDatetimeString + "0"; }
             endDatetimeString = endDatetimeString + endMinute;
 
             document.getElementById('endDateDisplay').value = endDatetimeString;   // Set Display-only end datetime
+
+            var sDate = new Date(startDatetimeString).toShortFormat() + " " + selTime;
+            var area = $("#AreaID option:selected").text();
+            var room = "";
+            room = $("#RoomID option:selected").text();
 
             // Flash displays
             if (flashDisplays != false) {
@@ -715,23 +798,34 @@
             }
 
             updateSelectedDatetimeErrorMsg();
+            var summaryhtml = "<strong>Your Booking for " + area + " - " + room + " begins at " + sDate + " and ends at " + endDatetimeString + ".</strong>";
+            var roundedTime = "@Html.Raw(Model.RoundedEndDate.ToString("HH:mm"))";
+
+            if (summaryhtml.includes("NaN:NaN")) {
+                summaryhtml = summaryhtml.slice(0, -17);
+                summaryhtml = summaryhtml + roundedTime + ".</strong>";
+            }
+            console.log(summaryhtml);
+            $('#bookingsummary').html(summaryhtml);   // Set Display-only end datetime
+
         }
 
-        // Update start and end time when start Date picker changes
+
+        // Update actual start and end time when start Date picker changes
         function startDatePickerHandler(e) {
             updateStartEndDatetimes(true);
             $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
             $("#aspEndDateErrorSpan").html("");
         }
 
-        // Update start and end time when start Time picker changes
+        // Update actual start and end time when start Time picker changes
         function startTimePickerHandler(e) {
             updateStartEndDatetimes(true);
             $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
             $("#aspEndDateErrorSpan").html("");
         }
 
-        // Update start and end time when Duration picker changes
+        // Update actual start and end time when Duration picker changes
         function durationPickerHandler(e) {
             updateStartEndDatetimes(true);
             $("#aspStartDateErrorSpan").html("");//Clear error previous messages from server
@@ -740,39 +834,158 @@
 
         // Refresh DDL of time durations when duration selection control is clicked
         $('#durationPicker').click(function () {
-            var selectedArea = $("#AreaID").val();
-            var selectedDuration = $("#durationPicker").val();
-            var URL = "/RoomBookings/GetDurations/?ID=" + selectedArea + "&selectedValue=" + selectedDuration;
-            refreshDDL('durationPicker', URL);
-            if (selectedDuration == null || selectedDuration.length() == 0) {
-                $("#durationPicker").val($("#durationPicker option:first").val());
-            }
-            updateStartEndDatetimes(false);
+            updateStartEndDatetimes(false, selTime);
+            document.getElementById("repeatsection").hidden = false;
+            document.getElementById("bookingsummary").hidden = false;
         });
-    </script>
-    <script type="text/javascript">
-        // Refresh DDL of available rooms when Area is changed
+
+        // Refresh User DDL of available rooms when Area is changed
         $('#AreaID').change(function () {
             var selectedArea = $("#AreaID").val();
             var URL = "/RoomBookings/GetRooms/" + selectedArea;
             refreshDDL('RoomID', URL, true, "There are no Rooms available in this Area.", true, "-Select a Room-", true);
         });
-    </script>
-    <script type="text/javascript">
-        // Load initial Area description when page loads
-        $('document').ready(function () {
+        // Refresh Admin Listbox of available rooms when Area is changed
+        $('#AreaID').change(function () {
             var selectedArea = $("#AreaID").val();
-            var URL = "/RoomBookings/GetArea/" + selectedArea;
-            $.getJSON(URL, function (data) {
-                if (data !== null && !jQuery.isEmptyObject(data)) {
-                    $("#areaDescription_Title").text(data.areaName);
-                    $("#areaDescription_Body").html(data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'));
-                } else {
-                    $("#areaDescription_Title").text("Connection Error");
-                    $("#areaDescription_Body").html("Could not load Area description.");
-                }
+            var URL = "/RoomBookings/GetRooms/" + selectedArea;
+            $("#selectedOptions").empty();  // Empty previously selected rooms because the area changed
+            refreshListbox('availOptions', URL, true, 'There are no Rooms available in this Area.', true);
+            $("#selectedOptions").fadeToggle(400, function () {
+                $("#selectedOptions").fadeToggle(400);
             });
         });
+
+        $('#RoomID').change(function () {
+            RefreshAvailTimes();
+            document.getElementById("bookingtime").hidden = false;
+        });
+        $('#startDatePicker').change(function () {
+            RefreshAvailTimes();
+            document.getElementById("starttimeoptions").hidden = false;
+        });
+
+        function RefreshAvailTimes() {
+            var selDate = $("#startDatePicker").val();
+
+            var isAdmin = @{
+                string adm = User.IsInRole("User") ? "false" : "true";
+                @adm;
+            };
+
+            var selRoom = "";
+
+            selRoom = $("#RoomID").val();
+            var URL = "/RoomBookings/GetStartTimes/?ID=" + selRoom + "&selectedDateString=" + selDate + eID;
+            var starttimes1 = "";
+            var starttimes2 = "";
+            var starttimes3 = "";
+            var starttimes4 = "";
+            var starttimes5 = "";
+            var starttimes6 = "";
+            var starttimes7 = "";
+            var starttimes8 = "";
+            $("#nostarttimes").html("");
+
+            $(function () {
+                $.getJSON(URL, function (data) {
+                    var i = 1;
+                    $.each(data, function (index, item) {
+                        var checked = "";
+                        if (selTime === item.value) {
+                            checked = " active";
+                            onStartTimeSelect(item.value);
+                        }
+
+                        if (i <= 6) {
+                            starttimes1 = starttimes1 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="9"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 6 && i <= 12) {
+                            starttimes2 = starttimes2 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="10"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 12 && i <= 18) {
+                            starttimes3 = starttimes3 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="11"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 18 && i <= 24) {
+                            starttimes4 = starttimes4 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="12"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 24 && i <= 30) {
+                            starttimes5 = starttimes5 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="13"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 30 && i <= 36) {
+                            starttimes6 = starttimes6 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="14"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 36 && i <= 42) {
+                            starttimes7 = starttimes7 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="15><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+                        if (i > 42 && i <= 48) {
+                            starttimes8 = starttimes8 + '<label class="btn btn-outline-primary' + checked + '" onclick="onStartTimeSelect(this.firstElementChild.value)" tabindex="16"><input type="radio" name="options" value="' + item.value + '" autocomplete="off" onclick="onStartTimeSelect(this.firstElementChild.value)">' + item.text + '</label><br/>'
+                        }
+
+                        i = i+1;
+                    });
+
+                    $("#starttimes1").html(starttimes1);
+                    $("#starttimes2").html(starttimes2);
+                    $("#starttimes3").html(starttimes3);
+                    $("#starttimes4").html(starttimes4);
+                    $("#starttimes5").html(starttimes5);
+                    $("#starttimes6").html(starttimes6);
+                    $("#starttimes7").html(starttimes7);
+                    $("#starttimes8").html(starttimes8);
+
+                    if (data == null || !jQuery.isEmptyObject(data)) {
+                    }
+                    else {
+                        $("#nostarttimes").html("<strong>There are no available Booking Times on this day.</strong>");
+                        document.getElementById("duration").hidden = true;
+                        $("#bookingsummary").html("");
+                    }
+                });
+            });
+        }
+
+        function onStartTimeSelect(time) {
+            selTime = time;
+            var isAdmin = @{
+                string ad = User.IsInRole("User") ? "false" : "true";
+                @ad;
+            };
+
+            var selectedRoom = $("#RoomID").val();
+
+
+            var date = $("#startDatePicker").val();
+            var URL = "/RoomBookings/GetDurations/?ID=" + selectedRoom + "&selectedDate=" + date  + "&selectedTime=" + time + eID;
+            console.log(URL);
+            console.log(time);
+            console.log(selectedRoom);
+            console.log(date);
+            console.log(eID);
+            refreshDDL('durationPicker', URL);
+            $("#durationPicker").val($("#durationPicker option:first").val());
+            updateStartEndDatetimes(false, time);
+            document.getElementById("duration").hidden = false;
+
+
+        }
+
+        Date.prototype.toShortFormat = function () {
+
+            let monthNames = ["Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec"];
+
+            let day = this.getDate();
+
+            let monthIndex = this.getMonth();
+            let monthName = monthNames[monthIndex];
+
+            let year = this.getFullYear();
+
+            return `${day} ${monthName} ${year}`;
+        }
+
         // Refresh Area description when Area is changed
         $('#AreaID').change(function () {
             var selectedArea = $("#AreaID").val();
@@ -790,26 +1003,22 @@
                 });
             });
         });
-    </script>
-    <script tye="text/javascript">
-        $(function () {
-            $('[data-toggle="popover"]').popover()
-        })
-    </script>
-    <script>
+
         // Javascript updates live error message beneath datetime selector
         function updateSelectedDatetimeErrorMsg() {
-            console.log("Actual Selected Start Datetime: '" + $("#startDateInput").val()) + "'";
+            //console.log("Actual Selected Start Datetime: '" + $("#startDateInput").val()) + "'";
             if ($("#startDateInput").val().length == 0 || new Date($("#startDateInput").val()) < new Date($.now())) {
                 $("#startDateError").html("Booking start cannot be in the past. Please select a new date/time.");
+
             }
             else {
                 $("#startDateError").html("");
             }
 
-            console.log("Actual Selected End Datetime: '" + $("#endDateInput").val()) + "'";
+            //console.log("Actual Selected End Datetime: '" + $("#endDateInput").val()) + "'";
             if ($("#endDateInput").val().length == 0 || new Date($("#endDateInput").val()) < new Date($("#startDateInput").val())) {
                 $("#endDateError").html("The end date/time must occur after the selected start date/time. Please select a new date/time.");
+
             }
             else {
                 $("#endDateError").html("");
@@ -822,5 +1031,14 @@
         $("#endDateInput").change(function () {
             updateSelectedDatetimeErrorMsg();
         });
+
+        function UnhideAll() {
+            document.getElementById("repeatsection").hidden = false;
+            document.getElementById("bookingsummary").hidden = false;
+            document.getElementById("bookingtime").hidden = false;
+            document.getElementById("starttimeoptions").hidden = false;
+            document.getElementById("durationPicker").hidden = false;
+
+        }
     </script>
 }

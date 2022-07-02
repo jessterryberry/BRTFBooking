@@ -32,15 +32,26 @@
     <div class="container">
         <section style="background-color: #FFF; display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-1 py-3 my-3 mx-auto">
             <h4 class="text-left">
-                <a asp-action="Create" class="btn btn-primary mt-3" tabindex="1">Book a Room</a>
+                <a asp-action="Create" asp-controller="RoomBookings" class="btn btn-primary mt-3" tabindex="1">Book a Room</a>
             </h4>
             <form asp-action="UsersBookings" method="get">
                 <div class="control-section">
                     <div class="content-wrapper">
+                        @{
+                            string calTimeFormat = "";
+                            if ((string)ViewData["24HrFormat"] == "true")
+                            {
+                                calTimeFormat = "HH:mm";
+                            }
+                            else
+                            {
+                                calTimeFormat = "hh:mm aa";
+                            }
+                        }
                         <ejs-schedule id="schedule" width="100%" height="650px" currentView="TimelineDay"
                                       selectedDate="DateTime.Now" workDays="@ViewBag.workDays"
                                       readonly="true" allowInline="false" allowDragAndDrop="false" allowResizing="false"
-                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="HH:mm">
+                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="@calTimeFormat">
                             <e-schedule-views>
                                 <e-schedule-view option="TimelineDay"></e-schedule-view>
                             </e-schedule-views>

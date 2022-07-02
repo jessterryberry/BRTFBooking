@@ -72,7 +72,7 @@ else
 
 
 <div class="row justify-content-center">
-    <div class="container">
+    <div class="container" style="max-width: 1250px;">
         <form asp-action="Index" method="get">
             <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="my-3 mx-auto">
                 @if (User.IsInRole("User"))
@@ -93,11 +93,41 @@ else
                             @foreach (var item in Model)
                             {
                                 <div class="card mb-sm-3" style="min-width: 18rem;">
-                                    <h5 class="card-header">@Convert.ToDateTime(item.StartDate).ToString("MMMM dd, yyyy - h:mm tt")</h5>
+                                    <h5 class="card-header">
+                                        @if ((string)ViewData["24HrFormat"] == "true")
+                                        {
+                                            @Convert.ToDateTime(item.RoundedStartDate).ToString("dd MMM yyyy - HH:mm")
+                                        }
+                                        else
+                                        {
+                                            @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy - hh:mm tt", new System.Globalization.CultureInfo("en-US"))
+                                        }
+
+                                    </h5>
                                     <div class="card-body">
                                         <div class="media-body ml-2">
-                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")</div>
-                                            <div class="card-text mb-2"><strong>Time:</strong> @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()<br /></div>
+                                            <div class="card-text mb-2"><strong>Date:</strong> @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")</div>
+                                            <div class="card-text mb-2">
+                                                <strong>Time:</strong>
+                                                @if ((string)ViewData["24HrFormat"] == "true")
+                                                {
+                                                    var start = item.RoundedStartDate.ToString("HH:mm");
+                                                    var end = item.RoundedEndDate.ToString("HH:mm");
+                                                    var times = string.Format("{0} - {1}", start, end);
+
+                                                    @times
+
+                                                }
+                                                else
+                                                {
+                                                    var start = item.RoundedStartDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                                    var end = item.RoundedEndDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                                    var times = string.Format("{0} - {1}", start, end);
+
+                                                    @times
+                                                }
+                                                <br />
+                                            </div>
                                             <div class="card-text mb-2"><strong>Room:</strong> @Html.DisplayFor(modelItem => item.Room.RoomName)</div>
                                             <div class="card-text mb-2"><strong>User:</strong> @Html.DisplayFor(modelItem => item.User.FullName)</div>
                                             <div class="card-text"><strong>Approval Status:</strong> @Html.DisplayFor(modelItem => item.ApprovalStatus)</div>
@@ -164,10 +194,26 @@ else
                         {
                             <tr>
                                 <td>
-                                    @Convert.ToDateTime(item.StartDate).ToString("yyyy-MM-dd")
+                                    @Convert.ToDateTime(item.StartDate).ToString("dd MMM yyyy")
                                 </td>
                                 <td>
-                                    @Convert.ToDateTime(item.StartDate).ToShortTimeString() - @Convert.ToDateTime(item.EndDate).ToShortTimeString()
+                                    @if ((string)ViewData["24HrFormat"] == "true")
+                                    {
+                                        var start = item.RoundedStartDate.ToString("HH:mm");
+                                        var end = item.RoundedEndDate.ToString("HH:mm");
+                                        var times = string.Format("{0} - {1}", start, end);
+
+                                        @times
+
+                                    }
+                                    else
+                                    {
+                                        var start = item.RoundedStartDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                        var end = item.RoundedEndDate.ToString("hh:mm tt", new System.Globalization.CultureInfo("en-US"));
+                                        var times = string.Format("{0} - {1}", start, end);
+
+                                        @times
+                                    }
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Room.RoomName)

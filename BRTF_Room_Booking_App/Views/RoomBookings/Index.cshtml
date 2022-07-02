@@ -53,10 +53,21 @@
             <form asp-action="Index" method="get">
                 <div class="control-section">
                     <div class="content-wrapper">
+                        @{
+                            string calTimeFormat = "";
+                            if ((string)ViewData["24HrFormat"] == "true")
+                            {
+                                calTimeFormat = "HH:mm";
+                            }
+                            else
+                            {
+                                calTimeFormat = "hh:mm aa";
+                            }
+                        }
                         <ejs-schedule id="schedule" width="100%" height="650px" currentView="TimelineDay"
                                       selectedDate="DateTime.Now" workDays="@ViewBag.workDays"
                                       readonly="true" allowInline="false" allowDragAndDrop="false" allowResizing="false"
-                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="HH:mm">
+                                      eventClick="OnCellClick" popupOpen="onPopupOpen" dataBound="onDataBound" dateFormat="dd MMM yyyy" timeFormat="@calTimeFormat">
                             <e-schedule-views>
                                 <e-schedule-view option="TimelineDay"></e-schedule-view>
                             </e-schedule-views>

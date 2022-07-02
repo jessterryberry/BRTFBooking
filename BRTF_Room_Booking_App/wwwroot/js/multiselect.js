@@ -8,6 +8,7 @@
     $('#availOptions').append($(selectedOpts).clone());
     $(selectedOpts).remove();
     e.preventDefault();
+    RefreshAvailTimes();
 });
 
 $('#btnLeft').click(function (e) {
@@ -20,6 +21,7 @@ $('#btnLeft').click(function (e) {
     $('#selectedOptions').append($(selectedOpts).clone());
     $(selectedOpts).remove();
     e.preventDefault();
+    RefreshAvailTimes();
 });
 
 $('#btnRightTP').click(function (e) {

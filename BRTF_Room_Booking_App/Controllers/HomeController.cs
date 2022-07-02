@@ -51,6 +51,13 @@ namespace BRTF_Room_Booking_App.Controllers
             //                   .Include(r => r.User)
             //                   select r;
             //return View(roombookings);
+            // Ensure cookies are refreshed when user visits Bookings index
+            User loggedInUser = _context.Users.Where(u => u.Username == User.Identity.Name).FirstOrDefault();
+            CookieHelper.CookieSet(HttpContext, "userName", loggedInUser.FirstName, 3200);  // Although this cookie is called userName, it is used to store the user's first name for the welcome message to say Hello
+            CookieHelper.CookieSet(HttpContext, "userID", loggedInUser.ID.ToString(), 3200);
+
+            ViewData["24HrFormat"] = loggedInUser.TimeFormat24Hours ? "true" : "false";
+
 
             if (User.IsInRole("Top-level Admin"))
             {

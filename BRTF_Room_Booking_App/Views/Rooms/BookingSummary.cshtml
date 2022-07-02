@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<BRTF_Room_Booking_App.ViewModels.BookingSummary>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Admin Reports";
@@ -9,97 +10,99 @@
 <br />
 <p class="text-danger">@TempData["Message"]</p>
 <div class="container">
-<section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-5 py-2 my-3">
-    <form asp-action="BookingSummary" method="get">
-        <div class="row">
+    <section style="background-color: #FFF;display: block; border-radius: 8px; box-shadow: 0 15px 25px rgba(0,0,50,0.2);" class="px-5 py-2 my-3">
+        <form asp-action="BookingSummary" method="get">
+            <div class="row">
                 <div class="col-12">
                     <div class="form-horizontal align-items-start text-left justify-content-start my-3">
-                        <a asp-action="DownloadBookings" class="btn btn-info mb-3" tabindex="1">Download Bookings Report</a>
-                    </div>
-                </div>
-            <div class="col-12">
-                <div class="form-horizontal align-items-start text-left justify-content-start my-3">
-                    <button tabindex="2" class="btn @(ViewData["Filter"])" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
-                        Filter/Search
-                    </button>
-                    <div class="collapse @(ViewData["Filtering"])" id="collapseFilter">
-                        <div class="card card-body bg-light">
-                            <div class="row">
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">Bookings From:</label>
-                                    @Html.TextBox("start", null, new { @class = "form-control", @type = "date", @tabindex="3" })
+                        <button tabindex="2" class="btn @(ViewData["Filter"])" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                            Filter/Search
+                        </button>
+                        <a asp-action="DownloadBookings"
+                           asp-route-start="@HttpContextAccessor.HttpContext.Request.Query["start"]"
+                           asp-route-end="@HttpContextAccessor.HttpContext.Request.Query["end"]"
+                           asp-route-SearchRoom="@HttpContextAccessor.HttpContext.Request.Query["SearchRoom"]"
+                           asp-route-AreaID="@HttpContextAccessor.HttpContext.Request.Query["AreaID"]"
+                           class="btn btn-info" tabindex="1">Download Bookings Report</a>
+
+                        <div class="collapse @(ViewData["Filtering"])" id="collapseFilter">
+                            <div class="card card-body bg-light">
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Bookings From:</label>
+                                        @Html.TextBox("start", null, new { @class = "form-control", @type = "date", @tabindex = "3" })
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Bookings Before:</label>
+                                        @Html.TextBox("end", null, new { @class = "form-control", @type = "date", @tabindex = "4" })
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Search Room:</label>
+                                        @Html.TextBox("SearchRoom", null, new { @class = "form-control", @tabindex = "5" })
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Search by Area:</label>
+                                        @Html.DropDownList("AreaID", null, "All Areas", htmlAttributes: new { @class = "form-control", @tabindex = "6" })
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">Bookings Before:</label>
-                                    @Html.TextBox("end", null, new { @class = "form-control", @type = "date", @tabindex = "4" })
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">Search Room:</label>
-                                    @Html.TextBox("SearchRoom", null, new { @class = "form-control", @tabindex = "5" })
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">Search by Area:</label>
-                                    @Html.DropDownList("AreaID", null, "All Areas", htmlAttributes: new { @class = "form-control", @tabindex = "6" })
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-md-4 align-self-end">
-                                    <input type="submit" name="actionButton" value="Filter" class="btn btn-outline-primary" tabindex="7"/>
-                                    <a asp-action="BookingSummary" class="btn btn-outline-dark" tabindex="8">Clear</a>
+                                <div class="row">
+                                    <div class="form-group col-md-4 align-self-end">
+                                        <input type="submit" name="actionButton" value="Filter" class="btn btn-outline-primary" tabindex="7" />
+                                        <a asp-action="BookingSummary" class="btn btn-outline-dark" tabindex="8">Clear</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="chartHolder">
-            <!-- HTML -->
-            <div id="chartdiv" tabindex="9"></div>
-        </div>
+            <div id="chartHolder">
+                <!-- HTML -->
+                <div id="chartdiv" tabindex="9"></div>
+            </div>
 
 
-    </form>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.RoomName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Area)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.NumberOfAppointments)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalHours)
-                </th>
-
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+        </form>
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.RoomName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Area)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NumberOfAppointments)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TotalHours)
-                    </td>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RoomName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Area)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NumberOfAppointments)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TotalHours)
+                    </th>
 
                 </tr>
-            }
-        </tbody>
-    </table>
-</section>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoomName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Area)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumberOfAppointments)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalHours)
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
 </div>
 <style>
     #chartHolder {

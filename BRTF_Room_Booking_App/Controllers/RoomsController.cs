@@ -365,64 +365,53 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["AreaID"] = AreaSelectList(AreaID);
 
             var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
-               .Where(a => a.StartDate >= start && a.EndDate <= end)
                .OrderBy(p => p.Room.RoomName)
-               .AsNoTracking()
-               .ToList();
+               .AsNoTracking();
 
             //  Filtering
-            if (start == null && end == null)
+            if (end != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
-                .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
-            }
-            else if (start == null && end != null)
-            {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(a => a.EndDate <= end)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
             }
-            else if (start != null && end == null)
+            if (start != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(a => a.StartDate >= start)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
             }
             if (!String.IsNullOrEmpty(SearchRoom))
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                .Where(r => r.Room.RoomName.ToUpper().Contains(SearchRoom.ToUpper()))
                .OrderBy(p => p.Room.RoomName)
-               .AsNoTracking()
-               .ToList();
+               .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
 
             }
             if (AreaID.HasValue)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(r => r.Room.AreaID == AreaID)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
 
             }
 
+            var filteredList = filtered.ToList();
+
             //Now do the grouping
-            var sumQ = filtered
+            var sumQ = filteredList
                 .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.Area.AreaName })
                 .Select(grp => new BookingSummary
                 {
@@ -455,8 +444,8 @@ namespace BRTF_Room_Booking_App.Controllers
             //   .AsNoTracking()
             //   .ToList();
 
-            //Clear the sort/filter/paging URL Cookie for Controller
-            CookieHelper.CookieSet(HttpContext, ControllerName() + "URL", "", -1);
+            ////Clear the sort/filter/paging URL Cookie for Controller
+            //CookieHelper.CookieSet(HttpContext, ControllerName() + "URL", "", -1);
 
             //Toggle the open/closed state of the 'Filter/Sort' button based on if something is currently being filtered
             ViewData["Filtering"] = ""; //Assume nothing is filtered initially
@@ -467,63 +456,52 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["AreaID"] = AreaSelectList(AreaID);
 
             var filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
-               .Where(a => a.StartDate >= start && a.EndDate <= end)
                .OrderBy(p => p.Room.RoomName)
-               .AsNoTracking()
-               .ToList();
+               .AsNoTracking();
 
             //  Filtering
-            if (start == null && end == null)
+            if (end != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
-                .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
-            }
-            else if (start == null && end != null)
-            {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(a => a.EndDate <= end)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
             }
-            else if (start != null && end == null)
+            if (start != null)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(a => a.StartDate >= start)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
             }
             if (!String.IsNullOrEmpty(SearchRoom))
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                .Where(r => r.Room.RoomName.ToUpper().Contains(SearchRoom.ToUpper()))
                .OrderBy(p => p.Room.RoomName)
-               .AsNoTracking()
-               .ToList();
+               .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
 
             }
             if (AreaID.HasValue)
             {
-                filtered = _context.RoomBookings.Include(a => a.Room).ThenInclude(a => a.Area)
+                filtered = filtered
                 .Where(r => r.Room.AreaID == AreaID)
                 .OrderBy(p => p.Room.RoomName)
-                .AsNoTracking()
-                .ToList();
+                .AsNoTracking();
                 ViewData["Filtering"] = " show ";
                 ViewData["Filter"] = "btn-danger";
 
             }
 
-            var appts = filtered
+            var filteredList = filtered.ToList();
+
+            var bookings = filteredList
                 .GroupBy(a => new { a.RoomID, a.Room.RoomName, a.Room.Area.AreaName })
                 .Select(grp => new BookingSummary
                 {
@@ -535,7 +513,7 @@ namespace BRTF_Room_Booking_App.Controllers
                 });
 
             //How many rows?
-            int numRows = appts.Count();
+            int numRows = bookings.Count();
 
             if (numRows > 0) //We have data
             {
@@ -546,10 +524,10 @@ namespace BRTF_Room_Booking_App.Controllers
                     var workSheet = excel.Workbook.Worksheets.Add("BookingSummaries");//RoomBookings?
 
                     //Note: Cells[row, column]
-                    workSheet.Cells[3, 1].LoadFromCollection(appts, true);
+                    workSheet.Cells[3, 1].LoadFromCollection(bookings, true);
 
                     //Set Style and backgound colour of headings
-                    using (ExcelRange headings = workSheet.Cells[3, 1, 3, 5])
+                    using (ExcelRange headings = workSheet.Cells[3, 1, 3, 4])
                     {
                         headings.Style.Font.Bold = true;
                         var fill = headings.Style.Fill;
@@ -562,7 +540,7 @@ namespace BRTF_Room_Booking_App.Controllers
 
                     //Add a title and timestamp at the top of the report
                     workSheet.Cells[1, 1].Value = "Booking Report";
-                    using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 5])
+                    using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 4])
                     {
                         Rng.Merge = true; //Merge columns start and end range
                         Rng.Style.Font.Bold = true; //Font should be bold
