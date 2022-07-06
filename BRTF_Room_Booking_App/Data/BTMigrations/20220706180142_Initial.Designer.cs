@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BRTF_Room_Booking_App.Data.BTMigrations
 {
     [DbContext(typeof(BTRFRoomBookingContext))]
-    [Migration("20220611123322_Initial")]
+    [Migration("20220706180142_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,12 +212,7 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(50);
 
-                    b.Property<int>("UserGroupID")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("UserGroupID");
 
                     b.HasIndex("ProgramLevel", "ProgramCode")
                         .IsUnique();
@@ -259,6 +254,9 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                     b.Property<int>("TermAndProgramID")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("TimeFormat24Hours")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -294,6 +292,24 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                         .IsUnique();
 
                     b.ToTable("UserGroups");
+                });
+
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.UserGroupTermAndProgram", b =>
+                {
+                    b.Property<int>("TermAndProgramID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserGroupID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TermAndProgramID", "UserGroupID");
+
+                    b.HasIndex("TermAndProgramID")
+                        .IsUnique();
+
+                    b.HasIndex("UserGroupID");
+
+                    b.ToTable("UserGroupTermAndPrograms");
                 });
 
             modelBuilder.Entity("BRTF_Room_Booking_App.Models.AreaApprover", b =>
@@ -350,21 +366,27 @@ namespace BRTF_Room_Booking_App.Data.BTMigrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BRTF_Room_Booking_App.Models.TermAndProgram", b =>
-                {
-                    b.HasOne("BRTF_Room_Booking_App.Models.UserGroup", "UserGroup")
-                        .WithMany("TermAndPrograms")
-                        .HasForeignKey("UserGroupID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BRTF_Room_Booking_App.Models.User", b =>
                 {
                     b.HasOne("BRTF_Room_Booking_App.Models.TermAndProgram", "TermAndProgram")
                         .WithMany("Users")
                         .HasForeignKey("TermAndProgramID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BRTF_Room_Booking_App.Models.UserGroupTermAndProgram", b =>
+                {
+                    b.HasOne("BRTF_Room_Booking_App.Models.TermAndProgram", "TermAndProgram")
+                        .WithOne("AssignedUserGroup")
+                        .HasForeignKey("BRTF_Room_Booking_App.Models.UserGroupTermAndProgram", "TermAndProgramID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BRTF_Room_Booking_App.Models.UserGroup", "UserGroup")
+                        .WithMany("AssignedTermAndPrograms")
+                        .HasForeignKey("UserGroupID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
