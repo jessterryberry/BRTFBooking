@@ -414,14 +414,14 @@ namespace BRTF_Room_Booking_App.Controllers
             ViewData["chkRepeat"] = "";
             ViewData["RepeatContainer"] = "";
             ViewData["RepeatInterval"] = "";
-            ViewData["DaysOfWeekContainer"] = "";
-            ViewData["Monday"] = "";
-            ViewData["Tuesday"] = "";
-            ViewData["Wednesday"] = "";
-            ViewData["Thursday"] = "";
-            ViewData["Friday"] = "";
-            ViewData["Saturday"] = "";
-            ViewData["Sunday"] = "";
+            //ViewData["DaysOfWeekContainer"] = "";
+            //ViewData["Monday"] = "";
+            //ViewData["Tuesday"] = "";
+            //ViewData["Wednesday"] = "";
+            //ViewData["Thursday"] = "";
+            //ViewData["Friday"] = "";
+            //ViewData["Saturday"] = "";
+            //ViewData["Sunday"] = "";
             ViewData["RepeatEndDate"] = "";
 
             int userID = int.Parse(Request.Cookies["userID"]);
@@ -437,14 +437,14 @@ namespace BRTF_Room_Booking_App.Controllers
                 ViewData["chkRepeat"] = "checked";
                 ViewData["RepeatContainer"] = "show";
                 ViewData["RepeatInterval"] = RepeatInterval;
-                if (RepeatType == "Weeks") ViewData["DaysOfWeekContainer"] = "show";
-                if (Monday == "on") ViewData["Monday"] = "checked";
-                if (Tuesday == "on") ViewData["Tuesday"] = "checked";
-                if (Wednesday == "on") ViewData["Wednesday"] = "checked";
-                if (Thursday == "on") ViewData["Thursday"] = "checked";
-                if (Friday == "on") ViewData["Friday"] = "checked";
-                if (Saturday == "on") ViewData["Saturday"] = "checked";
-                if (Sunday == "on") ViewData["Sunday"] = "checked";
+                //if (RepeatType == "Weeks") ViewData["DaysOfWeekContainer"] = "show";
+                //if (Monday == "on") ViewData["Monday"] = "checked";
+                //if (Tuesday == "on") ViewData["Tuesday"] = "checked";
+                //if (Wednesday == "on") ViewData["Wednesday"] = "checked";
+                //if (Thursday == "on") ViewData["Thursday"] = "checked";
+                //if (Friday == "on") ViewData["Friday"] = "checked";
+                //if (Saturday == "on") ViewData["Saturday"] = "checked";
+                //if (Sunday == "on") ViewData["Sunday"] = "checked";
                 ViewData["RepeatEndDate"] = RepeatEndDate;
 
                 // Add model errors for any Repeat controls that are not set correctly
@@ -461,17 +461,17 @@ namespace BRTF_Room_Booking_App.Controllers
                 {
                     ModelState.AddModelError("", "Repeat Interval cannot be less than 1.");
                 }
-                else if (RepeatInterval == "Weeks"
-                    && (Monday != "on")
-                    && (Tuesday != "on")
-                    && (Wednesday != "on")
-                    && (Thursday != "on")
-                    && (Friday != "on")
-                    && (Saturday != "on")
-                    && (Sunday != "on"))
-                {
-                    ModelState.AddModelError("", "You must check \"On\" the days of the week upon which you want to repeat your booking.");
-                }
+                //else if (RepeatInterval == "Weeks"
+                //    && (Monday != "on")
+                //    && (Tuesday != "on")
+                //    && (Wednesday != "on")
+                //    && (Thursday != "on")
+                //    && (Friday != "on")
+                //    && (Saturday != "on")
+                //    && (Sunday != "on"))
+                //{
+                //    ModelState.AddModelError("", "You must check \"On\" the days of the week upon which you want to repeat your booking.");
+                //}
 
                 if (RepeatEndDate == null)
                 {
@@ -648,7 +648,6 @@ namespace BRTF_Room_Booking_App.Controllers
                             // Generate bookings to add for this room
                             List<RoomBooking> newBookingsForThisRoom = GenerateRepeatBookings(roomBooking.SpecialNotes, roomBooking.UserID, Convert.ToInt32(roomID),
                                     roomBooking.StartDate, roomBooking.EndDate, Convert.ToDateTime(RepeatEndDate), Convert.ToInt32(RepeatInterval), RepeatType,
-                                    Monday == "on", Tuesday == "on", Wednesday == "on", Thursday == "on", Friday == "on", Saturday == "on", Sunday == "on",
                                     out isTimeConflictFoundForThisRoom, out timeConflictFeedbackForThisRoom, out timeAddedByNewBookings,
                                     out isSingleBookingLengthViolationFoundForThisRoom, out singleBookingLengthFeedbackForThisRoom,
                                     out isBlackoutViolationFoundForThisRoom, out blackoutViolationFeedbackForThisRoom, out blackoutTimesForThisRoom,
@@ -1642,7 +1641,6 @@ namespace BRTF_Room_Booking_App.Controllers
         /// <returns>Generated list of Room Bookings to add.</returns>
         private List<RoomBooking> GenerateRepeatBookings(string SpecialNotes, int UserID, int RoomID,
             DateTime StartDate, DateTime EndDate, DateTime RepeatEndDate, int RepeatInterval, string RepeatType,
-            bool IncludeMonday, bool IncludeTuesday, bool IncludeWednesday, bool IncludeThursday, bool IncludeFriday, bool IncludeSaturday, bool IncludeSunday,
             out bool isTimeConflictFound, out List<RoomBooking> timeConflictFeedback, out TimeSpan timeAddedByGeneratedBookings,
             out bool isSingleBookingViolationFound, out List<IDictionary<string, string>> singleBookingFeedback,
             out bool isBlackoutViolationFound, out List<RoomBooking> blackoutViolationFeedback, out List<int> blackoutTimesForGeneratedBookings,
@@ -1667,24 +1665,15 @@ namespace BRTF_Room_Booking_App.Controllers
             List<RoomBooking> overallNewBookingsToAdd = new List<RoomBooking>();
 
             TimeSpan duration = EndDate - StartDate;    // Duration of booking to repeat when generating bookings
-            for (DateTime day = StartDate; day.Date <= RepeatEndDate; day = day.AddDays((RepeatType == "Days") ? RepeatInterval : 1))
+            for (DateTime day = StartDate; day.Date <= RepeatEndDate; day = day.AddDays((RepeatType == "Days") ? RepeatInterval : RepeatInterval * 7))
             {
                 totalTimeOfGeneratedBookings += duration;   // Track the tally of time added
 
                 // Check that this day of the week is checked "On" before adding booking
-                if ((day.DayOfWeek == DayOfWeek.Monday && IncludeMonday)    // Generate booking if the variable day of the week is one of the included days of the week
-                    || (day.DayOfWeek == DayOfWeek.Tuesday && IncludeTuesday)
-                    || (day.DayOfWeek == DayOfWeek.Wednesday && IncludeWednesday)
-                    || (day.DayOfWeek == DayOfWeek.Thursday && IncludeThursday)
-                    || (day.DayOfWeek == DayOfWeek.Friday && IncludeFriday)
-                    || (day.DayOfWeek == DayOfWeek.Saturday && IncludeSaturday)
-                    || (day.DayOfWeek == DayOfWeek.Sunday && IncludeSunday)
-                    || (RepeatType == "Days"))  // Generate booking if the RepeatType is Days, since it includes all days of the week
-                {
                     // Get Room data
                     var thisRoom = _context.Rooms.Include(r => r.Area).Where(r => r.ID == RoomID).FirstOrDefault();
 
-                    // Auto-approve bookings made by Users possessing approval permissions or bookins in areas that don't require approval
+                    // Auto-approve bookings made by Users possessing approval permissions or bookings in areas that don't require approval
                     string approvalString = "Pending";
                     var approverUsernames = _context.AreaApprovers // Get names of approvers for this Area
                         .Include(r => r.User)
@@ -1765,12 +1754,6 @@ namespace BRTF_Room_Booking_App.Controllers
 
                     // Add booking to list to return
                     overallNewBookingsToAdd.Add(newBooking);
-                }
-
-                // Check the repeat interval, since we may need to skip weeks
-                if ((RepeatType == "Weeks")
-                    && (day.DayOfWeek == DayOfWeek.Saturday))
-                    day = day.AddDays(7 * (RepeatInterval - 1));   // Add days according to week interval at the end of the week
             }
 
             // Return violation results:

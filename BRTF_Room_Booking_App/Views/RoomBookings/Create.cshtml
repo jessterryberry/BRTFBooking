@@ -431,6 +431,71 @@
         <div>
             <div class="container mt-0">
                 <form asp-action="Create">
+                    <div class="modal fade" id="repeatModal" role="dialog" aria-labelledby="repeatModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="repeatModalLabel">Repeat Frequency</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="@(ViewData["RepeatContainer"])" id="collapseRepeat">
+                                        <div class="container">
+                                            <div class="form-group text-left">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="presetRadios" id="presetRadios1" value="everyday" checked tabindex="27">
+                                                    <label class="form-check-label" for="presetRadios1">
+                                                        Every day
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="presetRadios" id="presetRadios2" value="every2days" tabindex="28">
+                                                    <label class="form-check-label" for="presetRadios2">
+                                                        Every 2 days
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="presetRadios" id="presetRadios3" value="everyweek" tabindex="29">
+                                                    <label class="form-check-label" for="presetRadios3">
+                                                        Once per week
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="presetRadios" id="presetRadios4" value="every2weeks" tabindex="30">
+                                                    <label class="form-check-label" for="presetRadios4">
+                                                        Every 2 weeks
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="presetRadios" id="presetRadios5" value="custom" tabindex="31">
+                                                    <label class="form-check-label" for="presetRadios5">
+                                                        Custom
+                                                    </label>
+                                                </div>
+                                                <div class="collapse" id="collapseRepeatCustom">
+                                                    <label for="RepeatInterval" class="control-label"><strong>Every *</strong></label>
+
+                                                    <div class="input-group">
+                                                        <input tabindex="32" type="number" id="RepeatInterval" name="RepeatInterval" step="1" min="1" value="@(ViewData["RepeatInterval"])" class="form-control" />
+                                                        <select tabindex="33" id="RepeatType" name="RepeatType" class="form-control" asp-items="ViewBag.RepeatType"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                <div class="form-group text-left mt-3">
+                                                    <label for="RepeatEndDate" class="control-label"><strong>Repeat Until *</strong></label>
+                                                    <input tabindex="34" type="date" id="RepeatEndDate" name="RepeatEndDate" value="@(ViewData["RepeatEndDate"])" class="form-control" />
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <input type="button" class="btn btn-primary" value="Confirm" data-dismiss="modal" tabindex="35"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="col-lg-10" style="margin: auto">
                         <div class="form-group text-left">
                             <label asp-for="UserID" class="control-label"><strong>Full Name *</strong></label>
@@ -489,7 +554,7 @@
                                     <label for="selectedOptions" class="control-label"><strong>Current Rooms to Book</strong></label> <button tabindex="7" type="button" title="Remove Rooms from Booking" id="btnRight" class="btn btn-danger btn-sm">
                                         <strong>➖</strong>
                                     </button>
-                                    @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control", @style = "height: 90%;", @tabindex="6" })
+                                    @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control", @style = "height: 90%;", @tabindex = "6" })
                                     <span asp-validation-for="RoomID" id="valRoom" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
@@ -515,7 +580,7 @@
                             @* First row contains separate pickers for Date, Time, Duration. Javascript updates the datetimes in Third row using these pickers in First row *@
                             <div class="form-group text-left">
                                 Select Booking Date
-                                <input type="date" class="form-control" id="startDatePicker" onchange="startDatePickerHandler(event);" tabindex="11"/>
+                                <input type="date" class="form-control" id="startDatePicker" onchange="startDatePickerHandler(event);" tabindex="11" />
                             </div>
 
                             <div class="form-group text-left" id="starttimeoptions" hidden>
@@ -549,8 +614,8 @@
                                 <div class="text-right pt-2">
                                 </div>
                                 @* Second row contains the REAL inputs for the start and end time, but they are hidden from the user.
-                    User does not edit directly. Javascript on First row edits these.
-                    Also Error Messages for the datetime inputs get displayed here. *@
+                                User does not edit directly. Javascript on First row edits these.
+                                Also Error Messages for the datetime inputs get displayed here. *@
                                 <div class="text-left">
                                     <input type="hidden" id="startDateInput" asp-for="StartDate" class="form-control" runat="server" />
                                     <input type="hidden" asp-for="EndDate" id="endDateInput" class="form-control" runat="server" />
@@ -575,70 +640,23 @@
                             </div>
                             <div id="bookingsummary" hidden></div>
                             <br />
-                            <div hidden id="repeatsection">
+                            <div id="repeatsection" hidden="false">
                                 <div class="form-group text-left">
                                     <button tabindex="21" type="button" title="Repeating Bookings Help" class="btn btn-sm" data-container="body" data-toggle="popover" data-placement="left"
-                                            data-content="If you want your Booking to be repeated over a period of time, click this checkbox. Then select how frequently you want the Booking to occur. You may choose to repeat bookings every X number of Days or Weeks until your chosen Repeat End Date, and specify which days of the week within that period should be booked.">
+                                            data-content="If you want your Booking to be repeated over a period of time, click this checkbox. Then select how frequently you want the Booking to occur. You may choose to repeat bookings every X number of Days or Weeks until your chosen Repeat End Date.">
                                         <img src="~/img/questionmark.png" width="30" height="30" />
                                     </button>
                                     <label for="chkRepeat" class="control-label" style="font-size: 1.25rem; font-weight: 500;"><strong>Repeat?</strong></label>
-                                    <input tabindex="22" type="checkbox" id="chkRepeat" name="chkRepeat" class="control-label ml-2" @Html.Raw(ViewBag.chkRepeat) data-toggle="collapse" data-target="#collapseRepeat" aria-expanded="false" aria-controls="collapseRepeat" />
-                                </div>
-                                <div class="collapse @(ViewData["RepeatContainer"])" id="collapseRepeat">
-                                    <div class="container">
-                                        <div class="form-group text-left">
-                                            <label for="RepeatInterval" class="control-label"><strong>Every *</strong></label>
-                                            <input tabindex="23" type="number" id="RepeatInterval" name="RepeatInterval" step="1" min="1" value="@(ViewData["RepeatInterval"])" class="form-control" />
-                                            <span id="valRepeat" class="text-danger field-validation-valid" data-valmsg-for="RepeatInterval" data-valmsg-replace="true"></span>
-                                            <select tabindex="24" id="RepeatType" name="RepeatType" class="form-control my-4" asp-items="ViewBag.RepeatType"></select>
-                                        </div>
-                                        <div class="container mt-4">
-                                            <div class="collapse @(ViewData["DaysOfWeekContainer"])" id="collapseDaysOfWeekSelection">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <input tabindex="25" type="checkbox" id="Monday" name="Monday" @Html.Raw(ViewBag.Monday) style="width: 20px; height: 20px;" /><br />
-                                                        <label for="Monday" class="control-label">Mon</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="26" type="checkbox" id="Tuesday" name="Tuesday" @Html.Raw(ViewBag.Tuesday) style="width: 20px; height: 20px;" /><br />
-                                                        <label for="Tuesday" class="control-label">Tue</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="27" type="checkbox" id="Wednesday" name="Wednesday" @Html.Raw(ViewBag.Wednesday) style="width: 20px; height: 20px; " /><br />
-                                                        <label for="Wednesday" class="control-label">Wed</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="28" type="checkbox" id="Thursday" name="Thursday" @Html.Raw(ViewBag.Thursday) style="width: 20px; height: 20px; " /><br />
-                                                        <label for="Thursday" class="control-label">Thu</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="29" type="checkbox" id="Friday" name="Friday" @Html.Raw(ViewBag.Friday) style="width: 20px; height: 20px; " /><br />
-                                                        <label for="Friday" class="control-label">Fri</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="30" type="checkbox" id="Saturday" name="Saturday" @Html.Raw(ViewBag.Saturday) style="width: 20px; height: 20px; " /><br />
-                                                        <label for="Saturday" class="control-label">Sat</label>
-                                                    </div>
-                                                    <div class="col">
-                                                        <input tabindex="31" type="checkbox" id="Sunday" name="Sunday" @Html.Raw(ViewBag.Sunday) style="width: 20px; height: 20px; " /><br />
-                                                        <label for="Sunday" class="control-label">Sun</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group text-left mt-3">
-                                            <label for="RepeatEndDate" class="control-label"><strong>Repeat End Date *</strong></label>
-                                            <input tabindex="32" type="date" id="RepeatEndDate" name="RepeatEndDate" value="@(ViewData["RepeatEndDate"])" class="form-control" />
-                                        </div>
-                                    </div>
+                                    <input tabindex="22" type="checkbox" id="chkRepeat" name="chkRepeat" class="control-label ml-2" @Html.Raw(ViewBag.chkRepeat) aria-expanded="false" aria-controls="repeatModal" />
+                                    <span id="valRepeat" class="text-danger field-validation-valid" data-valmsg-for="RepeatInterval" data-valmsg-replace="true"></span>
                                 </div>
                             </div>
                         </div>
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <br />
                         <div class="d-flex justify-content-center">
-                            <input tabindex="33" id="btnSubmit" type="submit" value="Create" class="btn btn-primary mx-2" style="width:100px;" />
-                            <a tabindex="34" href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Bookings</a>
+                            <input tabindex="36" id="btnSubmit" type="submit" value="Create" class="btn btn-primary mx-2" style="width:100px;" />
+                            <a tabindex="37" href='@ViewData["returnURL"]' role="button" class="btn btn-secondary mx-2">Back to Bookings</a>
                         </div>
                         <br />
                     </div>
@@ -666,16 +684,44 @@
         })
 
         // Expand Day-of-week checkboxes when repeat type is Weeks
-        $('#RepeatType').change(function () {
-            if ($('#RepeatType').val() == "Days") {
-                $('#collapseDaysOfWeekSelection').collapse('hide');
-            } else if ($('#RepeatType').val() == "Weeks") {
-                $('#collapseDaysOfWeekSelection').collapse('show');
-            }
-        });
+        //$('#RepeatType').change(function () {
+        //    if ($('#RepeatType').val() == "Days") {
+        //        $('#collapseDaysOfWeekSelection').collapse('hide');
+        //    } else if ($('#RepeatType').val() == "Weeks") {
+        //        $('#collapseDaysOfWeekSelection').collapse('show');
+        //    }
+        //});
 
         // Load initial booking time when page loads
         $('document').ready(function () {
+
+            $('input:radio[name=presetRadios]').change(function () {
+                if (this.value == 'everyday') {
+                    $('#collapseRepeatCustom').collapse('hide');
+                    $('#RepeatInterval').val(1);
+                    $('#RepeatType').val("Days");
+                }
+                else if (this.value == 'every2days') {
+                    $('#collapseRepeatCustom').collapse('hide');
+                    $('#RepeatInterval').val(2);
+                    $('#RepeatType').val("Days");
+                }
+                else if (this.value == 'everyweek') {
+                    $('#collapseRepeatCustom').collapse('hide');
+                    $('#RepeatInterval').val(1);
+                    $('#RepeatType').val("Weeks");
+                }
+                else if (this.value == 'every2weeks') {
+                    $('#collapseRepeatCustom').collapse('hide');
+                    $('#RepeatInterval').val(2);
+                    $('#RepeatType').val("Weeks");
+                }
+                else if (this.value == 'custom') {
+                    $('#collapseRepeatCustom').collapse('show');
+                }
+            });
+
+
             var selTime = "";
             var isAdmin = @{
                 string a = User.IsInRole("User") ? "false" : "true";
@@ -880,6 +926,15 @@
             updateSelectedDatetimeErrorMsg();
         }
 
+        $('#chkRepeat').on('change', function (e) {
+            if (e.target.checked) {
+                $('#repeatModal').modal();
+                if ($('#presetRadios1').is(':checked')) {
+                    $('#RepeatInterval').val(1);
+                    $('#RepeatType').val("Days");
+                }
+            }
+        });
 
         // Update actual start and end time when start Date picker changes
         function startDatePickerHandler(e) {
@@ -1112,7 +1167,6 @@
         });
 
         function UnhideAll() {
-            document.getElementById("repeatsection").hidden = false;
             document.getElementById("bookingsummary").hidden = false;
             document.getElementById("bookingtime").hidden = false;
             document.getElementById("starttimeoptions").hidden = false;

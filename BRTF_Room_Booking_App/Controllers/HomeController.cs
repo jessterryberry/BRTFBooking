@@ -107,6 +107,7 @@ namespace BRTF_Room_Booking_App.Controllers
                                .ThenInclude(r => r.Area)
                                .Include(r => r.User)
                                .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
+                               .OrderBy(r => r.StartDate)
                                select r;
 
                 return View(await bookings.ToListAsync());
@@ -208,7 +209,8 @@ namespace BRTF_Room_Booking_App.Controllers
                            .Include(r => r.Room)
                            .ThenInclude(r => r.Area)
                            .Include(r => r.User)
-                           .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
+                           .Where(r => r.User == currentUser && r.StartDate >= DateTime.Now)
+                           .OrderBy(r => r.StartDate)
                            select r;
 
             //bool filtered = false;
@@ -351,7 +353,7 @@ namespace BRTF_Room_Booking_App.Controllers
                            .Include(r => r.Room)
                            .ThenInclude(r => r.Area)
                            .Include(r => r.User)
-                           .Where(r => r.User == currentUser && r.StartDate > DateTime.Now)
+                           .Where(r => r.User == currentUser && r.StartDate >= DateTime.Now)
                             select r;
 
             //bool filtered = false;
